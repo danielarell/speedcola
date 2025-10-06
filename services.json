@@ -1,0 +1,35 @@
+[
+  {
+    "id": 1,
+    "categoria": "Mechanic",
+    "precio": 5000,
+    "ubicacion": "Ameca, Jalisco",
+    "payMethod": "Cash",
+    "provider": "Iván",
+    "rating": "4 stars",
+    "review": "Buen servicio, rápido y confiable.",
+    "imagen": "assets/images/property-05.jpg"
+  },
+  {
+    "id": 2,
+    "categoria": "Construction worker",
+    "precio": 8000,
+    "ubicacion": "Tlajomulco, Jalisco",
+    "payMethod": "Cash",
+    "provider": "Luis",
+    "rating": "5 stars",
+    "review": "Trabajo impecable, muy profesional.",
+    "imagen": "assets/images/property-06.jpg"
+  },
+  {
+    "id": 3,
+    "categoria": "Plumbing",
+    "precio": 3500,
+    "ubicacion": "Guadalajara, Jalisco",
+    "payMethod": "Transfer",
+    "provider": "Marta",
+    "rating": "5 stars",
+    "review": "Excelente trato y muy puntual.",
+    "imagen": "assets/images/property-04.jpg"
+  }
+]

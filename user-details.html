@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Speedcola | User Details</title>
+  <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/fontawesome.css">
+  <link rel="stylesheet" href="assets/css/templatemo-villa-agency.css">
+  <link rel="stylesheet" href="assets/css/owl.css">
+  <link rel="stylesheet" href="assets/css/animate.css">
+  <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+</head>
+
+<body>
+
+  <!-- ***** Header ***** -->
+  <!-- ***** Header Area Start ***** -->
+  <header class="header-area header-sticky">
+    <div class="container">
+      <div class="row">
+        <div class="col-12">
+          <nav class="main-nav">
+            <!-- ***** Logo Start ***** -->
+            <a href="index.html" class="logo">
+              <h1>SpeedCola</h1>
+            </a>
+            <!-- ***** Logo End ***** -->
+            <!-- ***** Menu Start ***** -->
+            <ul class="nav">
+              <li><a href="index.html">Home</a></li>
+              <li><a href="properties.html">Services</a></li>
+              <li><a href="user-details.html" class="active">User Details</a></li>
+              <li><a href="contact.html">About Us</a></li>
+              <li><a href="#"><i class="fa fa-calendar"></i> Schedule a visit</a></li>
+            </ul>
+            <a class="menu-trigger">
+              <span>Menu</span>
+            </a>
+            <!-- ***** Menu End ***** -->
+          </nav>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ***** Page Heading ***** -->
+  <div class="page-heading header-text">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <span class="breadcrumb"><a href="index.html">Home</a> / User Details</span>
+          <h3>User Profile</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ***** User Details Section ***** -->
+  <div class="contact-page section">
+    <div class="container">
+      <div class="row">
+        <!-- User Info Card -->
+        <div class="col-lg-6">
+          <div class="card shadow-sm p-4 rounded-3">
+            <h4 class="mb-3">My Information</h4>
+            <form action="/update-user" method="POST">
+              <div class="form-group mb-3">
+                <label for="idUsuario">User ID</label>
+                <input type="text" id="idUsuario" name="idUsuario" class="form-control" value="12345" readonly>
+              </div>
+              <div class="form-group mb-3">
+                <label for="nombre">Name</label>
+                <input type="text" id="nombre" name="nombre" class="form-control" value="Juan Pérez">
+              </div>
+              <div class="form-group mb-3">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" class="form-control" value="juanperez@email.com">
+              </div>
+              <div class="form-group mb-3">
+                <label for="telefono">Phone</label>
+                <input type="tel" id="telefono" name="telefono" class="form-control" value="555-123-4567">
+              </div>
+              <div class="form-group mb-3">
+                <label for="rol">Role</label>
+                <input type="text" id="rol" name="rol" class="form-control" value="Cliente" readonly>
+              </div>
+              <div class="form-group mb-3">
+                <label for="contrasena">Password</label>
+                <input type="password" id="contrasena" name="contrasena" class="form-control" placeholder="••••••••">
+              </div>
+              <button type="submit" class="btn btn-primary">Save Changes</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Profile Side Info -->
+        <div class="col-lg-6">
+          <div class="card shadow-sm p-4 rounded-3">
+            <h4 class="mb-3">Profile Overview</h4>
+            <ul class="list-group">
+              <li class="list-group-item"><strong>Name:</strong> Juan Pérez</li>
+              <li class="list-group-item"><strong>Email:</strong> juanperez@email.com</li>
+              <li class="list-group-item"><strong>Phone:</strong> 555-123-4567</li>
+              <li class="list-group-item"><strong>Role:</strong> Cliente</li>
+              <li class="list-group-item"><strong>User ID:</strong> 12345</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ***** Footer ***** -->
+  <footer class="footer-no-gap">
+    <div class="container">
+      <div class="col-lg-12">
+        <p>Copyright © 2048 SpeedCola Co., Ltd. All rights reserved. 
+        Design: <a rel="nofollow" href="https://templatemo.com" target="_blank">TemplateMo</a></p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <!-- Bootstrap core JavaScript -->
+  <script src="vendor/jquery/jquery.min.js"></script>
+  <script src="vendor/bootstrap/js/bootstrap.min.js"></script>
+  <script src="assets/js/isotope.min.js"></script>
+  <script src="assets/js/owl-carousel.js"></script>
+  <script src="assets/js/counter.js"></script>
+  <script src="assets/js/custom.js"></script>
+
+  <script src="Data/showinfo.js"></script>
+
+</body>
+</html>

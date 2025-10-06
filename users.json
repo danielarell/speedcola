@@ -1,0 +1,18 @@
+[
+  {
+    "username": "SpeedAdmin",
+    "email": "speedcola@company.com",
+    "password": "12345",
+    "nombre": "Test",
+    "telefono": "3346789210",
+    "rol": 1
+  },
+  {
+    "username": "TestUser",
+    "email": "test@demo.com",
+    "password": "qwerty",
+    "nombre": "Test",
+    "telefono": "3346789210",
+    "rol": 0
+  }
+]
