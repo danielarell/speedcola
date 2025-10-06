@@ -4,12 +4,18 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const cookieParser = require('cookie-parser');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(cors());
 app.use(express.json());
+
+app.use(cookieParser());
 
 // Configuración de base de datos
 const dbConfig = {
@@ -91,6 +97,46 @@ app.delete('/api/users/:id', async (req, res) => {
     res.json({ message: 'Usuario eliminado' });
   } catch (error) {
     res.status(500).json({ error: 'Error al eliminar' });
+  }
+});
+
+// POST /api/login
+app.post('/api/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    // Buscar usuario
+    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    if (rows.length === 0) {
+      return res.status(401).json({ error: 'Usuario no encontrado' });
+    }
+
+    const user = rows[0];
+
+    // Comparar contraseña
+    const validPassword = await bcrypt.compare(password, user.password);
+    if (!validPassword) {
+      return res.status(401).json({ error: 'Contraseña incorrecta' });
+    }
+
+    // Crear token JWT
+    const token = jwt.sign(
+      { id: user.id, name: user.name, email: user.email },
+      process.env.JWT_SECRET || 'mi_clave_secreta',
+      { expiresIn: '1h' }
+    );
+
+    // Guardar token en cookie HTTP-only
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: false, // true si usas HTTPS
+      maxAge: 3600000 // 1 hora
+    });
+
+    res.json({ message: 'Login exitoso', user: { id: user.id, name: user.name, email: user.email } });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error en login' });
   }
 });
 

@@ -1,46 +1,27 @@
-// login.js
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-async function getUsers() {
-  const response = await fetch("users.json");
-  return await response.json();
-}
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
 
-document.addEventListener("DOMContentLoaded", () => {
-  const loginForm = document.querySelector("#loginModal form");
+  try {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      credentials: 'include', // 👈 importante para cookies
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
 
-  loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault(); // Evitar refresh de la página
+    const data = await res.json();
 
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    const users = await getUsers();
-    const user = users.find(
-      (u) => u.email === email && u.password === password
-    );
-
-    if (user) {
-      // Guardamos los datos simulando "cookies" en localStorage
-      localStorage.setItem("loggedUser", JSON.stringify({
-        email: user.email,
-        username: user.username
-      }));
-
-      alert(`✅ Bienvenido ${user.username}`);
-      window.location.href = "user-details.html"; // Redirigir a página de perfil
+    if (res.ok) {
+      alert('✅ Login exitoso: ' + data.user.name);
+      // Redirigir o mostrar perfil
     } else {
-      alert("❌ Credenciales incorrectas");
+      alert('❌ ' + data.error);
     }
-  });
+  } catch (err) {
+      console.error(err);
+      alert('⚠️ Error en la conexión');
+  }
 });
-
-// Función para saber si hay un usuario logueado
-function getLoggedUser() {
-  return JSON.parse(localStorage.getItem("loggedUser"));
-}
-
-// Ejemplo: mostrar el nombre en la consola
-const loggedUser = getLoggedUser();
-if (loggedUser) {
-  console.log(`Usuario logueado: ${loggedUser.username} (${loggedUser.email})`);
-}
