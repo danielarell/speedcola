@@ -7,6 +7,7 @@ require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
+const authenticateToken = require('./middlewares/auth');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
