@@ -31,7 +31,9 @@ async function initDB() {
   }
 }
 
-// Ruta principal para index
+app.use(express.static(__dirname)); // sirve todo el proyecto
+
+// Ruta raíz
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
