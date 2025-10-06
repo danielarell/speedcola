@@ -65,9 +65,10 @@ app.get('/api/users', async (req, res) => {
 app.post('/api/users', async (req, res) => {
   try {
     const { name, location, isprovider, email, password, phone } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await pool.query(
       'INSERT INTO users (name, location, isprovider, email, password, phone) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, location, isprovider, email, password, phone]
+      [name, location, isprovider, email, hashedPassword, phone]
     );
     res.status(201).json({ id: result.insertId, name, email });
   } catch (error) {
