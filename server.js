@@ -141,6 +141,11 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+app.get('/api/check-session', authenticateToken, (req, res) => {
+  // Si el middleware pasa, significa que el usuario está logeado
+  res.json({ loggedIn: true, user: req.user });
+});
+
 // Iniciar servidor
 async function start() {
   await initDB();
