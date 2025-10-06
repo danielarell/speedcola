@@ -31,6 +31,11 @@ async function initDB() {
   }
 }
 
+// Ruta principal para index
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
+
 // Ruta de prueba
 app.get('/health', (req, res) => {
   res.json({ status: 'OK', message: 'Servidor funcionando' });
