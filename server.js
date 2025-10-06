@@ -123,9 +123,15 @@ app.post('/api/login', async (req, res) => {
 
     // Crear token JWT
     const token = jwt.sign(
-      { id: user.id, name: user.name, email: user.email },
-      process.env.JWT_SECRET || 'mi_clave_secreta',
-      { expiresIn: '1h' }
+    { 
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,   
+        isprovider: user.isprovider
+    },
+    process.env.JWT_SECRET || 'mi_clave_secreta',
+    { expiresIn: '1h' }
     );
 
     // Guardar token en cookie HTTP-only
