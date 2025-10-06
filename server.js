@@ -1,6 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -56,10 +57,10 @@ app.get('/api/users', async (req, res) => {
 // POST - Crear usuario
 app.post('/api/users', async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, location, isprovider, email, password, phone } = req.body;
     const [result] = await pool.query(
-      'INSERT INTO users (name, email) VALUES (?, ?)',
-      [name, email]
+      'INSERT INTO users (name, location, isprovider, email, password, phone) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, location, isprovider, email, password, phone]
     );
     res.status(201).json({ id: result.insertId, name, email });
   } catch (error) {
