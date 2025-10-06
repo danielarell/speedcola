@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     // 1. Hacer fetch a la ruta protegida para obtener el usuario logeado
-    const response = await fetch("http://localhost:3000/api/check-session", {
+    const response = await fetch("/api/check-session", {
       method: "GET",
       credentials: "include" // importante para enviar la cookie
     });
