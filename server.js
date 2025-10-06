@@ -50,7 +50,8 @@ app.get('/api/users', async (req, res) => {
     const [rows] = await pool.query('SELECT * FROM users');
     res.json(rows);
   } catch (error) {
-    res.status(500).json({ error: 'Error al obtener datos' });
+        console.error(error);
+        res.status(500).json({ error: 'Error al crear usuario', details: error.message });
   }
 });
 
@@ -64,7 +65,8 @@ app.post('/api/users', async (req, res) => {
     );
     res.status(201).json({ id: result.insertId, name, email });
   } catch (error) {
-    res.status(500).json({ error: 'Error al crear usuario' });
+        console.error(error);
+        res.status(500).json({ error: 'Error al crear usuario', details: error.message });
   }
 });
 

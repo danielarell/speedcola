@@ -3,7 +3,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
   const name = document.getElementById('regName').value;
   const location = document.getElementById('regLocation').value;
-  const isprovider = document.getElementById('isProvider').value;
+  const isprovider = document.getElementById('isProvider').checked;
   const email = document.getElementById('regEmail').value;
   const password = document.getElementById('regPassword').value;
   const phone = document.getElementById('regPhone').value;
@@ -23,8 +23,11 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
       e.target.reset();
       const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
       modal.hide();
-    } else {
-      alert('❌ Error al registrar usuario');
+    }
+    if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        console.error('Error del servidor:', errData);
+        alert('❌ Error al registrar usuario');
     }
   } catch (err) {
     console.error('Error:', err);
