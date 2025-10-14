@@ -65,7 +65,7 @@ app.get('/api/users', async (req, res) => {
 // GET - Obtener todos los usuarios
 app.get('/api/services', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM services');
+    const [rows] = await pool.query('SELECT * FROM servicios');
     res.json(rows);
   } catch (error) {
         console.error(error);
