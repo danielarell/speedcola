@@ -1,7 +1,10 @@
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         // 1. Leer JSON de servicios
-        const response = await fetch("services.json");
+        const response = await fetch("/api/services", {
+            method: "GET",
+            credentials: "include" // importante para enviar la cookie
+        });
         const servicios = await response.json();
 
         // 2. Contenedor
