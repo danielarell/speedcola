@@ -62,6 +62,19 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
+// GET - Obtener todos los usuarios
+app.get('/api/services', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM services');
+    res.json(rows);
+  } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al mostrar Servicios', details: error.message });
+  }
+});
+
+
+
 // POST - Crear usuario
 app.post('/api/users', async (req, res) => {
   try {
