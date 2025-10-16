@@ -17,6 +17,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     if (res.ok) {
       alert('✅ Login exitoso: ' + data.user.name);
       // Redirigir o mostrar perfil
+      const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
+      modal.hide();
     } else {
       alert('❌ ' + data.error);
     }

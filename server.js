@@ -54,7 +54,7 @@ app.get('/health', (req, res) => {
 // GET - Obtener todos los usuarios
 app.get('/api/users', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM users');
+    const [rows] = await pool.query('SELECT * FROM usuarios');
     res.json(rows);
   } catch (error) {
         console.error(error);
@@ -65,11 +65,11 @@ app.get('/api/users', async (req, res) => {
 // POST - Crear usuario
 app.post('/api/users', async (req, res) => {
   try {
-    const { name, location, isprovider, email, password, phone } = req.body;
+    const { name, isprovider, email, password, phone, foto } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await pool.query(
-      'INSERT INTO users (name, location, isprovider, email, password, phone) VALUES (?, ?, ?, ?, ?, ?)',
-      [name, location, isprovider, email, hashedPassword, phone]
+      'INSERT INTO usuarios (nombre, email, contrasenia, telefono, rol, fotoperfil) VALUES (?, ?, ?, ?, ?, ?)',
+      [name, email, hashedPassword, phone, isprovider, foto]
     );
     res.status(201).json({ id: result.insertId, name, email });
   } catch (error) {
@@ -108,7 +108,7 @@ app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
     // Buscar usuario
-    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [email]);
+    const [rows] = await pool.query('SELECT * FROM usuarios WHERE email = ?', [email]);
     if (rows.length === 0) {
       return res.status(401).json({ error: 'Usuario no encontrado' });
     }

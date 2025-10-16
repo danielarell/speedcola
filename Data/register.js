@@ -2,7 +2,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   e.preventDefault(); // Evita recargar la página
 
   const name = document.getElementById('regName').value;
-  const location = document.getElementById('regLocation').value;
+  const photo = document.getElementById('regPhoto').value;
   const isprovider = document.getElementById('isProvider').checked;
   const email = document.getElementById('regEmail').value;
   const password = document.getElementById('regPassword').value;
@@ -14,7 +14,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ name, location, isprovider, email, password, phone})
+      body: JSON.stringify({ name, photo, isprovider, email, password, phone})
     });
 
     if (response.ok) {
