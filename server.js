@@ -96,9 +96,11 @@ app.get('/api/servicesUsers', async (req, res) => {
     s.imagen, \
     s.idCategoria, \
     u.nombre AS nombreProveedor, \
-    u.calificacion AS ratingProveedor \
+    u.calificacion AS ratingProveedor, \
+    c.descripcion AS nombreCategoria \
     FROM servicios s \
-    JOIN usuarios u ON s.idUsuario = u.idUsuario;');
+    JOIN usuarios u ON s.idUsuario = u.idUsuario \
+    JOIN categoria c ON s.idCategoria = c.idCategoria;');
     res.json(rows);
   } catch (error) {
         console.error(error);

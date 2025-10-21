@@ -111,15 +111,19 @@ function renderServices(list) {
         col.className = "col-lg-4 col-md-6 align-self-center mb-30 properties-items";
 
         col.innerHTML = `
-            <div class="item">
-                <a href="property-details.html"><img src="${servicio.imagen}" alt="${servicio.nombreServicio}"></a>
-                <span class="category">${servicio.idCategoria}</span>
-                <h6>$${servicio.precio.toLocaleString()}</h6>
-                <ul>
-                    <li>Nombre del Servicio: <span>${servicio.nombreServicio}</span></li>
+            <div class="item text-center">
+                <a href="property-details.html">
+                    <img src="${servicio.imagen}" alt="${servicio.nombreServicio}">
+                </a>
+                <h4 class="service-title" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">
+                    ${servicio.nombreServicio}
+                </h4>
+                <h6 style="color: #28a745;">$${servicio.precio.toLocaleString()}</h6>
+                <ul style="text-align: left; margin-top: 10px;">
                     <li>Descripción: <span>${servicio.descripcion}</span></li>
                     <li>Proveedor: <span>${servicio.nombreProveedor}</span></li>
                     <li>Duración Estimada: <span>${servicio.duracionEstimada}</span></li>
+                    <li>Categoria: <span>${servicio.nombreCategoria || 'N/A'}</span></li>
                     <li>Rating: <span>${servicio.ratingProveedor || 'N/A'}</span></li>
                 </ul>
                 <div class="main-button">
