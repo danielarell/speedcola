@@ -10,21 +10,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         // Cargar categorías
         await loadServiceCategories();
 
-        // Inicial render
+        // Render inicial
         renderServices(servicios);
 
         // Eventos de filtro
         document.querySelector('#filterBtn').addEventListener('click', applyFilters);
         document.querySelector('#resetFilters').addEventListener('click', resetFilters);
 
-        // Actualizar labels de range sliders
+        // Filtro de texto en vivo (cada vez que el usuario escribe)
+        document.querySelector('#searchText').addEventListener('input', applyFilters);
+
+        // Actualizar labels de los sliders
         const priceRange = document.getElementById('priceRange');
         const priceValue = document.getElementById('priceValue');
-        priceRange.addEventListener('input', () => { priceValue.textContent = priceRange.value; });
+        priceRange.addEventListener('input', () => { 
+            priceValue.textContent = priceRange.value; 
+            applyFilters(); // aplicar en vivo si cambian el rango
+        });
 
         const ratingRange = document.getElementById('ratingRange');
         const ratingValue = document.getElementById('ratingValue');
-        ratingRange.addEventListener('input', () => { ratingValue.textContent = ratingRange.value; });
+        ratingRange.addEventListener('input', () => { 
+            ratingValue.textContent = ratingRange.value; 
+            applyFilters(); // aplicar en vivo si cambian el rating
+        });
 
     } catch (error) {
         console.error("Error cargando servicios:", error);
@@ -43,6 +52,10 @@ async function loadServiceCategories() {
             option.textContent = cat.descripcion;
             categorySelect.appendChild(option);
         });
+
+        // Refiltrar si se cambia la categoría
+        categorySelect.addEventListener('change', applyFilters);
+
     } catch (err) {
         console.error('Error cargando categorías:', err);
     }
@@ -56,20 +69,27 @@ function applyFilters() {
     const maxPrice = parseFloat(document.getElementById('priceRange').value);
     const minRating = parseFloat(document.getElementById('ratingRange').value);
 
+    // Filtro por texto (nombre, descripción o proveedor)
     if (searchText.trim() !== "") {
         filtered = filtered.filter(s =>
             s.nombreServicio.toLowerCase().includes(searchText) ||
-            s.descripcion.toLowerCase().includes(searchText)
+            s.descripcion.toLowerCase().includes(searchText) ||
+            (s.nombreProveedor && s.nombreProveedor.toLowerCase().includes(searchText))
         );
     }
 
-    if(selectedCategory !== "0") {
+    // Filtro por categoría
+    if (selectedCategory !== "0") {
         filtered = filtered.filter(s => s.idCategoria.toString() === selectedCategory);
     }
 
+    // Filtro por precio máximo
     filtered = filtered.filter(s => s.precio <= maxPrice);
+
+    // Filtro por rating mínimo
     filtered = filtered.filter(s => (s.ratingProveedor || 0) >= minRating);
 
+    // Renderizar resultados filtrados
     renderServices(filtered);
 }
 
@@ -80,8 +100,6 @@ function resetFilters() {
     document.getElementById('priceValue').textContent = 2000;
     document.getElementById('ratingRange').value = 0;
     document.getElementById('ratingValue').textContent = 0;
-    
-
 
     renderServices(servicios);
 }
@@ -89,6 +107,11 @@ function resetFilters() {
 function renderServices(list) {
     const container = document.getElementById('services-container');
     container.innerHTML = '';
+
+    if (list.length === 0) {
+        container.innerHTML = `<p class="text-center mt-4">No se encontraron servicios que coincidan con los filtros.</p>`;
+        return;
+    }
 
     list.forEach(servicio => {
         const col = document.createElement("div");
