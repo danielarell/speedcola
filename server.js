@@ -62,10 +62,42 @@ app.get('/api/users', async (req, res) => {
   }
 });
 
-// GET - Obtener todos los usuarios
+// GET - Obtener todos los servicios
 app.get('/api/services', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM servicios');
+    res.json(rows);
+  } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al mostrar Servicios', details: error.message });
+  }
+});
+
+// GET - Obtener todos los categorias
+app.get('/api/categories', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT * FROM categorias');
+    res.json(rows);
+  } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al mostrar Categorias', details: error.message });
+  }
+});
+
+// GET - Obtener todos los servicios con el nombre del proveedor
+app.get('/api/servicesUsers', async (req, res) => {
+  try {
+    const [rows] = await pool.query('SELECT  \
+    s.idServicio, \
+    s.nombre AS nombreServicio, \
+    s.descripcion, \
+    s.precio, \
+    s.duracionEstimada, \
+    s.imagen, \
+    s.idCategoria, \
+    u.nombre AS nombreProveedor \
+    FROM servicios s \
+    JOIN usuarios u ON s.idUsuario = u.idUsuario;');
     res.json(rows);
   } catch (error) {
         console.error(error);

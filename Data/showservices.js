@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
     try {
         // 1. Leer JSON de servicios
-        const response = await fetch("/api/services", {
+        const response = await fetch("/api/servicesUsers", {
             method: "GET",
             credentials: "include" // importante para enviar la cookie
         });
@@ -22,12 +22,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         col.innerHTML = `
             <div class="item">
+            <a href="property-details.html"><img src="${servicio.imagen}" alt=""></a>
             <span class="category">${servicio.idCategoria}</span>
             <h6>$${servicio.precio.toLocaleString()}</h6>
             <ul>
                 <li>nombre del Servicio: <span>${servicio.nombre}</span></li>
                 <li>Descripcion: <span>${servicio.descripcion}</span></li>
-                <li>Provider: <span>${servicio.idUsuario}</span></li>
+                <li>Provider: <span>${servicio.nombreProveedor}</span></li>
                 <li>Duracion Estimada: <span>${servicio.duracionEstimada}</span></li>
             </ul>
             <div class="main-button">
