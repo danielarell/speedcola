@@ -85,11 +85,11 @@ function renderServices(list) {
 
         col.innerHTML = `
             <div class="item">
-                <a href="property-details.html"><img src="${servicio.imagen}" alt="${servicio.nombre}"></a>
+                <a href="property-details.html"><img src="${servicio.imagen}" alt="${servicio.nombreServicio}"></a>
                 <span class="category">${servicio.idCategoria}</span>
                 <h6>$${servicio.precio.toLocaleString()}</h6>
                 <ul>
-                    <li>Nombre del Servicio: <span>${servicio.nombre}</span></li>
+                    <li>Nombre del Servicio: <span>${servicio.nombreServicio}</span></li>
                     <li>Descripción: <span>${servicio.descripcion}</span></li>
                     <li>Proveedor: <span>${servicio.nombreProveedor}</span></li>
                     <li>Duración Estimada: <span>${servicio.duracionEstimada}</span></li>
