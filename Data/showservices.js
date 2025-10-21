@@ -17,22 +17,17 @@ document.addEventListener("DOMContentLoaded", async () => {
         document.querySelector('#filterBtn').addEventListener('click', applyFilters);
         document.querySelector('#resetFilters').addEventListener('click', resetFilters);
 
-        // Filtro de texto en vivo (cada vez que el usuario escribe)
-        document.querySelector('#searchText').addEventListener('input', applyFilters);
-
-        // Actualizar labels de los sliders
+        // Solo actualizar etiquetas de sliders visualmente (sin aplicar filtros)
         const priceRange = document.getElementById('priceRange');
         const priceValue = document.getElementById('priceValue');
         priceRange.addEventListener('input', () => { 
             priceValue.textContent = priceRange.value; 
-            applyFilters(); // aplicar en vivo si cambian el rango
         });
 
         const ratingRange = document.getElementById('ratingRange');
         const ratingValue = document.getElementById('ratingValue');
         ratingRange.addEventListener('input', () => { 
             ratingValue.textContent = ratingRange.value; 
-            applyFilters(); // aplicar en vivo si cambian el rating
         });
 
     } catch (error) {
@@ -53,9 +48,7 @@ async function loadServiceCategories() {
             categorySelect.appendChild(option);
         });
 
-        // Refiltrar si se cambia la categoría
-        categorySelect.addEventListener('change', applyFilters);
-
+        // Ya no aplicamos filtros al cambiar la categoría (solo con el botón)
     } catch (err) {
         console.error('Error cargando categorías:', err);
     }
@@ -96,8 +89,8 @@ function applyFilters() {
 function resetFilters() {
     document.getElementById('categorySelect').value = "0";
     document.getElementById('searchText').value = "";
-    document.getElementById('priceRange').value = 2000;
-    document.getElementById('priceValue').textContent = 2000;
+    document.getElementById('priceRange').value = 10000;
+    document.getElementById('priceValue').textContent = 10000;
     document.getElementById('ratingRange').value = 0;
     document.getElementById('ratingValue').textContent = 0;
 
