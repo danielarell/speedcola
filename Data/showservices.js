@@ -33,9 +33,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadServiceCategories() {
     try {
-        const resp = await fetch('/api/categories', { method: 'GET' });
-        const data = await resp.json();
-        categories = data.categories;
+        const resp = await fetch("/api/categories", { method: "GET", credentials: "include" });
+        categories = await resp.json();
 
         const categorySelect = document.getElementById('categorySelect');
         categories.forEach(cat => {

@@ -95,7 +95,7 @@ app.get('/api/servicesUsers', async (req, res) => {
     s.duracionEstimada, \
     s.imagen, \
     s.idCategoria, \
-    u.nombre AS nombreProveedor \
+    u.nombre AS nombreProveedor, \
     u.calificacion AS ratingProveedor \
     FROM servicios s \
     JOIN usuarios u ON s.idUsuario = u.idUsuario;');
