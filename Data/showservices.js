@@ -51,9 +51,17 @@ async function loadServiceCategories() {
 function applyFilters() {
     let filtered = servicios.slice();
 
+    const searchText = document.getElementById('searchText').value.toLowerCase();
     const selectedCategory = document.getElementById('categorySelect').value;
     const maxPrice = parseFloat(document.getElementById('priceRange').value);
     const minRating = parseFloat(document.getElementById('ratingRange').value);
+
+    if (searchText.trim() !== "") {
+        filtered = filtered.filter(s =>
+            s.nombreServicio.toLowerCase().includes(searchText) ||
+            s.descripcion.toLowerCase().includes(searchText)
+        );
+    }
 
     if(selectedCategory !== "0") {
         filtered = filtered.filter(s => s.idCategoria.toString() === selectedCategory);
@@ -67,10 +75,13 @@ function applyFilters() {
 
 function resetFilters() {
     document.getElementById('categorySelect').value = "0";
+    document.getElementById('searchText').value = "";
     document.getElementById('priceRange').value = 2000;
     document.getElementById('priceValue').textContent = 2000;
     document.getElementById('ratingRange').value = 0;
     document.getElementById('ratingValue').textContent = 0;
+    
+
 
     renderServices(servicios);
 }
