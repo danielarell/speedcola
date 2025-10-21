@@ -118,7 +118,7 @@ app.delete('/api/users/:id', async (req, res) => {
 // POST /api/login
 app.post('/api/login', async (req, res) => {
   try {
-    const { email, contrasenia } = req.body;
+    const { email, password } = req.body;
 
     // Buscar usuario
     const [rows] = await pool.query('SELECT * FROM usuarios WHERE email = ?', [email]);
@@ -129,7 +129,7 @@ app.post('/api/login', async (req, res) => {
     const user = rows[0];
     console.log(user.contrasenia)
     // Comparar contraseña
-    const validPassword = await bcrypt.compare(contrasenia, user.contrasenia);
+    const validPassword = await bcrypt.compare(password, user.contrasenia);
     if (!validPassword) {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
