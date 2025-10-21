@@ -118,7 +118,6 @@ function renderServices(list) {
                 <h4 class="service-title" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">
                     ${servicio.nombreServicio}
                 </h4>
-                <h6 style="color: #28a745;">$${servicio.precio.toLocaleString()}</h6>
                 <ul style="text-align: left; margin-top: 10px;">
                     <li>Descripción: <span>${servicio.descripcion}</span></li>
                     <li>Proveedor: <span>${servicio.nombreProveedor}</span></li>
@@ -126,6 +125,7 @@ function renderServices(list) {
                     <li>Categoria: <span>${servicio.nombreCategoria || 'N/A'}</span></li>
                     <li>Rating: <span>${servicio.ratingProveedor || 'N/A'}</span></li>
                 </ul>
+                <h6 style="color: #28a745;">$${servicio.precio.toLocaleString()}</h6>
                 <div class="main-button">
                     <a href="property-details.html">Schedule a visit</a>
                 </div>
