@@ -118,7 +118,7 @@ app.delete('/api/users/:id', async (req, res) => {
 // POST /api/login
 app.post('/api/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, contrasenia } = req.body;
 
     // Buscar usuario
     const [rows] = await pool.query('SELECT * FROM usuarios WHERE email = ?', [email]);
@@ -127,9 +127,9 @@ app.post('/api/login', async (req, res) => {
     }
 
     const user = rows[0];
-
+    console.log(user.contrasenia)
     // Comparar contraseña
-    const validPassword = await bcrypt.compare(password, user.password);
+    const validPassword = await bcrypt.compare(contrasenia, user.contrasenia);
     if (!validPassword) {
       return res.status(401).json({ error: 'Contraseña incorrecta' });
     }
@@ -138,10 +138,10 @@ app.post('/api/login', async (req, res) => {
     const token = jwt.sign(
     { 
         id: user.id,
-        name: user.name,
+        name: user.nombre,
         email: user.email,
-        phone: user.phone,   
-        isprovider: user.isprovider
+        phone: user.telefono,   
+        isprovider: user.rol
     },
     process.env.JWT_SECRET || 'mi_clave_secreta',
     { expiresIn: '1h' }
