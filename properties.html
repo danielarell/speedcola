@@ -183,29 +183,43 @@ https://templatemo.com/tm-591-villa-agency
     </div>
   </div>
 
-  <div class="section properties">
-    <div class="container">
-      <ul class="properties-filter">
-        <li>
-          <a class="is_active" href="#!" data-filter="*">Show All</a>
-        </li>
-        <li>
-          <a href="#!" data-filter=".adv">Plumbing</a>
-        </li>
-        <li>
-          <a href="#!" data-filter=".str">Mechanic</a>
-        </li>
-        <li>
-          <a href="#!" data-filter=".rac">Cons. Worker</a>
-        </li>
-      </ul>
-      <div class="row properties-box" id="services-container">
-          <!-- SERVICIOS -->
+  <div class="section properties py-4">
+  <div class="container">
+
+    <!-- FILTROS -->
+    <div class="row mb-4 g-3"> <!-- g-3 agrega espacio entre columnas -->
+      <div class="col-md-4">
+        <label for="categorySelect" class="form-label">Category:</label>
+        <select id="categorySelect" class="form-select">
+          <option value="0">All Categories</option>
+        </select>
       </div>
-      <!-- Agregar clearfix -->
-      <div style="clear: both;"></div>
+      <div class="col-md-4">
+        <label for="priceRange" class="form-label">Max Price: <span id="priceValue">2000</span></label>
+        <input type="range" class="form-range" min="0" max="2000" step="50" id="priceRange" value="2000">
+      </div>
+      <div class="col-md-4">
+        <label for="ratingRange" class="form-label">Min Rating: <span id="ratingValue">0</span></label>
+        <input type="range" class="form-range" min="0" max="5" step="0.1" id="ratingRange" value="0">
+      </div>
     </div>
+
+    <div class="mb-4 d-flex gap-2">
+      <button class="btn btn-primary" id="filterBtn">Apply Filters</button>
+      <button class="btn btn-secondary" id="resetFilters">Reset Filters</button>
+    </div>
+
+    <!-- SERVICIOS -->
+    <div class="row properties-box" id="services-container">
+      <!-- SERVICIOS -->
+    </div>
+
+    <!-- Agregar clearfix -->
+    <div style="clear: both;"></div>
+
   </div>
+</div>
+
 
   <!-- Scripts -->
   <!-- Bootstrap core JavaScript -->

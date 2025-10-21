@@ -76,7 +76,7 @@ app.get('/api/services', async (req, res) => {
 // GET - Obtener todos los categorias
 app.get('/api/categories', async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM categorias');
+    const [rows] = await pool.query('SELECT * FROM categoria');
     res.json(rows);
   } catch (error) {
         console.error(error);
@@ -96,6 +96,7 @@ app.get('/api/servicesUsers', async (req, res) => {
     s.imagen, \
     s.idCategoria, \
     u.nombre AS nombreProveedor \
+    u.calificacion AS ratingProveedor \
     FROM servicios s \
     JOIN usuarios u ON s.idUsuario = u.idUsuario;');
     res.json(rows);

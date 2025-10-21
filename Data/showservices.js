@@ -1,45 +1,106 @@
+let servicios = [];
+let categories = [];
+
 document.addEventListener("DOMContentLoaded", async () => {
     try {
-        // 1. Leer JSON de servicios
-        const response = await fetch("/api/servicesUsers", {
-            method: "GET",
-            credentials: "include" // importante para enviar la cookie
-        });
-        const servicios = await response.json();
+        // Cargar servicios
+        const resp = await fetch("/api/servicesUsers", { method: "GET", credentials: "include" });
+        servicios = await resp.json();
 
-        // 2. Contenedor
-        const container = document.getElementById("services-container");
+        // Cargar categorías
+        await loadServiceCategories();
 
-        // 3. Generar HTML dinámico
-        servicios.forEach(servicio => {
-        const col = document.createElement("div");
-        col.className = "col-lg-4 col-md-6 align-self-center mb-30 properties-items";
+        // Inicial render
+        renderServices(servicios);
 
-        // clase adicional para filtros (str, rac, adv, etc.)
-        // agregar a tabla de servicios imagen
-        //             <a href="property-details.html"><img src="${servicio.imagen}" alt=""></a>
-        // Agregar Rating a servicios
+        // Eventos de filtro
+        document.querySelector('#filterBtn').addEventListener('click', applyFilters);
+        document.querySelector('#resetFilters').addEventListener('click', resetFilters);
 
-        col.innerHTML = `
-            <div class="item">
-            <a href="property-details.html"><img src="${servicio.imagen}" alt=""></a>
-            <span class="category">${servicio.idCategoria}</span>
-            <h6>$${servicio.precio.toLocaleString()}</h6>
-            <ul>
-                <li>nombre del Servicio: <span>${servicio.nombre}</span></li>
-                <li>Descripcion: <span>${servicio.descripcion}</span></li>
-                <li>Provider: <span>${servicio.nombreProveedor}</span></li>
-                <li>Duracion Estimada: <span>${servicio.duracionEstimada}</span></li>
-            </ul>
-            <div class="main-button">
-                <a href="property-details.html">Schedule a visit</a>
-            </div>
-            </div>
-        `;
+        // Actualizar labels de range sliders
+        const priceRange = document.getElementById('priceRange');
+        const priceValue = document.getElementById('priceValue');
+        priceRange.addEventListener('input', () => { priceValue.textContent = priceRange.value; });
 
-        container.appendChild(col);
-        });
+        const ratingRange = document.getElementById('ratingRange');
+        const ratingValue = document.getElementById('ratingValue');
+        ratingRange.addEventListener('input', () => { ratingValue.textContent = ratingRange.value; });
+
     } catch (error) {
         console.error("Error cargando servicios:", error);
     }
 });
+
+async function loadServiceCategories() {
+    try {
+        const resp = await fetch('/api/categories', { method: 'GET' });
+        const data = await resp.json();
+        categories = data.categories;
+
+        const categorySelect = document.getElementById('categorySelect');
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.idCategoria;
+            option.textContent = cat.descripcion;
+            categorySelect.appendChild(option);
+        });
+    } catch (err) {
+        console.error('Error cargando categorías:', err);
+    }
+}
+
+function applyFilters() {
+    let filtered = servicios.slice();
+
+    const selectedCategory = document.getElementById('categorySelect').value;
+    const maxPrice = parseFloat(document.getElementById('priceRange').value);
+    const minRating = parseFloat(document.getElementById('ratingRange').value);
+
+    if(selectedCategory !== "0") {
+        filtered = filtered.filter(s => s.idCategoria.toString() === selectedCategory);
+    }
+
+    filtered = filtered.filter(s => s.precio <= maxPrice);
+    filtered = filtered.filter(s => (s.ratingProveedor || 0) >= minRating);
+
+    renderServices(filtered);
+}
+
+function resetFilters() {
+    document.getElementById('categorySelect').value = "0";
+    document.getElementById('priceRange').value = 2000;
+    document.getElementById('priceValue').textContent = 2000;
+    document.getElementById('ratingRange').value = 0;
+    document.getElementById('ratingValue').textContent = 0;
+
+    renderServices(servicios);
+}
+
+function renderServices(list) {
+    const container = document.getElementById('services-container');
+    container.innerHTML = '';
+
+    list.forEach(servicio => {
+        const col = document.createElement("div");
+        col.className = "col-lg-4 col-md-6 align-self-center mb-30 properties-items";
+
+        col.innerHTML = `
+            <div class="item">
+                <a href="property-details.html"><img src="${servicio.imagen}" alt="${servicio.nombre}"></a>
+                <span class="category">${servicio.idCategoria}</span>
+                <h6>$${servicio.precio.toLocaleString()}</h6>
+                <ul>
+                    <li>Nombre del Servicio: <span>${servicio.nombre}</span></li>
+                    <li>Descripción: <span>${servicio.descripcion}</span></li>
+                    <li>Proveedor: <span>${servicio.nombreProveedor}</span></li>
+                    <li>Duración Estimada: <span>${servicio.duracionEstimada}</span></li>
+                    <li>Rating: <span>${servicio.ratingProveedor || 'N/A'}</span></li>
+                </ul>
+                <div class="main-button">
+                    <a href="property-details.html">Schedule a visit</a>
+                </div>
+            </div>
+        `;
+        container.appendChild(col);
+    });
+}
