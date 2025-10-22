@@ -3,35 +3,62 @@ let categories = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
     try {
+        // Verificar sesión
+        const response = await fetch("/api/check-session", {
+            method: "GET",
+            credentials: "include"
+        });
+        const sessionData = await response.json();
+
+        if (sessionData.loggedIn && sessionData.user.isProvider) {
+            // Crear botón dinámicamente
+            const container = document.querySelector(".section.properties .container");
+            const btn = document.createElement("button");
+            btn.textContent = "Crear Servicio";
+            btn.className = "btn btn-success mb-3"; // estilo bootstrap
+            btn.onclick = () => {
+                window.location.href = "/create-service.html"; // o la ruta que uses
+            };
+
+            // Insertar el botón antes de los filtros
+            const filtersRow = container.querySelector(".row.mb-4");
+            container.insertBefore(btn, filtersRow);
+        }
+
+        try {
         // Cargar servicios
-        const resp = await fetch("/api/servicesUsers", { method: "GET", credentials: "include" });
-        servicios = await resp.json();
+            const resp = await fetch("/api/servicesUsers", { method: "GET", credentials: "include" });
+            servicios = await resp.json();
 
-        // Cargar categorías
-        await loadServiceCategories();
+            // Cargar categorías
+            await loadServiceCategories();
 
-        // Render inicial
-        renderServices(servicios);
+            // Render inicial
+            renderServices(servicios);
 
-        // Eventos de filtro
-        document.querySelector('#filterBtn').addEventListener('click', applyFilters);
-        document.querySelector('#resetFilters').addEventListener('click', resetFilters);
+            // Eventos de filtro
+            document.querySelector('#filterBtn').addEventListener('click', applyFilters);
+            document.querySelector('#resetFilters').addEventListener('click', resetFilters);
 
-        // Solo actualizar etiquetas de sliders visualmente (sin aplicar filtros)
-        const priceRange = document.getElementById('priceRange');
-        const priceValue = document.getElementById('priceValue');
-        priceRange.addEventListener('input', () => { 
-            priceValue.textContent = priceRange.value; 
-        });
+            // Solo actualizar etiquetas de sliders visualmente (sin aplicar filtros)
+            const priceRange = document.getElementById('priceRange');
+            const priceValue = document.getElementById('priceValue');
+            priceRange.addEventListener('input', () => { 
+                priceValue.textContent = priceRange.value; 
+            });
 
-        const ratingRange = document.getElementById('ratingRange');
-        const ratingValue = document.getElementById('ratingValue');
-        ratingRange.addEventListener('input', () => { 
-            ratingValue.textContent = ratingRange.value; 
-        });
+            const ratingRange = document.getElementById('ratingRange');
+            const ratingValue = document.getElementById('ratingValue');
+            ratingRange.addEventListener('input', () => { 
+                ratingValue.textContent = ratingRange.value; 
+            });
 
+        } catch (error) {
+            console.error("Error cargando servicios:", error);
+        }
+            
     } catch (error) {
-        console.error("Error cargando servicios:", error);
+        console.error("Error verificando sesión:", error);
     }
 });
 

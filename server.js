@@ -108,6 +108,21 @@ app.get('/api/servicesUsers', async (req, res) => {
   }
 });
 
+// POST - Crear Servicio
+app.post('/api/services', async (req, res) => {
+  try {
+    const { name, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria} = req.body;
+    const [result] = await pool.query(
+      'INSERT INTO usuarios (nombre, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [name, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria]
+    );
+    res.status(201).json({ id: result.insertId, idUsuario, name });
+  } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Error al crear servicio', details: error.message });
+  }
+});
+
 
 
 // POST - Crear usuario
