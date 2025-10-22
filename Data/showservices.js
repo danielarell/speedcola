@@ -9,7 +9,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             credentials: "include"
         });
         const sessionData = await response.json();
-
+        console.log(sessionData)
         if (sessionData.loggedIn && sessionData.user.isProvider) {
             // Crear botón dinámicamente
             const container = document.querySelector(".section.properties .container");
