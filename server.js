@@ -112,7 +112,7 @@ app.get('/api/servicesUsers', async (req, res) => {
 app.get("/api/services/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query(
+    const [rows] = await pool.query(
       `
       SELECT 
         s.idServicio, 
