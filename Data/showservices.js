@@ -200,19 +200,39 @@ function renderServices(list) {
 async function handleCreateService(e) {
     e.preventDefault();
     
-    const formData = new FormData(e.target);
-    const serviceData = {
-        nombre: formData.get('nombre'),
-        descripcion: formData.get('descripcion'),
-        precio: parseFloat(formData.get('precio')),
-        duracionEstimada: formData.get('duracionEstimada'),
-        imagen: formData.get('imagen'),
-        idCategoria: parseInt(formData.get('idCategoria'))
-    };
-
-    console.log("Sending service data:", serviceData); // Debug
-
     try {
+        // Get session data
+        const sessionResponse = await fetch("/api/check-session", {
+            method: "GET",
+            credentials: "include"
+        });
+        const sessionData = await sessionResponse.json();
+        console.log("Session data:", sessionData);
+        
+        // Check if user is logged in and is a provider
+        if (!sessionData.loggedIn) {
+            alert("You must be logged in to create a service");
+            return;
+        }
+        
+        if (!sessionData.user.isprovider) {
+            alert("Only providers can create services");
+            return;
+        }
+        
+        const formData = new FormData(e.target);
+        const serviceData = {
+            nombre: formData.get('nombre'),
+            descripcion: formData.get('descripcion'),
+            precio: parseFloat(formData.get('precio')),
+            duracionEstimada: formData.get('duracionEstimada'),
+            imagen: formData.get('imagen'),
+            idCategoria: parseInt(formData.get('idCategoria')),
+            email: sessionData.user.email // Send email to identify user in backend
+        };
+
+        console.log("Sending service data:", serviceData);
+
         const response = await fetch("/api/services", {
             method: "POST",
             headers: {
@@ -223,7 +243,7 @@ async function handleCreateService(e) {
         });
 
         const data = await response.json();
-        console.log("Response:", data); // Debug
+        console.log("Response:", data);
 
         if (response.ok) {
             // Cerrar modal

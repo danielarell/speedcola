@@ -112,27 +112,11 @@ app.get('/api/servicesUsers', async (req, res) => {
 // POST - Crear Servicio
 app.post('/api/services', async (req, res) => {
   try {
-    console.log("Session:", req.session); // Debug
-    console.log("Request body:", req.body); // Debug
+    console.log("Session:", req.session);
+    console.log("Request body:", req.body);
 
-    // Check if user is logged in
-    if (!req.session || !req.session.user) {
-      return res.status(401).json({ error: 'Not authenticated', details: 'No session found' });
-    }
-
-    // Check if user is a provider - FIX: use lowercase 'isprovider'
-    if (!req.session.user.isprovider) {
-      return res.status(403).json({ error: 'Only providers can create services' });
-    }
-
-    const { nombre, descripcion, precio, duracionEstimada, imagen, idCategoria } = req.body;
+    const { nombre, descripcion, precio, duracionEstimada, imagen, idCategoria, email } = req.body;
     
-    // Get idUsuario from session - might need to adjust based on your JWT structure
-    // Check if you have idUsuario in the token, if not you might need to fetch it from DB using email
-    const idUsuario = req.session.user.idUsuario || req.session.user.id;
-
-    console.log("Creating service for user:", idUsuario); // Debug
-
     // Validate required fields
     if (!nombre || !precio || !duracionEstimada || !idCategoria) {
       return res.status(400).json({ 
@@ -141,26 +125,25 @@ app.post('/api/services', async (req, res) => {
       });
     }
 
-    // If idUsuario is not in the token, fetch it from database
-    if (!idUsuario) {
-      const [users] = await pool.query(
-        'SELECT idUsuario FROM usuarios WHERE email = ?',
-        [req.session.user.email]
-      );
-      
-      if (users.length === 0) {
-        return res.status(404).json({ error: 'User not found' });
-      }
-      
-      idUsuario = users[0].idUsuario;
+    // Get idUsuario from database using email
+    const [users] = await pool.query(
+      'SELECT idUsuario FROM usuarios WHERE email = ?',
+      [email || req.session.user.email]
+    );
+    
+    if (users.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
     }
+    
+    const idUsuario = users[0].idUsuario;
+    console.log("Creating service for user ID:", idUsuario);
 
     const [result] = await pool.query(
       'INSERT INTO servicios (nombre, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [nombre, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria]
     );
     
-    console.log("Service created with ID:", result.insertId); // Debug
+    console.log("Service created with ID:", result.insertId);
     
     res.status(201).json({ 
       id: result.insertId, 
@@ -173,7 +156,7 @@ app.post('/api/services', async (req, res) => {
       idCategoria 
     });
   } catch (error) {
-    console.error("Full error:", error); // Debug
+    console.error("Full error:", error);
     res.status(500).json({ error: 'Error al crear servicio', details: error.message });
   }
 });
