@@ -112,7 +112,7 @@ app.get('/api/servicesUsers', async (req, res) => {
 app.get("/api/services/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await db.query(
+    const [rows] = await pool.query(
       `SELECT \
         s.idServicio, \
         s.nombre AS nombreServicio, \
@@ -125,8 +125,8 @@ app.get("/api/services/:id", async (req, res) => {
         u.calificacion AS ratingProveedor, \
         c.descripcion AS nombreCategoria \
       FROM servicios s \
-      JOIN usuarios u ON s.idUsuario = u.idUsuario \
-      JOIN categoria c ON s.idCategoria = c.idCategoria;
+      LEFT JOIN usuarios u ON s.idUsuario = u.idUsuario \
+      LEFT JOIN categoria c ON s.idCategoria = c.idCategoria;
       WHERE s.idServicio = ?;
       `,
       [id]

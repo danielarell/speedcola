@@ -20,22 +20,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-function renderSingleService(service) {
+function renderSingleService(servicio) {
   const container = document.getElementById("single-service-container");
   if (!container) return;
 
   container.innerHTML = `
     <div class="property-item">
       <div class="property-thumb">
-        <img src="${service.imagen}" alt="${service.nombre}" class="img-fluid rounded">
+        <img src="${servicio.imagen}" alt="${servicio.nombreServicio}" class="img-fluid rounded">
       </div>
       <div class="down-content">
-        <h2 class="mb-3">${service.nombre}</h2>
-        <p class="text-muted">${service.descripcion}</p>
-        <p><strong>Price:</strong> $${service.precio}</p>
-        <p><strong>Duration:</strong> ${service.duracionEstimada}</p>
-        <p><strong>Category:</strong> ${service.categoria || "Uncategorized"}</p>
-        <p><strong>Provider:</strong> ${service.proveedor || "Unknown"}</p>
+        <h2 class="mb-3">${servicio.nombreServicio}</h2>
+        <p class="text-muted">${servicio.descripcion}</p>
+        <p><strong>Rating:</strong> ${servicio.ratingProveedor}</p>
+        <p><strong>Price:</strong> $${servicio.precio}</p>
+        <p><strong>Duration:</strong> ${servicio.duracionEstimada}</p>
+        <p><strong>Category:</strong> ${servicio.nombreCategoria || "Uncategorized"}</p>
+        <p><strong>Provider:</strong> ${servicio.nombreProveedor || "Unknown"}</p>
       </div>
     </div>
   `;
