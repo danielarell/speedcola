@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const sessionData = await response.json();
         console.log(sessionData)
         
-        if (sessionData.loggedIn && sessionData.user.isProvider == 1) {
+        if (sessionData.loggedIn && sessionData.user.isprovider) {
             // Crear botón dinámicamente
             console.log("User is provider, creating button...");
 
