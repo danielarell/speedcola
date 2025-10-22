@@ -107,6 +107,7 @@ async function loadCategoriesForModal() {
             option.value = cat.idCategoria;
             option.textContent = cat.nombre;
             select.appendChild(option);
+            console.log("Added option:", cat.nombre, cat.idCategoria); // Debug
         });
     } catch (error) {
         console.error("Error loading categories for modal:", error);
