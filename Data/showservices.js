@@ -98,14 +98,15 @@ async function loadServiceCategories() {
 // Función para cargar categorías en el modal
 async function loadCategoriesForModal() {
     try {
-        const response = await fetch("/api/categories");
+        const response = await fetch("/api/categories", { method: "GET", credentials: "include" });
         const categories = await response.json();
+        console.log("Categories loaded:", categories); // Debug
         
         const select = document.getElementById('serviceCategory');
         categories.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.idCategoria;
-            option.textContent = cat.nombre;
+            option.textContent = cat.descripcion; // Changed from cat.nombre to cat.descripcion
             select.appendChild(option);
         });
     } catch (error) {
