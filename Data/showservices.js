@@ -39,8 +39,11 @@ document.addEventListener("DOMContentLoaded", async () => {
             const resp = await fetch("/api/servicesUsers", { method: "GET", credentials: "include" });
             servicios = await resp.json();
 
-            // Cargar categorías
+            // Cargar categorías para los filtros
             await loadServiceCategories();
+            
+            // Cargar categorías para el modal
+            await loadCategoriesForModal();
 
             // Render inicial
             renderServices(servicios);
@@ -48,6 +51,9 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Eventos de filtro
             document.querySelector('#filterBtn').addEventListener('click', applyFilters);
             document.querySelector('#resetFilters').addEventListener('click', resetFilters);
+
+            // Evento para crear servicio
+            document.querySelector('#createServiceForm').addEventListener('submit', handleCreateService);
 
             const priceRange = document.getElementById('priceRange');
             const priceValue = document.getElementById('priceValue');
@@ -188,7 +194,7 @@ function renderServices(list) {
         container.appendChild(col);
     });
 }
-/*
+
 async function handleCreateService(e) {
     e.preventDefault();
     
@@ -234,4 +240,4 @@ async function handleCreateService(e) {
         console.error("Error creating service:", error);
         alert("Error creating service. Please try again.");
     }
-}*/
+}

@@ -111,15 +111,44 @@ app.get('/api/servicesUsers', async (req, res) => {
 // POST - Crear Servicio
 app.post('/api/services', async (req, res) => {
   try {
-    const { name, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria} = req.body;
+    // Check if user is logged in
+    if (!req.session.user) {
+      return res.status(401).json({ error: 'Not authenticated' });
+    }
+
+    // Check if user is a provider
+    if (!req.session.user.isProvider) {
+      return res.status(403).json({ error: 'Only providers can create services' });
+    }
+
+    const { nombre, descripcion, precio, duracionEstimada, imagen, idCategoria } = req.body;
+    
+    // Get idUsuario from session (not from request body for security)
+    const idUsuario = req.session.user.idUsuario;
+
+    // Validate required fields
+    if (!nombre || !precio || !duracionEstimada || !idCategoria) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
     const [result] = await pool.query(
-      'INSERT INTO usuarios (nombre, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria) VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [name, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria]
+      'INSERT INTO servicios (nombre, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [nombre, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria]
     );
-    res.status(201).json({ id: result.insertId, idUsuario, name });
+    
+    res.status(201).json({ 
+      id: result.insertId, 
+      nombre, 
+      descripcion, 
+      precio, 
+      duracionEstimada, 
+      imagen, 
+      idUsuario, 
+      idCategoria 
+    });
   } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Error al crear servicio', details: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Error al crear servicio', details: error.message });
   }
 });
 
