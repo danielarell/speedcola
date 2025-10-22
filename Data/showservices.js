@@ -10,23 +10,30 @@ document.addEventListener("DOMContentLoaded", async () => {
         });
         const sessionData = await response.json();
         console.log(sessionData)
+        
         if (sessionData.loggedIn && sessionData.user.isProvider) {
             // Crear botón dinámicamente
-            const container = document.querySelector(".section.properties .container");
+            console.log("User is provider, creating button...");
+
+            const container = document.querySelector(".container");
             const btn = document.createElement("button");
             btn.textContent = "Crear Servicio";
-            btn.className = "btn btn-success mb-3"; // estilo bootstrap
+            btn.style.display = "block";
+            btn.className = "btn btn-success mb-3";
             btn.onclick = () => {
-                window.location.href = "/create-service.html"; // o la ruta que uses
+                window.location.href = "/create-service.html";
             };
 
-            // Insertar el botón antes de los filtros
-            const filtersRow = container.querySelector(".row.mb-4");
-            container.insertBefore(btn, filtersRow);
+            // Insertar el botón al inicio del container (antes de los filtros)
+            container.insertBefore(btn, container.firstChild);
+            
+            // O si prefieres insertarlo después del título pero antes de los filtros:
+            // const filtersRow = container.querySelector(".row.mb-4.g-3");
+            // container.insertBefore(btn, filtersRow);
         }
 
         try {
-        // Cargar servicios
+            // Cargar servicios
             const resp = await fetch("/api/servicesUsers", { method: "GET", credentials: "include" });
             servicios = await resp.json();
 
@@ -40,7 +47,6 @@ document.addEventListener("DOMContentLoaded", async () => {
             document.querySelector('#filterBtn').addEventListener('click', applyFilters);
             document.querySelector('#resetFilters').addEventListener('click', resetFilters);
 
-            // Solo actualizar etiquetas de sliders visualmente (sin aplicar filtros)
             const priceRange = document.getElementById('priceRange');
             const priceValue = document.getElementById('priceValue');
             priceRange.addEventListener('input', () => { 
