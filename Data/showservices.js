@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         const sessionData = await response.json();
         console.log(sessionData)
         
-        if (sessionData.loggedIn && sessionData.user.isProvider) {
+        if (sessionData.loggedIn && sessionData.user.isProvider == 1) {
             // Crear botón dinámicamente
             console.log("User is provider, creating button...");
 
@@ -30,6 +30,8 @@ document.addEventListener("DOMContentLoaded", async () => {
             // O si prefieres insertarlo después del título pero antes de los filtros:
             // const filtersRow = container.querySelector(".row.mb-4.g-3");
             // container.insertBefore(btn, filtersRow);
+        } else {
+            console.log("User is not provider...");
         }
 
         try {
