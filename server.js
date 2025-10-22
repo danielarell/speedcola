@@ -120,15 +120,16 @@ app.post('/api/services', async (req, res) => {
       return res.status(401).json({ error: 'Not authenticated', details: 'No session found' });
     }
 
-    // Check if user is a provider
-    if (!req.session.user.isProvider) {
+    // Check if user is a provider - FIX: use lowercase 'isprovider'
+    if (!req.session.user.isprovider) {
       return res.status(403).json({ error: 'Only providers can create services' });
     }
 
     const { nombre, descripcion, precio, duracionEstimada, imagen, idCategoria } = req.body;
     
-    // Get idUsuario from session
-    const idUsuario = req.session.user.idUsuario;
+    // Get idUsuario from session - might need to adjust based on your JWT structure
+    // Check if you have idUsuario in the token, if not you might need to fetch it from DB using email
+    const idUsuario = req.session.user.idUsuario || req.session.user.id;
 
     console.log("Creating service for user:", idUsuario); // Debug
 
@@ -138,6 +139,20 @@ app.post('/api/services', async (req, res) => {
         error: 'Missing required fields',
         received: { nombre, precio, duracionEstimada, idCategoria }
       });
+    }
+
+    // If idUsuario is not in the token, fetch it from database
+    if (!idUsuario) {
+      const [users] = await pool.query(
+        'SELECT idUsuario FROM usuarios WHERE email = ?',
+        [req.session.user.email]
+      );
+      
+      if (users.length === 0) {
+        return res.status(404).json({ error: 'User not found' });
+      }
+      
+      idUsuario = users[0].idUsuario;
     }
 
     const [result] = await pool.query(
@@ -158,11 +173,10 @@ app.post('/api/services', async (req, res) => {
       idCategoria 
     });
   } catch (error) {
-    console.error("Full error:", error); // Debug - this will show in your server console
+    console.error("Full error:", error); // Debug
     res.status(500).json({ error: 'Error al crear servicio', details: error.message });
   }
 });
-
 
 
 // POST - Crear usuario
