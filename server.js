@@ -112,33 +112,37 @@ app.get('/api/servicesUsers', async (req, res) => {
 app.get("/api/services/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const [rows] = await pool.query(
-      `SELECT \
-        s.idServicio, \
-        s.nombre AS nombreServicio, \
-        s.descripcion, \
-        s.precio, \
-        s.duracionEstimada, \
-        s.imagen, \
-        s.idCategoria, \
-        u.nombre AS nombreProveedor, \
-        u.calificacion AS ratingProveedor, \
-        c.descripcion AS nombreCategoria \
-      FROM servicios s \
-      LEFT JOIN usuarios u ON s.idUsuario = u.idUsuario \
-      LEFT JOIN categoria c ON s.idCategoria = c.idCategoria;
+    const [rows] = await db.query(
+      `
+      SELECT 
+        s.idServicio, 
+        s.nombre AS nombreServicio, 
+        s.descripcion, 
+        s.precio, 
+        s.duracionEstimada, 
+        s.imagen, 
+        s.idCategoria, 
+        u.nombre AS nombreProveedor, 
+        u.calificacion AS ratingProveedor, 
+        c.descripcion AS nombreCategoria
+      FROM servicios s
+      LEFT JOIN usuarios u ON s.idUsuario = u.idUsuario
+      LEFT JOIN categoria c ON s.idCategoria = c.idCategoria
       WHERE s.idServicio = ?;
       `,
       [id]
     );
 
-    if (rows.length === 0) return res.status(404).json({ message: "Service not found" });
+    if (rows.length === 0)
+      return res.status(404).json({ message: "Service not found" });
+
     res.json(rows[0]);
   } catch (error) {
     console.error("Error fetching single service:", error);
-    res.status(500).json({ message: "Error fetching service" });
+    res.status(500).json({ message: "Error fetching service", error: error.message });
   }
 });
+
 
 
 // POST - Crear Servicio
