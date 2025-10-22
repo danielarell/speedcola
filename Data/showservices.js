@@ -196,6 +196,7 @@ function renderServices(list) {
     });
 }
 
+// Función para manejar la creación del servicio
 async function handleCreateService(e) {
     e.preventDefault();
     
@@ -209,6 +210,8 @@ async function handleCreateService(e) {
         idCategoria: parseInt(formData.get('idCategoria'))
     };
 
+    console.log("Sending service data:", serviceData); // Debug
+
     try {
         const response = await fetch("/api/services", {
             method: "POST",
@@ -218,6 +221,9 @@ async function handleCreateService(e) {
             credentials: "include",
             body: JSON.stringify(serviceData)
         });
+
+        const data = await response.json();
+        console.log("Response:", data); // Debug
 
         if (response.ok) {
             // Cerrar modal
@@ -234,8 +240,8 @@ async function handleCreateService(e) {
             
             alert("Service created successfully!");
         } else {
-            const error = await response.json();
-            alert("Error creating service: " + (error.message || "Unknown error"));
+            console.error("Server error:", data);
+            alert("Error creating service: " + (data.error || "Unknown error") + (data.details ? "\n" + data.details : ""));
         }
     } catch (error) {
         console.error("Error creating service:", error);

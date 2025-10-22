@@ -108,12 +108,16 @@ app.get('/api/servicesUsers', async (req, res) => {
   }
 });
 
+
 // POST - Crear Servicio
 app.post('/api/services', async (req, res) => {
   try {
+    console.log("Session:", req.session); // Debug
+    console.log("Request body:", req.body); // Debug
+
     // Check if user is logged in
-    if (!req.session.user) {
-      return res.status(401).json({ error: 'Not authenticated' });
+    if (!req.session || !req.session.user) {
+      return res.status(401).json({ error: 'Not authenticated', details: 'No session found' });
     }
 
     // Check if user is a provider
@@ -123,18 +127,25 @@ app.post('/api/services', async (req, res) => {
 
     const { nombre, descripcion, precio, duracionEstimada, imagen, idCategoria } = req.body;
     
-    // Get idUsuario from session (not from request body for security)
+    // Get idUsuario from session
     const idUsuario = req.session.user.idUsuario;
+
+    console.log("Creating service for user:", idUsuario); // Debug
 
     // Validate required fields
     if (!nombre || !precio || !duracionEstimada || !idCategoria) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ 
+        error: 'Missing required fields',
+        received: { nombre, precio, duracionEstimada, idCategoria }
+      });
     }
 
     const [result] = await pool.query(
       'INSERT INTO servicios (nombre, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [nombre, descripcion, precio, duracionEstimada, imagen, idUsuario, idCategoria]
     );
+    
+    console.log("Service created with ID:", result.insertId); // Debug
     
     res.status(201).json({ 
       id: result.insertId, 
@@ -147,7 +158,7 @@ app.post('/api/services', async (req, res) => {
       idCategoria 
     });
   } catch (error) {
-    console.error(error);
+    console.error("Full error:", error); // Debug - this will show in your server console
     res.status(500).json({ error: 'Error al crear servicio', details: error.message });
   }
 });
