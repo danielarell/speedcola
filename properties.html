@@ -25,8 +25,57 @@ TemplateMo 591 villa agency
 https://templatemo.com/tm-591-villa-agency
 
 -->
+<!--  MODAL CREATE SERVICE  -->
+<div class="modal fade" id="createServiceModal" tabindex="-1" aria-labelledby="createServiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="createServiceModalLabel">Create New Service</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="createServiceForm">
+          <div class="mb-3">
+            <label for="serviceName" class="form-label">Service Name</label>
+            <input type="text" class="form-control" id="serviceName" name="nombre" required>
+          </div>
+          <div class="mb-3">
+            <label for="serviceDescription" class="form-label">Description</label>
+            <textarea class="form-control" id="serviceDescription" name="descripcion" rows="3" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="servicePrice" class="form-label">Price</label>
+            <input type="number" class="form-control" id="servicePrice" name="precio" step="0.01" min="0" required>
+          </div>
+          <div class="mb-3">
+            <label for="serviceDuration" class="form-label">Estimated Duration</label>
+            <input type="text" class="form-control" id="serviceDuration" name="duracionEstimada" placeholder="e.g., 2 hours, 1 day" required>
+          </div>
+          <div class="mb-3">
+            <label for="serviceImage" class="form-label">Image URL</label>
+            <input type="url" class="form-control" id="serviceImage" name="imagen" placeholder="https://example.com/image.jpg" required>
+          </div>
+          <div class="mb-3">
+            <label for="serviceCategory" class="form-label">Category</label>
+            <select class="form-select" id="serviceCategory" name="idCategoria" required>
+              <option value="">Select a category</option>
+              <!-- Categories will be loaded dynamically -->
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success w-100" style="background-color: orangered; border-color: orangered;">Create Service</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
   </head>
 
+
+
+  
 <body>
 
   <!-- ***** Preloader Start ***** -->

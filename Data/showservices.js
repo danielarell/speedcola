@@ -15,14 +15,14 @@ document.addEventListener("DOMContentLoaded", async () => {
             // Crear botón dinámicamente
             console.log("User is provider, creating button...");
 
-            const container = document.querySelector(".container");
+            const container = document.querySelector(".row.mb-4.g-3");
             const btn = document.createElement("button");
             btn.textContent = "Crear Servicio";
             btn.style.display = "block";
+            btn.style.backgroundColor = '#f35525';
             btn.className = "btn btn-success mb-3";
-            btn.onclick = () => {
-                window.location.href = "/create-service.html";
-            };
+            btn.setAttribute("data-bs-toggle", "modal");
+            btn.setAttribute("data-bs-target", "#createServiceModal");
 
             // Insertar el botón al inicio del container (antes de los filtros)
             container.insertBefore(btn, container.firstChild);
@@ -88,6 +88,25 @@ async function loadServiceCategories() {
         console.error('Error cargando categorías:', err);
     }
 }
+
+// Función para cargar categorías en el modal
+async function loadCategoriesForModal() {
+    try {
+        const resp = await fetch("/api/categories", { method: "GET", credentials: "include" });
+        const categories = await resp.json();
+        
+        const select = document.getElementById('serviceCategory');
+        categories.forEach(cat => {
+            const option = document.createElement('option');
+            option.value = cat.idCategoria;
+            option.textContent = cat.nombre;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error("Error loading categories for modal:", error);
+    }
+}
+
 
 function applyFilters() {
     let filtered = servicios.slice();
@@ -169,3 +188,50 @@ function renderServices(list) {
         container.appendChild(col);
     });
 }
+/*
+async function handleCreateService(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(e.target);
+    const serviceData = {
+        nombre: formData.get('nombre'),
+        descripcion: formData.get('descripcion'),
+        precio: parseFloat(formData.get('precio')),
+        duracionEstimada: formData.get('duracionEstimada'),
+        imagen: formData.get('imagen'),
+        idCategoria: parseInt(formData.get('idCategoria'))
+    };
+
+    try {
+        const response = await fetch("/api/services", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            credentials: "include",
+            body: JSON.stringify(serviceData)
+        });
+
+        if (response.ok) {
+            // Cerrar modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createServiceModal'));
+            modal.hide();
+            
+            // Limpiar formulario
+            e.target.reset();
+            
+            // Recargar servicios
+            const resp = await fetch("/api/servicesUsers", { method: "GET", credentials: "include" });
+            servicios = await resp.json();
+            renderServices(servicios);
+            
+            alert("Service created successfully!");
+        } else {
+            const error = await response.json();
+            alert("Error creating service: " + (error.message || "Unknown error"));
+        }
+    } catch (error) {
+        console.error("Error creating service:", error);
+        alert("Error creating service. Please try again.");
+    }
+}*/
