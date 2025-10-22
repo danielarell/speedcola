@@ -25,19 +25,29 @@ function renderSingleService(servicio) {
   if (!container) return;
 
   container.innerHTML = `
-    <div class="property-item">
-      <div class="property-thumb">
-        <img src="${servicio.imagen}" alt="${servicio.nombreServicio}" class="img-fluid rounded">
-      </div>
-      <div class="down-content">
-        <h2 class="mb-3">${servicio.nombreServicio}</h2>
-        <p class="text-muted">${servicio.descripcion}</p>
-        <p><strong>Rating:</strong> ${servicio.ratingProveedor}</p>
-        <p><strong>Price:</strong> $${servicio.precio}</p>
-        <p><strong>Duration:</strong> ${servicio.duracionEstimada}</p>
-        <p><strong>Category:</strong> ${servicio.nombreCategoria || "Uncategorized"}</p>
-        <p><strong>Provider:</strong> ${servicio.nombreProveedor || "Unknown"}</p>
+    <div class="service-detail mb-5">
+      <img src="${servicio.imagen}" alt="${servicio.nombreServicio}">
+      <div class="service-content">
+        <h2>${servicio.nombreServicio}</h2>
+        <p class="description">${servicio.descripcion}</p>
+        <div class="service-meta">
+          <p><strong>⭐ Rating:</strong> ${servicio.ratingProveedor || "N/A"}</p>
+          <p><strong>💰 Price:</strong> $${servicio.precio}</p>
+          <p><strong>⏱ Duration:</strong> ${servicio.duracionEstimada}</p>
+          <p><strong>🏷 Category:</strong> ${servicio.nombreCategoria || "Uncategorized"}</p>
+          <p><strong>👤 Provider:</strong> ${servicio.nombreProveedor || "Unknown"}</p>
+        </div>
+
+        <div class="service-actions mt-4">
+          <button class="btn btn-chat">
+            <i class="fa fa-comments"></i> Chat
+          </button>
+          <button class="btn btn-hire">
+            <i class="fa fa-briefcase"></i> Contratar servicio
+          </button>
+        </div>
       </div>
     </div>
   `;
 }
+

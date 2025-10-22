@@ -1826,3 +1826,120 @@ body {
     margin-right: 100px;
   }
 }
+
+/* ==== SERVICE DETAIL STYLE ==== */
+.service-detail {
+  max-width: 900px;
+  margin: 0 auto;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.service-detail:hover {
+  transform: translateY(-4px);
+}
+
+.service-detail img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+}
+
+.service-content {
+  padding: 2rem 2.5rem;
+}
+
+.service-content h2 {
+  color: #333;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.service-content p.description {
+  color: #555;
+  font-size: 1rem;
+  margin-bottom: 1.2rem;
+  line-height: 1.6;
+}
+
+.service-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+}
+
+.service-meta p {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-weight: 500;
+  color: #444;
+}
+
+.service-meta strong {
+  color: orangered;
+}
+
+@media (max-width: 768px) {
+  .service-content {
+    padding: 1.5rem;
+  }
+  .service-detail img {
+    height: 250px;
+  }
+}
+
+
+/* ==== SERVICE ACTION BUTTONS ==== */
+.service-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.service-actions .btn {
+  flex: 1;
+  font-size: 1rem;
+  padding: 0.9rem 1.4rem;
+  border-radius: 10px;
+  border: none;
+  color: #fff;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+/* Botón de Chat */
+.btn-chat {
+  background-color: #6c63ff; /* morado vibrante */
+}
+
+.btn-chat:hover {
+  background-color: #584ee2;
+}
+
+/* Botón de Contratar */
+.btn-hire {
+  background-color: orangered;
+}
+
+.btn-hire:hover {
+  background-color: #d54300;
+}
+
+@media (max-width: 768px) {
+  .service-actions {
+    flex-direction: column;
+  }
+  .service-actions .btn {
+    width: 100%;
+  }
+}
