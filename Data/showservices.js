@@ -99,9 +99,9 @@ async function loadServiceCategories() {
 async function loadCategoriesForModal() {
     try {
         const resp = await fetch("/api/categories", { method: "GET", credentials: "include" });
-        const categories = await resp.json();
-        
-        const select = document.getElementById('serviceCategory');
+        categories = await resp.json();
+
+        const categorySelect = document.getElementById('categorySelect');
         categories.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.idCategoria;
