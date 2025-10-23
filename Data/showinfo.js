@@ -32,11 +32,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     if (usuario.isprovider) {
-      console.log("Hey, si entre aqui pero no quice renderizar")
-      renderUserService(usuario.service);
-    } else {
-      console.log("Hey, no entre")
-      
+      const serviceResp = await fetch(`/api/services/${usuario.id}`, {
+        method: "GET",
+        credentials: "include"
+      });
+
+      if (serviceResp.ok) {
+        const servicio = await serviceResp.json(); 
+        renderUserService(servicio);
+      } else {
+        console.warn("No se pudo obtener el servicio del proveedor");
+      }
     }
 
   } catch (error) {
