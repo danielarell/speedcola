@@ -32,10 +32,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     if (usuario.isprovider) {
-      const serviceResp = await fetch(`/api/services/${usuario.id}`, {
+      const serviceResp = await fetch(`/api/services/${usuario.email}`, {
         method: "GET",
         credentials: "include"
       });
+
+      console.log(usuario.id)
 
       if (serviceResp.ok) {
         const servicio = await serviceResp.json(); 
