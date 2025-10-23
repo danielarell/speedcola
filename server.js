@@ -9,6 +9,9 @@ const bcrypt = require('bcryptjs');
 const cookieParser = require('cookie-parser');
 const authenticateToken = require('./middleware/auth');
 
+const http = require('http');
+const { Server } = require('socket.io');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -255,6 +258,12 @@ app.post('/api/services', async (req, res) => {
       idUsuario, 
       idCategoria 
     });
+
+    const io = req.app.get("io");
+    io.emit("newService", {
+      message: `Nuevo servicio creado: ${nombre}`,
+      data: { nombre, precio, idCategoria }
+    });
   } catch (error) {
     console.error("Full error:", error);
     res.status(500).json({ error: 'Error al crear servicio', details: error.message });
@@ -400,12 +409,41 @@ app.get('/api/check-session', authenticateToken, (req, res) => {
   res.json({ loggedIn: true, user: req.user });
 });
 
-// Iniciar servidor
+// ========================== SERVIDOR Y SOCKETS ==========================
+
 async function start() {
   await initDB();
-  app.listen(PORT, () => {
+  
+  const server = http.createServer(app);
+  const io = new Server(server, {
+    cors: {
+      origin: "*", // o tu dominio si ya lo tienes
+      methods: ["GET", "POST"]
+    }
+  });
+
+  io.on("connection", (socket) => {
+    console.log("🟢 Usuario conectado al socket:", socket.id);
+
+    socket.on("disconnect", () => {
+      console.log("🔴 Usuario desconectado:", socket.id);
+    });
+  });
+
+  // Guarda la instancia globalmente
+  app.set("io", io);
+
+  server.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
   });
 }
+
+// // Iniciar servidor
+// async function start() {
+//   await initDB();
+//   app.listen(PORT, () => {
+//     console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+//   });
+// }
 
 start();

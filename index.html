@@ -518,6 +518,20 @@ https://templatemo.com/tm-591-villa-agency
 
   <script src="Data/register.js"></script>
   <script src="Data/showTopServicesIndex.js"></script>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script>
+    const socket = io("http://54.226.207.123");
+
+    socket.on("connect", () => {
+      console.log("Conectado al servidor de notificaciones ✅");
+    });
+
+    socket.on("newService", (data) => {
+      alert(data.message); // o usar un toast visual
+      console.log("Notificación:", data);
+    });
+  </script>
   
   </body>
 </html>
