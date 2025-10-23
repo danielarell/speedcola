@@ -228,7 +228,8 @@ async function handleCreateService(e) {
         const serviceResp = await fetch(`/api/serviceProv/${sessionData.user.email}`, {
             method: "GET",
             credentials: "include"
-        })        
+        })
+        console.log(serviceResp)        
         if (serviceResp) {
             alert("Ya tienes un servicio creado. No puedes crear otro.");
             return;
