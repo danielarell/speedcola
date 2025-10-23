@@ -32,6 +32,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 
     if (usuario.isprovider && usuario.service) {
+      console.log("Hey, si entre aqui pero no quice renderizar")
       renderUserService(usuario.service);
     }
 
@@ -48,15 +49,13 @@ function renderUserService(servicio) {
 
   container.innerHTML = `
     <div class="item text-center shadow-sm p-3 rounded-3">
-        <a href="property-details.html">
-            <img src="${servicio.imagen}" alt="${servicio.nombreServicio}" style="max-height: 200px; object-fit: cover;">
-        </a>
         <h4 class="service-title" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">
             ${servicio.nombreServicio}
         </h4>
         <ul style="text-align: left; margin-top: 10px;">
+            
             <li>Descripción: <span>${servicio.descripcion}</span></li>
-            <li>Proveedor: <span>${servicio.nombreProveedor}</span></li>
+            <li>Imagen Link: <span>${servicio.imagen}</span></li>
             <li>Duración Estimada: <span>${servicio.duracionEstimada}</span></li>
             <li>Categoria: <span>${servicio.nombreCategoria || 'N/A'}</span></li>
             <li>Rating: <span>${servicio.ratingProveedor || 'N/A'}</span></li>
