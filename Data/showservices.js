@@ -225,7 +225,7 @@ async function handleCreateService(e) {
             return;
         }
 
-        const serviceResp = await fetch(`/api/serviceProv/${user.email}`, {
+        const serviceResp = await fetch(`/api/serviceProv/${sessionData.user.email}`, {
             method: "GET",
             credentials: "include"
         })        

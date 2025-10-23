@@ -93,12 +93,35 @@ function renderUserService(servicio) {
   editBtn.addEventListener("click", () => editService(servicio.idServicio));
   buttonsContainer.appendChild(editBtn);
 
-  // Delete Button
+    // Delete Button
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "Delete";
   deleteBtn.className = "btn btn-sm btn-danger";
-  deleteBtn.addEventListener("click", () => deleteService(servicio.idServicio));
+  deleteBtn.addEventListener("click", async () => {
+    if (!confirm("¿Estás seguro que quieres eliminar este servicio?")) return;
+
+    try {
+      const response = await fetch(`/api/services/${servicio.idServicio}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Servicio eliminado correctamente");
+        // Opcional: remover la tarjeta del DOM
+        container.remove();
+      } else {
+        alert("Error eliminando servicio: " + (data.error || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error eliminando servicio:", error);
+      alert("Error eliminando servicio. Intenta nuevamente.");
+    }
+  });
   buttonsContainer.appendChild(deleteBtn);
+
 }
 
 async function loadCategoriesForModal() {
