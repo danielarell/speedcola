@@ -229,7 +229,7 @@ async function handleCreateService(e) {
             method: "GET",
             credentials: "include"
         })        
-        if (existingService) {
+        if (serviceResp) {
             alert("Ya tienes un servicio creado. No puedes crear otro.");
             return;
         }

@@ -12,55 +12,6 @@
   <link rel="stylesheet" href="assets/css/owl.css">
   <link rel="stylesheet" href="assets/css/animate.css">
   <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
-
-  <!-- Modal Edit Service -->
-<div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editServiceModalLabel">Edit Service</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="editServiceForm">
-          <input type="hidden" id="editServiceId" name="idServicio">
-          <div class="mb-3">
-            <label for="editServiceName" class="form-label">Service Name</label>
-            <input type="text" class="form-control" id="editServiceName" name="nombre" required>
-          </div>
-          <div class="mb-3">
-            <label for="editServiceDescription" class="form-label">Description</label>
-            <textarea class="form-control" id="editServiceDescription" name="descripcion" rows="3" required></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="editServicePrice" class="form-label">Price</label>
-            <input type="number" class="form-control" id="editServicePrice" name="precio" step="0.01" min="0" required>
-          </div>
-          <div class="mb-3">
-            <label for="editServiceDuration" class="form-label">Estimated Duration</label>
-            <input type="text" class="form-control" id="editServiceDuration" name="duracionEstimada" required>
-          </div>
-          <div class="mb-3">
-            <label for="editServiceImage" class="form-label">Image URL</label>
-            <input type="url" class="form-control" id="editServiceImage" name="imagen" required>
-          </div>
-          <div class="mb-3">
-            <label for="editServiceCategory" class="form-label">Category</label>
-            <select class="form-select" id="editServiceCategory" name="idCategoria" required style="color: #000; background-color: #fff;">
-              <option value="">Select a category</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-success w-100" style="background-color: orangered; border-color: orangered;">
-            Save Changes
-          </button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
 </head>
 
 <body>
@@ -182,6 +133,52 @@
     </div>
   </footer>
 
+
+    <!-- Modal Edit Service -->
+<div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editServiceModalLabel">Edit Service</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editServiceForm">
+          <input type="hidden" id="editServiceId" name="idServicio">
+          <div class="mb-3">
+            <label for="editServiceName" class="form-label">Service Name</label>
+            <input type="text" class="form-control" id="editServiceName" name="nombre" required>
+          </div>
+          <div class="mb-3">
+            <label for="editServiceDescription" class="form-label">Description</label>
+            <textarea class="form-control" id="editServiceDescription" name="descripcion" rows="3" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="editServicePrice" class="form-label">Price</label>
+            <input type="number" class="form-control" id="editServicePrice" name="precio" step="0.01" min="0" required>
+          </div>
+          <div class="mb-3">
+            <label for="editServiceDuration" class="form-label">Estimated Duration</label>
+            <input type="text" class="form-control" id="editServiceDuration" name="duracionEstimada" required>
+          </div>
+          <div class="mb-3">
+            <label for="editServiceImage" class="form-label">Image URL</label>
+            <input type="url" class="form-control" id="editServiceImage" name="imagen" required>
+          </div>
+          <div class="mb-3">
+            <label for="editServiceCategory" class="form-label">Category</label>
+            <select class="form-select" id="editServiceCategory" name="idCategoria" required style="color: #000; background-color: #fff;">
+              <option value="">Select a category</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-success w-100" style="background-color: orangered; border-color: orangered;">
+            Save Changes
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
 
 
   <!-- Scripts -->

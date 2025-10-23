@@ -136,19 +136,25 @@ async function editService(idServicio) {
     document.getElementById("editServiceDuration").value = servicio.duracionEstimada;
     document.getElementById("editServiceImage").value = servicio.imagen;
 
-    // Cargar categorías y seleccionar la actual
+    // Cargar categorías en el dropdown y seleccionar la actual
     await loadCategoriesForModal();
     const categorySelect = document.getElementById("editServiceCategory");
     if (categorySelect) categorySelect.value = servicio.idCategoria;
 
     // Mostrar modal usando Bootstrap API
     const modalEl = document.getElementById('editServiceModal');
-    const modal = new bootstrap.Modal(modalEl);
+
+    // Obtener instancia existente o crear nueva
+    let modal = bootstrap.Modal.getInstance(modalEl);
+    if (!modal) modal = new bootstrap.Modal(modalEl);
+
     modal.show();
 
-    // Reset formulario al cerrar modal
+    // Reset formulario y restaurar foco al cerrar modal
     modalEl.addEventListener('hidden.bs.modal', () => {
       document.getElementById("editServiceForm").reset();
+      const openButton = document.getElementById(`editServiceButton-${idServicio}`);
+      if (openButton) openButton.focus(); // Devuelve el foco al botón que abrió el modal
     }, { once: true });
 
   } catch (err) {
@@ -156,6 +162,7 @@ async function editService(idServicio) {
     alert("Error loading service data");
   }
 }
+
 
 
 
