@@ -31,9 +31,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     items[4].innerHTML = `<strong>User ID:</strong> ${usuario.id}`;
 
 
-    if (usuario.isprovider && usuario.service) {
+    if (usuario.isprovider) {
       console.log("Hey, si entre aqui pero no quice renderizar")
       renderUserService(usuario.service);
+    } else {
+      console.log("Hey, no entre")
+      
     }
 
   } catch (error) {
