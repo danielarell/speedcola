@@ -43,8 +43,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 function renderUserService(servicio) {
-  const container = document.createElement("div");
-  container.className = "col-12 mt-4 properties-items";
+  const container = document.getElementById("service-container");
+  if (!container) return;
 
   container.innerHTML = `
     <div class="item text-center shadow-sm p-3 rounded-3">
