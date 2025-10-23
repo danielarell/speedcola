@@ -1948,19 +1948,28 @@ body {
 
 #services-top3-container {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center; /* centers the items */
-  gap: 2rem; /* spacing between cards */
+  justify-content: center;    /* centers the cards horizontally */
+  align-items: stretch;
+  gap: 2rem;                  /* spacing between cards */
+  flex-wrap: nowrap;          /* keeps them on one line */
+  overflow-x: auto;           /* adds scroll on small screens */
+  padding: 1rem 0;
 }
 
 #services-top3-container .item {
+  flex: 0 0 320px;            /* fixed width for each card */
   background: #fff;
-  border-radius: 15px;
+  border-radius: 16px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease;
   padding: 1rem;
 }
 
 #services-top3-container .item:hover {
-  transform: translateY(-5px);
+  transform: translateY(-6px);
+}
+
+/* Optional: hide scrollbar for cleaner look */
+#services-top3-container::-webkit-scrollbar {
+  display: none;
 }
