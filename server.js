@@ -108,7 +108,7 @@ app.get('/api/servicesUsers', async (req, res) => {
   }
 });
 
-// GET - Obtener todos los servicios con el nombre del proveedor
+// GET - Obtener top 3 servicios
 app.get('/api/servicesIndex', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT  \
