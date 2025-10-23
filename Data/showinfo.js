@@ -70,7 +70,7 @@ function renderUserService(servicio) {
       <ul class="list-group">
         <li class="list-group-item"><strong>Service Name:</strong> ${servicio.nombreServicio || 'N/A'}</li>
         <li class="list-group-item"><strong>Description:</strong> ${servicio.descripcion || 'N/A'}</li>
-        <li class="list-group-item"><strong>Image Link:</strong> <a href="${servicio.imagen || '#'}" target="_blank">${servicio.imagen ? 'View Image' : 'N/A'}</a></li>
+        <li class="list-group-item"><strong>Image Link:</strong> <a href="${servicio.imagen || '#'}" target="_blank">View Image</a></li>
         <li class="list-group-item"><strong>Estimated Duration:</strong> ${servicio.duracionEstimada || 'N/A'}</li>
         <li class="list-group-item"><strong>Category:</strong> ${servicio.nombreCategoria || 'N/A'}</li>
         <li class="list-group-item"><strong>Rating:</strong> ${servicio.ratingProveedor || 'N/A'}</li>
@@ -81,7 +81,6 @@ function renderUserService(servicio) {
     </div>
   `;
 
-  // Crear botones dinámicos
   const buttonsContainer = document.getElementById("service-buttons-container");
 
   // Edit Button
@@ -98,29 +97,7 @@ function renderUserService(servicio) {
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "Delete";
   deleteBtn.className = "btn btn-sm btn-danger";
-  deleteBtn.addEventListener("click", async () => {
-    if (!confirm("¿Estás seguro que quieres eliminar este servicio?")) return;
-
-    try {
-      const response = await fetch(`/api/services/${servicio.idServicio}`, {
-        method: "DELETE",
-        credentials: "include"
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        alert("Servicio eliminado correctamente");
-        // Opcional: remover la tarjeta del DOM
-        container.remove();
-      } else {
-        alert("Error eliminando servicio: " + (data.error || "Unknown error"));
-      }
-    } catch (error) {
-      console.error("Error eliminando servicio:", error);
-      alert("Error eliminando servicio. Intenta nuevamente.");
-    }
-  });
+  deleteBtn.addEventListener("click", () => deleteService(servicio.idServicio));
   buttonsContainer.appendChild(deleteBtn);
 }
 
@@ -143,6 +120,7 @@ async function loadCategoriesForModal() {
     console.error("Error loading categories for modal:", error);
   }
 }
+
 
 
 async function editService(idServicio) {
@@ -178,6 +156,7 @@ async function editService(idServicio) {
     alert("Error loading service data");
   }
 }
+
 
 
 
