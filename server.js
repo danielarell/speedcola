@@ -153,9 +153,9 @@ app.get("/api/services/:id", async (req, res) => {
         u.calificacion AS ratingProveedor, 
         c.descripcion AS nombreCategoria
       FROM servicios s
-      LEFT JOIN usuarios u ON s.idUsuario = u.idUsuario
-      LEFT JOIN categoria c ON s.idCategoria = c.idCategoria
-      WHERE s.idServicio = ?;
+      JOIN usuarios u ON s.idUsuario = u.idUsuario
+      JOIN categoria c ON s.idCategoria = c.idCategoria
+      WHERE u.email = ?;
       `,
       [id]
     );
