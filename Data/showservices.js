@@ -224,6 +224,12 @@ async function handleCreateService(e) {
             alert("Solo proveedores pueden crear servicios");
             return;
         }
+
+        const existingService = servicios.find(s => s.emailProveedor === sessionData.user.email);
+        if (existingService) {
+            alert("Ya tienes un servicio creado. No puedes crear otro.");
+            return;
+        }
         
         // Genera los datos para mandar a la DB (Obtenemos email del usuario para luego rescatar el id)
         const formData = new FormData(e.target);

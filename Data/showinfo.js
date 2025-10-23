@@ -124,24 +124,26 @@ function renderUserService(servicio) {
   buttonsContainer.appendChild(deleteBtn);
 }
 
-// Función para cargar categorías en el modal
 async function loadCategoriesForModal() {
-    try {
-        const response = await fetch("/api/categories", { method: "GET", credentials: "include" });
-        const categories = await response.json();
-        console.log("Categories loaded:", categories); // Debug
-        
-        const select = document.getElementById('serviceCategory');
-        categories.forEach(cat => {
-            const option = document.createElement('option');
-            option.value = cat.idCategoria;
-            option.textContent = cat.descripcion; // Changed from cat.nombre to cat.descripcion
-            select.appendChild(option);
-        });
-    } catch (error) {
-        console.error("Error loading categories for modal:", error);
-    }
+  try {
+    const response = await fetch("/api/categories", { method: "GET", credentials: "include" });
+    const categories = await response.json();
+
+    const select = document.getElementById('editServiceCategory');
+    if (!select) return;
+    select.innerHTML = '<option value="">Select a category</option>'; // Limpiar opciones previas
+
+    categories.forEach(cat => {
+      const option = document.createElement('option');
+      option.value = cat.idCategoria;
+      option.textContent = cat.descripcion;
+      select.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error loading categories for modal:", error);
+  }
 }
+
 
 async function editService(idServicio) {
   try {
@@ -156,26 +158,27 @@ async function editService(idServicio) {
     document.getElementById("editServiceDuration").value = servicio.duracionEstimada;
     document.getElementById("editServiceImage").value = servicio.imagen;
 
-    // Espera a cargar categorías primero
+    // Cargar categorías y seleccionar la actual
     await loadCategoriesForModal();
-
-    // Asigna la categoría actual **después de cargar opciones**
     const categorySelect = document.getElementById("editServiceCategory");
-    if (categorySelect) {
-      categorySelect.value = servicio.idCategoria;
-    } else {
-      console.warn("Dropdown de categoría no encontrado en el DOM");
-    }
+    if (categorySelect) categorySelect.value = servicio.idCategoria;
 
-    // Mostrar el modal
-    const modal = new bootstrap.Modal(document.getElementById('editServiceModal'));
+    // Mostrar modal usando Bootstrap API
+    const modalEl = document.getElementById('editServiceModal');
+    const modal = new bootstrap.Modal(modalEl);
     modal.show();
+
+    // Reset formulario al cerrar modal
+    modalEl.addEventListener('hidden.bs.modal', () => {
+      document.getElementById("editServiceForm").reset();
+    }, { once: true });
 
   } catch (err) {
     console.error("Error loading service:", err);
     alert("Error loading service data");
   }
 }
+
 
 
 
