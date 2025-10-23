@@ -81,6 +81,14 @@ https://templatemo.com/tm-591-villa-agency
               <li><a href="properties.html">Services</a></li>
               <li><a href="user-details.html">User Details</a></li>
               <li><a href="contact.html">About Us</a></li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  <i class="fa fa-bell"></i> <span id="notifCount" class="badge bg-danger">0</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifDropdown" id="notifList">
+                  <li><span class="dropdown-item-text">No hay notificaciones</span></li>
+                </ul>
+              </li>
               <li>
                 <!-- Botón para abrir modal de Login -->
                 <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
@@ -523,13 +531,31 @@ https://templatemo.com/tm-591-villa-agency
   <script>
     const socket = io("http://54.226.207.123");
 
+    let notifications = [];
+
     socket.on("connect", () => {
       console.log("Conectado al servidor de notificaciones ✅");
     });
 
     socket.on("newService", (data) => {
-      alert(data.message); // o usar un toast visual
-      console.log("Notificación:", data);
+      // Agregar notificación al inicio del array
+      notifications.unshift(data.message);
+
+      const notifList = document.getElementById("notifList");
+      const notifCount = document.getElementById("notifCount");
+
+      // Limpiar lista
+      notifList.innerHTML = "";
+
+      // Reconstruir lista de notificaciones
+      notifications.forEach(msg => {
+        const li = document.createElement("li");
+        li.innerHTML = `<span class="dropdown-item-text">${msg}</span>`;
+        notifList.appendChild(li);
+      });
+
+      // Actualizar contador
+      notifCount.textContent = notifications.length;
     });
   </script>
   
