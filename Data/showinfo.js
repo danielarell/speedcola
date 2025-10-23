@@ -63,57 +63,105 @@ function renderUserService(servicio) {
 
   container.innerHTML = `
     <div class="card shadow-sm p-4 rounded-3">
-      <h4 class="mb-3">My Service Information</h4>
-      <form id="service-form">
-        <div class="form-group mb-3">
-          <label for="nombreServicio">Service Name</label>
-          <input type="text" id="nombreServicio" name="nombreServicio" class="form-control" 
-                 value="${servicio.nombreServicio || ''}">
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="descripcion">Description</label>
-          <textarea id="descripcion" name="descripcion" class="form-control" rows="3">${servicio.descripcion || ''}</textarea>
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="imagen">Image Link</label>
-          <input type="text" id="imagen" name="imagen" class="form-control" 
-                 value="${servicio.imagen || ''}">
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="duracionEstimada">Estimated Duration</label>
-          <input type="text" id="duracionEstimada" name="duracionEstimada" class="form-control" 
-                 value="${servicio.duracionEstimada || ''}">
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="nombreCategoria">Category</label>
-          <input type="text" id="nombreCategoria" name="nombreCategoria" class="form-control" 
-                 value="${servicio.nombreCategoria || 'N/A'}" readonly>
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="ratingProveedor">Rating</label>
-          <input type="text" id="ratingProveedor" name="ratingProveedor" class="form-control" 
-                 value="${servicio.ratingProveedor || 'N/A'}" readonly>
-        </div>
-
-        <div class="form-group mb-3">
-          <label for="precio">Price</label>
-          <input type="number" id="precio" name="precio" class="form-control" 
-                 value="${servicio.precio || 0}">
-        </div>
-
-        <div class="d-flex justify-content-end">
-          <button type="button" class="btn btn-warning me-2" onclick="editService(${servicio.idServicio})">Edit</button>
-          <button type="button" class="btn btn-danger" onclick="deleteService(${servicio.idServicio})">Delete</button>
-        </div>
-      </form>
+      <h4 class="mb-3">Service Overview</h4>
+      <ul class="list-group">
+        <li class="list-group-item"><strong>Service Name:</strong> ${servicio.nombreServicio || 'N/A'}</li>
+        <li class="list-group-item"><strong>Description:</strong> ${servicio.descripcion || 'N/A'}</li>
+        <li class="list-group-item"><strong>Image Link:</strong> 
+          <a href="${servicio.imagen || '#'}" target="_blank">
+            ${servicio.imagen ? 'View Image' : 'N/A'}
+          </a>
+        </li>
+        <li class="list-group-item"><strong>Estimated Duration:</strong> ${servicio.duracionEstimada || 'N/A'}</li>
+        <li class="list-group-item"><strong>Category:</strong> ${servicio.nombreCategoria || 'N/A'}</li>
+        <li class="list-group-item"><strong>Rating:</strong> ${servicio.ratingProveedor || 'N/A'}</li>
+        <li class="list-group-item"><strong>Price:</strong> $${servicio.precio?.toLocaleString() || '0'}</li>
+        <li class="list-group-item"><strong>Service ID:</strong> ${servicio.idServicio}</li>
+      </ul>
+      <div class="mt-3 d-flex justify-content-end">
+        <button class="btn btn-sm btn-warning me-2" onclick="editService(${servicio.idServicio})">Edit</button>
+        <button class="btn btn-sm btn-danger" onclick="deleteService(${servicio.idServicio})">Delete</button>
+      </div>
     </div>
   `;
 }
+
+function editService(idServicio) {
+  fetch(`/api/services/${idServicio}`, { method: "GET", credentials: "include" })
+    .then(res => res.json())
+    .then(async servicio => {
+      // Llenar campos del modal
+      document.getElementById("editServiceId").value = servicio.idServicio;
+      document.getElementById("editServiceName").value = servicio.nombre;
+      document.getElementById("editServiceDescription").value = servicio.descripcion;
+      document.getElementById("editServicePrice").value = servicio.precio;
+      document.getElementById("editServiceDuration").value = servicio.duracionEstimada;
+      document.getElementById("editServiceImage").value = servicio.imagen;
+
+      // Cargar categorías en el dropdown
+      await loadCategoriesForModal();
+
+      // Seleccionar la categoría actual del servicio
+      document.getElementById("editServiceCategory").value = servicio.idCategoria;
+
+      // Mostrar el modal
+      const modal = new bootstrap.Modal(document.getElementById('editServiceModal'));
+      modal.show();
+    })
+    .catch(err => {
+      console.error("Error loading service:", err);
+      alert("Error loading service data");
+    });
+}
+
+
+// Manejar el envío del formulario (PUT)
+async function handleEditService(e) {
+  e.preventDefault();
+  const form = e.target;
+
+  const updatedService = {
+    nombre: form.nombre.value,
+    descripcion: form.descripcion.value,
+    precio: parseFloat(form.precio.value),
+    duracionEstimada: form.duracionEstimada.value,
+    imagen: form.imagen.value,
+    idCategoria: parseInt(form.idCategoria.value)
+  };
+
+  const idServicio = document.getElementById("editServiceId").value;
+
+  try {
+    const response = await fetch(`/api/services/${idServicio}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(updatedService)
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // Cierra modal
+      const modal = bootstrap.Modal.getInstance(document.getElementById('editServiceModal'));
+      modal.hide();
+
+      alert("Service updated successfully!");
+      // Recargar la vista del servicio actualizado
+      location.reload();
+    } else {
+      alert("Error updating service: " + (data.error || "Unknown error"));
+    }
+  } catch (error) {
+    console.error("Error updating service:", error);
+    alert("Unexpected error updating service.");
+  }
+}
+
+// Asigna el handler al formulario del modal
+document.getElementById("editServiceForm").addEventListener("submit", handleEditService);
+
+
 
 
 

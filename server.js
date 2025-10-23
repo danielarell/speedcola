@@ -261,6 +261,43 @@ app.post('/api/services', async (req, res) => {
   }
 });
 
+// PUT - Actualizar Servicios
+app.put('/api/services/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { nombre, descripcion, precio, duracionEstimada, imagen, idCategoria } = req.body;
+
+    // Validar campos requeridos
+    if (!nombre || !precio || !duracionEstimada || !idCategoria) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        received: { nombre, precio, duracionEstimada, idCategoria }
+      });
+    }
+
+    // Actualizar servicio
+    const [result] = await pool.query(
+      `UPDATE servicios 
+       SET nombre = ?, descripcion = ?, precio = ?, duracionEstimada = ?, imagen = ?, idCategoria = ?
+       WHERE idServicio = ?`,
+      [nombre, descripcion, precio, duracionEstimada, imagen, idCategoria, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Service not found' });
+    }
+
+    res.json({
+      message: 'Service updated successfully',
+      updated: { id, nombre, descripcion, precio, duracionEstimada, imagen, idCategoria }
+    });
+  } catch (error) {
+    console.error("Error updating service:", error);
+    res.status(500).json({ error: 'Error updating service', details: error.message });
+  }
+});
+
+
 
 // POST - Crear usuario
 app.post('/api/users', async (req, res) => {
