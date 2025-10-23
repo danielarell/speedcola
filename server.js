@@ -153,9 +153,9 @@ app.get("/api/services/:id", async (req, res) => {
         u.calificacion AS ratingProveedor, 
         c.descripcion AS nombreCategoria
       FROM servicios s
-      JOIN usuarios u ON s.idUsuario = u.idUsuario
-      JOIN categoria c ON s.idCategoria = c.idCategoria
-      WHERE u.email = ?;
+      LEFT JOIN usuarios u ON s.idUsuario = u.idUsuario
+      LEFT JOIN categoria c ON s.idCategoria = c.idCategoria
+      WHERE s.idServicio = ?;
       `,
       [id]
     );
@@ -171,7 +171,7 @@ app.get("/api/services/:id", async (req, res) => {
 });
 
 // GET - Servicio Unico en Base a ID
-app.get("/api/services/:email", async (req, res) => {
+app.get("/api/serviceProv/:email", async (req, res) => {
   const { email } = req.params;
   try {
     const [rows] = await pool.query(
@@ -188,8 +188,8 @@ app.get("/api/services/:email", async (req, res) => {
         u.calificacion AS ratingProveedor, 
         c.descripcion AS nombreCategoria
       FROM servicios s
-      LEFT JOIN usuarios u ON s.idUsuario = u.idUsuario
-      LEFT JOIN categoria c ON s.idCategoria = c.idCategoria
+      JOIN usuarios u ON s.idUsuario = u.idUsuario
+      JOIN categoria c ON s.idCategoria = c.idCategoria
       WHERE u.email = ?;
       `,
       [email]
