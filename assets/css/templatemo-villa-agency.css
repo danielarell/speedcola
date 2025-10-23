@@ -1946,30 +1946,40 @@ body {
 
 /* MMHHH, yes, pretty containers, yummy */
 
+/* === TOP 3 SERVICES FIXED LAYOUT === */
 #services-top3-container {
   display: flex;
-  justify-content: center;    /* centers the cards horizontally */
+  justify-content: center;
   align-items: stretch;
-  gap: 2rem;                  /* spacing between cards */
-  flex-wrap: nowrap;          /* keeps them on one line */
-  overflow-x: auto;           /* adds scroll on small screens */
-  padding: 1rem 0;
+  gap: 2rem;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: visible;
+  padding: 1rem 2rem;
+  margin: 0 auto;
+  max-width: 100%;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
 }
 
+/* Prevent card edges from being cut off */
 #services-top3-container .item {
-  flex: 0 0 320px;            /* fixed width for each card */
+  flex: 0 0 320px;
   background: #fff;
   border-radius: 16px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   transition: transform 0.3s ease;
   padding: 1rem;
+  margin-bottom: 1rem;
 }
 
 #services-top3-container .item:hover {
   transform: translateY(-6px);
 }
 
-/* Optional: hide scrollbar for cleaner look */
-#services-top3-container::-webkit-scrollbar {
-  display: none;
+/* Allow a little breathing space on left/right edges */
+#services-top3-container::before,
+#services-top3-container::after {
+  content: '';
+  flex: 0 0 1rem;
 }
