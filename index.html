@@ -26,6 +26,166 @@ TemplateMo 591 villa agency
 https://templatemo.com/tm-591-villa-agency
 
 -->
+
+    <style>
+      /* Estilos para el sistema de notificaciones */
+      .notification-bell {
+        position: relative;
+        cursor: pointer;
+        font-size: 20px;
+        color: #fff;
+      }
+
+      .notification-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background-color: #ff4444;
+        color: white;
+        border-radius: 50%;
+        padding: 2px 6px;
+        font-size: 11px;
+        font-weight: bold;
+        min-width: 18px;
+        text-align: center;
+      }
+
+      .notification-dropdown {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        width: 350px;
+        max-height: 400px;
+        overflow-y: auto;
+        display: none;
+        z-index: 1000;
+        margin-top: 10px;
+      }
+
+      .notification-dropdown.show {
+        display: block;
+      }
+
+      .notification-header {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .notification-header h6 {
+        margin: 0;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .clear-all-btn {
+        background: none;
+        border: none;
+        color: #ff5722;
+        font-size: 12px;
+        cursor: pointer;
+        font-weight: 500;
+      }
+
+      .clear-all-btn:hover {
+        text-decoration: underline;
+      }
+
+      .notification-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+
+      .notification-item {
+        padding: 15px;
+        border-bottom: 1px solid #f0f0f0;
+        cursor: pointer;
+        transition: background 0.2s;
+      }
+
+      .notification-item:hover {
+        background: #f8f8f8;
+      }
+
+      .notification-item.unread {
+        background: #fff3e0;
+      }
+
+      .notification-item.unread:hover {
+        background: #ffe0b2;
+      }
+
+      .notification-content {
+        display: flex;
+        align-items: start;
+        gap: 10px;
+      }
+
+      .notification-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: #ff5722;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        flex-shrink: 0;
+      }
+
+      .notification-text {
+        flex: 1;
+      }
+
+      .notification-text strong {
+        display: block;
+        color: #333;
+        margin-bottom: 4px;
+        font-size: 14px;
+      }
+
+      .notification-text p {
+        margin: 0;
+        color: #666;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .notification-time {
+        font-size: 11px;
+        color: #999;
+        margin-top: 5px;
+      }
+
+      .no-notifications {
+        padding: 40px 20px;
+        text-align: center;
+        color: #999;
+      }
+
+      .no-notifications i {
+        font-size: 48px;
+        margin-bottom: 10px;
+        opacity: 0.3;
+      }
+
+      /* Animación de campanita */
+      @keyframes ring {
+        0%, 100% { transform: rotate(0deg); }
+        10%, 30% { transform: rotate(-10deg); }
+        20%, 40% { transform: rotate(10deg); }
+      }
+
+      .notification-bell.ringing {
+        animation: ring 0.5s ease-in-out;
+      }
+    </style>
   </head>
 
 <body>
@@ -81,13 +241,26 @@ https://templatemo.com/tm-591-villa-agency
               <li><a href="properties.html">Services</a></li>
               <li><a href="user-details.html">User Details</a></li>
               <li><a href="contact.html">About Us</a></li>
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="notifDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  <i class="fa fa-bell"></i> <span id="notifCount" class="badge bg-danger">0</span>
+              <!-- Campanita de notificaciones -->
+              <li style="position: relative;">
+                <a href="javascript:void(0);" id="notificationBell" class="notification-bell" onclick="toggleNotifications(event)">
+                  <i class="fa fa-bell"></i>
+                  <span id="notificationBadge" class="notification-badge" style="display: none;">0</span>
                 </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="notifDropdown" id="notifList">
-                  <li><span class="dropdown-item-text">No hay notificaciones</span></li>
-                </ul>
+                
+                <!-- Dropdown de notificaciones -->
+                <div id="notificationDropdown" class="notification-dropdown">
+                  <div class="notification-header">
+                    <h6>Notificaciones</h6>
+                    <button class="clear-all-btn" id="clearAllBtn" onclick="clearAllNotifications()">Limpiar todas</button>
+                  </div>
+                  <ul class="notification-list" id="notificationList">
+                    <li class="no-notifications">
+                      <i class="fa fa-bell-slash"></i>
+                      <p>No tienes notificaciones</p>
+                    </li>
+                  </ul>
+                </div>
               </li>
               <li>
                 <!-- Botón para abrir modal de Login -->
@@ -529,33 +702,156 @@ https://templatemo.com/tm-591-villa-agency
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
   <script>
-    const socket = io("http://54.226.207.123");
-
+    // Variables globales
     let notifications = [];
+    let unreadCount = 0;
+    let socket;
 
-    socket.on("connect", () => {
-      console.log("Conectado al servidor de notificaciones ✅");
+    // Función para toggle del dropdown (llamada por onclick)
+    function toggleNotifications(event) {
+      event.preventDefault();
+      event.stopPropagation();
+      const dropdown = document.getElementById('notificationDropdown');
+      dropdown.classList.toggle('show');
+      console.log('✅ Dropdown toggled:', dropdown.classList.contains('show') ? 'ABIERTO' : 'CERRADO');
+    }
+
+    // Función para limpiar notificaciones (llamada por onclick)
+    function clearAllNotifications() {
+      notifications = [];
+      unreadCount = 0;
+      updateNotificationUI();
+      console.log('🗑️ Notificaciones limpiadas');
+    }
+
+    // Cerrar dropdown al hacer click fuera
+    document.addEventListener('click', function(e) {
+      const dropdown = document.getElementById('notificationDropdown');
+      const bell = document.getElementById('notificationBell');
+      
+      if (dropdown && bell && !bell.contains(e.target) && !dropdown.contains(e.target)) {
+        dropdown.classList.remove('show');
+      }
     });
 
-    socket.on("newService", (data) => {
-      // Agregar notificación al inicio del array
-      notifications.unshift(data.message);
+    // Actualizar UI de notificaciones
+    function updateNotificationUI() {
+      const notificationBadge = document.getElementById('notificationBadge');
+      const notificationList = document.getElementById('notificationList');
+      
+      // Actualizar badge
+      if (unreadCount > 0) {
+        notificationBadge.textContent = unreadCount;
+        notificationBadge.style.display = 'block';
+      } else {
+        notificationBadge.style.display = 'none';
+      }
 
-      const notifList = document.getElementById("notifList");
-      const notifCount = document.getElementById("notifCount");
+      // Actualizar lista
+      if (notifications.length === 0) {
+        notificationList.innerHTML = `
+          <li class="no-notifications">
+            <i class="fa fa-bell-slash"></i>
+            <p>No tienes notificaciones</p>
+          </li>
+        `;
+      } else {
+        notificationList.innerHTML = notifications.map((notif, index) => `
+          <li class="notification-item ${notif.read ? '' : 'unread'}" onclick="markAsRead(${index})">
+            <div class="notification-content">
+              <div class="notification-icon">
+                <i class="fa fa-${notif.icon || 'bell'}"></i>
+              </div>
+              <div class="notification-text">
+                <strong>${notif.title}</strong>
+                <p>${notif.message}</p>
+                <span class="notification-time">${notif.time}</span>
+              </div>
+            </div>
+          </li>
+        `).join('');
+      }
+    }
 
-      // Limpiar lista
-      notifList.innerHTML = "";
+    // Marcar notificación como leída
+    function markAsRead(index) {
+      if (!notifications[index].read) {
+        notifications[index].read = true;
+        unreadCount--;
+        updateNotificationUI();
+        console.log('📖 Notificación marcada como leída');
+      }
+    }
 
-      // Reconstruir lista de notificaciones
-      notifications.forEach(msg => {
-        const li = document.createElement("li");
-        li.innerHTML = `<span class="dropdown-item-text">${msg}</span>`;
-        notifList.appendChild(li);
+    // Agregar nueva notificación
+    function addNotification(title, message, icon = 'bell') {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+      
+      notifications.unshift({
+        title: title,
+        message: message,
+        time: timeStr,
+        read: false,
+        icon: icon
       });
 
-      // Actualizar contador
-      notifCount.textContent = notifications.length;
+      unreadCount++;
+      updateNotificationUI();
+
+      // Animación de campanita
+      const bell = document.getElementById('notificationBell');
+      bell.classList.add('ringing');
+      setTimeout(() => {
+        bell.classList.remove('ringing');
+      }, 500);
+
+      // Limitar a 50 notificaciones
+      if (notifications.length > 50) {
+        notifications = notifications.slice(0, 50);
+      }
+      
+      console.log('🔔 Nueva notificación:', title);
+    }
+
+    // Inicializar cuando el DOM esté listo
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('🚀 Inicializando sistema de notificaciones...');
+      
+      // Inicializar UI
+      updateNotificationUI();
+
+      // Socket.IO
+      socket = io("http://54.226.207.123");
+
+      socket.on("connect", () => {
+        console.log("✅ Conectado al servidor de notificaciones");
+        addNotification(
+          "Conectado", 
+          "Sistema de notificaciones activo",
+          "check-circle"
+        );
+      });
+
+      socket.on("newService", (data) => {
+        console.log("📢 Notificación recibida:", data);
+        addNotification(
+          "Nuevo Servicio", 
+          data.message || "Un nuevo servicio está disponible",
+          "briefcase"
+        );
+      });
+
+      socket.on("disconnect", () => {
+        console.log("❌ Desconectado del servidor");
+        addNotification(
+          "Desconectado", 
+          "Se perdió la conexión con el servidor",
+          "exclamation-triangle"
+        );
+      });
+      
+      console.log('✅ Sistema de notificaciones listo');
     });
   </script>
   
