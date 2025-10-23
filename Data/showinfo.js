@@ -38,6 +38,9 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
 
       console.log(usuario.id)
+      console.log(usuario)
+      console.log(usuario.email)
+      console.log(serviceResp)
 
       if (serviceResp.ok) {
         const servicio = await serviceResp.json(); 
