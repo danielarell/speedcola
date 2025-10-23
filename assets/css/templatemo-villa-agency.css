@@ -1943,3 +1943,24 @@ body {
     width: 100%;
   }
 }
+
+/* MMHHH, yes, pretty containers, yummy */
+
+#services-top3-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* centers the items */
+  gap: 2rem; /* spacing between cards */
+}
+
+#services-top3-container .item {
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  transition: transform 0.2s ease;
+  padding: 1rem;
+}
+
+#services-top3-container .item:hover {
+  transform: translateY(-5px);
+}
