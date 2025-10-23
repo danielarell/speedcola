@@ -61,34 +61,63 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 
-// 🔹 Render del servicio único del proveedor
 function renderUserService(servicio) {
   const container = document.getElementById("service-container") || document.createElement("div");
   container.id = "service-container";
 
+  container.className = "card shadow-sm mt-4"; 
   container.innerHTML = `
-    <div class="item text-center shadow-sm p-3 rounded-3" style="border: 1px solid #ddd; max-width: 500px; margin: 20px auto;">
-        <img src="${servicio.imagen}" alt="${servicio.nombreServicio}" style="max-width: 100%; border-radius: 10px; margin-bottom: 10px;">
-        <h4 class="service-title" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">
-            ${servicio.nombreServicio}
-        </h4>
-        <ul style="text-align: left; margin-top: 10px;">
-            <li><strong>Descripción:</strong> <span>${servicio.descripcion}</span></li>
-            <li><strong>Duración Estimada:</strong> <span>${servicio.duracionEstimada}</span></li>
-            <li><strong>Categoría:</strong> <span>${servicio.nombreCategoria || 'N/A'}</span></li>
-            <li><strong>Rating:</strong> <span>${servicio.ratingProveedor || 'N/A'}</span></li>
-            <li><strong>Precio:</strong> <span>$${Number(servicio.precio).toLocaleString()}</span></li>
-        </ul>
-        <div class="mt-3">
+    <div class="card-body">
+        <h5 class="card-title mb-3" style="font-weight: 600;">My Service Information</h5>
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <p><strong>Nombre del Servicio:</strong> ${servicio.nombreServicio}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Categoría:</strong> ${servicio.nombreCategoria || "N/A"}</p>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <p><strong>Duración Estimada:</strong> ${servicio.duracionEstimada}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Precio:</strong> $${Number(servicio.precio).toLocaleString()}</p>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-12">
+                <p><strong>Descripción:</strong> ${servicio.descripcion}</p>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-12">
+                <p><strong>Imagen (URL):</strong> <a href="${servicio.imagen}" target="_blank">${servicio.imagen}</a></p>
+            </div>
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-6">
+                <p><strong>Proveedor:</strong> ${servicio.nombreProveedor}</p>
+            </div>
+            <div class="col-md-6">
+                <p><strong>Rating:</strong> ${servicio.ratingProveedor || "N/A"}</p>
+            </div>
+        </div>
+
+        <div class="mt-3 text-end">
             <button class="btn btn-sm btn-warning me-2" onclick="editService(${servicio.idServicio})">Editar</button>
             <button class="btn btn-sm btn-danger" onclick="deleteService(${servicio.idServicio})">Eliminar</button>
         </div>
     </div>
   `;
 
-  // Lo inserta debajo del formulario de usuario (si no existía)
   const userSection = document.querySelector(".contact-page .row");
   if (userSection && !document.getElementById("service-container")) {
     userSection.appendChild(container);
   }
 }
+
