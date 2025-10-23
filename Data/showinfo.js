@@ -143,34 +143,40 @@ async function loadCategoriesForModal() {
     }
 }
 
+async function editService(idServicio) {
+  try {
+    const res = await fetch(`/api/services/${idServicio}`, { method: "GET", credentials: "include" });
+    const servicio = await res.json();
 
-function editService(idServicio) {
-  fetch(`/api/services/${idServicio}`, { method: "GET", credentials: "include" })
-    .then(res => res.json())
-    .then(async servicio => {
-      // Llenar campos del modal
-      document.getElementById("editServiceId").value = servicio.idServicio;
-      document.getElementById("editServiceName").value = servicio.nombreServicio;
-      document.getElementById("editServiceDescription").value = servicio.descripcion;
-      document.getElementById("editServicePrice").value = servicio.precio;
-      document.getElementById("editServiceDuration").value = servicio.duracionEstimada;
-      document.getElementById("editServiceImage").value = servicio.imagen;
+    // Llenar campos del modal
+    document.getElementById("editServiceId").value = servicio.idServicio;
+    document.getElementById("editServiceName").value = servicio.nombreServicio;
+    document.getElementById("editServiceDescription").value = servicio.descripcion;
+    document.getElementById("editServicePrice").value = servicio.precio;
+    document.getElementById("editServiceDuration").value = servicio.duracionEstimada;
+    document.getElementById("editServiceImage").value = servicio.imagen;
 
-      // Cargar categorías en el dropdown
-      await loadCategoriesForModal();
+    // Espera a cargar categorías primero
+    await loadCategoriesForModal();
 
-      // Seleccionar la categoría actual del servicio
-      document.getElementById("editServiceCategory").value = servicio.idCategoria;
+    // Asigna la categoría actual **después de cargar opciones**
+    const categorySelect = document.getElementById("editServiceCategory");
+    if (categorySelect) {
+      categorySelect.value = servicio.idCategoria;
+    } else {
+      console.warn("Dropdown de categoría no encontrado en el DOM");
+    }
 
-      // Mostrar el modal
-      const modal = new bootstrap.Modal(document.getElementById('editServiceModal'));
-      modal.show();
-    })
-    .catch(err => {
-      console.error("Error loading service:", err);
-      alert("Error loading service data");
-    });
+    // Mostrar el modal
+    const modal = new bootstrap.Modal(document.getElementById('editServiceModal'));
+    modal.show();
+
+  } catch (err) {
+    console.error("Error loading service:", err);
+    alert("Error loading service data");
+  }
 }
+
 
 
 // Manejar el envío del formulario (PUT)

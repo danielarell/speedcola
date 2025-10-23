@@ -125,7 +125,7 @@ app.get('/api/servicesIndex', async (req, res) => {
     FROM servicios s \
     JOIN usuarios u ON s.idUsuario = u.idUsuario \
     JOIN categoria c ON s.idCategoria = c.idCategoria \
-    WHERE s.ratingProveedor IS NOT NULL \
+    WHERE u.calificacion IS NOT NULL \
     ORDER BY s.precio ASC \
     LIMIT 3;');
     res.json(rows);
@@ -151,7 +151,6 @@ app.get("/api/services/:id", async (req, res) => {
         s.idCategoria, 
         u.nombre AS nombreProveedor, 
         u.calificacion AS ratingProveedor,
-        c.idCategoria, 
         c.descripcion AS nombreCategoria
       FROM servicios s
       LEFT JOIN usuarios u ON s.idUsuario = u.idUsuario
