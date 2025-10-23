@@ -228,12 +228,23 @@ async function handleCreateService(e) {
         const serviceResp = await fetch(`/api/serviceProv/${sessionData.user.email}`, {
             method: "GET",
             credentials: "include"
-        })
-        console.log(serviceResp)        
-        if (serviceResp) {
-            alert("Ya tienes un servicio creado. No puedes crear otro.");
+        });
+
+        // ✅ Verificar si el fetch fue exitoso
+        if (serviceResp.ok) {
+            const servicioExistente = await serviceResp.json();
+            if (servicioExistente) {
+                alert("Ya tienes un servicio creado. No puedes crear otro.");
+                return;
+            }
+        } else if (serviceResp.status !== 404) {
+            // Si no es 404, mostrar error
+            console.error("Error verificando servicio:", serviceResp.status, serviceResp.statusText);
+            alert("Ocurrió un error al verificar tu servicio. Intenta de nuevo.");
             return;
         }
+        // Si es 404, significa que no tiene servicio, seguimos con la creación
+
         
         // Genera los datos para mandar a la DB (Obtenemos email del usuario para luego rescatar el id)
         const formData = new FormData(e.target);
