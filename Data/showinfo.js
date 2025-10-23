@@ -67,24 +67,38 @@ function renderUserService(servicio) {
       <ul class="list-group">
         <li class="list-group-item"><strong>Service Name:</strong> ${servicio.nombreServicio || 'N/A'}</li>
         <li class="list-group-item"><strong>Description:</strong> ${servicio.descripcion || 'N/A'}</li>
-        <li class="list-group-item"><strong>Image Link:</strong> 
-          <a href="${servicio.imagen || '#'}" target="_blank">
-            ${servicio.imagen ? 'View Image' : 'N/A'}
-          </a>
-        </li>
+        <li class="list-group-item"><strong>Image Link:</strong> <a href="${servicio.imagen || '#'}" target="_blank">${servicio.imagen ? 'View Image' : 'N/A'}</a></li>
         <li class="list-group-item"><strong>Estimated Duration:</strong> ${servicio.duracionEstimada || 'N/A'}</li>
         <li class="list-group-item"><strong>Category:</strong> ${servicio.nombreCategoria || 'N/A'}</li>
         <li class="list-group-item"><strong>Rating:</strong> ${servicio.ratingProveedor || 'N/A'}</li>
         <li class="list-group-item"><strong>Price:</strong> $${servicio.precio?.toLocaleString() || '0'}</li>
         <li class="list-group-item"><strong>Service ID:</strong> ${servicio.idServicio}</li>
       </ul>
-      <div class="mt-3 d-flex justify-content-end">
-        <button class="btn btn-sm btn-warning me-2" onclick="editService(${servicio.idServicio})">Edit</button>
-        <button class="btn btn-sm btn-danger" onclick="deleteService(${servicio.idServicio})">Delete</button>
-      </div>
+      <div class="mt-3 d-flex justify-content-end" id="service-buttons-container"></div>
     </div>
   `;
+
+  // Crear botones dinámicos
+  const buttonsContainer = document.getElementById("service-buttons-container");
+
+  // Edit Button
+  const editBtn = document.createElement("button");
+  editBtn.textContent = "Edit";
+  editBtn.className = "btn btn-sm btn-warning me-2";
+  editBtn.style.backgroundColor = "orangered";
+  editBtn.setAttribute("data-bs-toggle", "modal");
+  editBtn.setAttribute("data-bs-target", "#editServiceModal");
+  editBtn.addEventListener("click", () => editService(servicio.idServicio));
+  buttonsContainer.appendChild(editBtn);
+
+  // Delete Button
+  const deleteBtn = document.createElement("button");
+  deleteBtn.textContent = "Delete";
+  deleteBtn.className = "btn btn-sm btn-danger";
+  deleteBtn.addEventListener("click", () => deleteService(servicio.idServicio));
+  buttonsContainer.appendChild(deleteBtn);
 }
+
 
 function editService(idServicio) {
   fetch(`/api/services/${idServicio}`, { method: "GET", credentials: "include" })
