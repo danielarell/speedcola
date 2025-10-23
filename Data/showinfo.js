@@ -30,8 +30,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     items[3].innerHTML = `<strong>Role:</strong> ${usuario.isprovider ? "Proveedor" : "Cliente"}`;
     items[4].innerHTML = `<strong>User ID:</strong> ${usuario.id}`;
 
+
+    if (usuario.isprovider && usuario.service) {
+      renderUserService(usuario.service);
+    }
+
   } catch (error) {
     console.error("Error cargando usuario logeado:", error);
     alert("Ocurrió un error. Intenta de nuevo.");
   }
+
 });
+
+function renderUserService(servicio) {
+  const container = document.createElement("div");
+  container.className = "col-12 mt-4 properties-items";
+
+  container.innerHTML = `
+    <div class="item text-center shadow-sm p-3 rounded-3">
+        <a href="property-details.html">
+            <img src="${servicio.imagen}" alt="${servicio.nombreServicio}" style="max-height: 200px; object-fit: cover;">
+        </a>
+        <h4 class="service-title" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">
+            ${servicio.nombreServicio}
+        </h4>
+        <ul style="text-align: left; margin-top: 10px;">
+            <li>Descripción: <span>${servicio.descripcion}</span></li>
+            <li>Proveedor: <span>${servicio.nombreProveedor}</span></li>
+            <li>Duración Estimada: <span>${servicio.duracionEstimada}</span></li>
+            <li>Categoria: <span>${servicio.nombreCategoria || 'N/A'}</span></li>
+            <li>Rating: <span>${servicio.ratingProveedor || 'N/A'}</span></li>
+            <li>Precio: <span>$${servicio.precio.toLocaleString()}</span></li>
+        </ul>
+        <div class="mt-2">
+            <button class="btn btn-sm btn-warning me-2" onclick="editService(${servicio.idServicio})">Editar</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteService(${servicio.idServicio})">Eliminar</button>
+        </div>
+    </div>
+  `;
+  // Insertar debajo del formulario del usuario
+  document.querySelector(".contact-page .row").appendChild(container);
+}

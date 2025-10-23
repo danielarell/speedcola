@@ -1,4 +1,3 @@
-// ===================== showSingleService.js =====================
 
 document.addEventListener("DOMContentLoaded", async () => {
         
@@ -9,9 +8,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         // Render inicial
         renderTop3Service(servicios);
-
-        // Evento para crear servicio
-        document.querySelector('#createServiceForm').addEventListener('submit', handleCreateService);
 
     } catch (error) {
         console.error("Error cargando servicios:", error);
@@ -24,9 +20,8 @@ function renderTop3Service(list) {
     const container = document.getElementById('services-top3-container');
     container.innerHTML = '';
 
-    // EN DADO CASO que ninugno de los servicios coincida con los filtros, mostraremos este mensaje
     if (list.length === 0) {
-        container.innerHTML = `<p class="text-center mt-4">No se encontraron servicios que coincidan con los filtros.</p>`;
+        container.innerHTML = `<p class="text-center mt-4">No hay Servicios por el momento.</p>`;
         return;
     }
 
@@ -35,7 +30,7 @@ function renderTop3Service(list) {
         const col = document.createElement("div");
         col.className = "col-lg-4 col-md-6 align-self-center mb-30 properties-items";
 
-        // Simple HTML (CAMBIAR EL PRECIO DE LUGAR)
+        // Simple HTML
         col.innerHTML = `
             <div class="item text-center">
                 <a href="property-details.html">
