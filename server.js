@@ -135,7 +135,7 @@ app.get('/api/servicesIndex', async (req, res) => {
   }
 });
 
-// GET - Servicio Unico en Base a ID
+// GET - Servicio Unico en Base a ID del servicio
 app.get("/api/services/:id", async (req, res) => {
   const { id } = req.params;
   try {
@@ -170,7 +170,7 @@ app.get("/api/services/:id", async (req, res) => {
   }
 });
 
-// GET - Servicio Unico en Base a ID
+// GET - Servicio Unico en Base a EMAIL
 app.get("/api/serviceProv/:email", async (req, res) => {
   const { email } = req.params;
   try {
@@ -297,6 +297,16 @@ app.put('/api/services/:id', async (req, res) => {
   }
 });
 
+// DELETE - Eliminar Servicio
+app.delete('/api/services/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM servicios WHERE idServicio = ?', [req.params.id]);
+    res.json({ message: 'Servicio eliminado' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al eliminar' });
+  }
+});
+
 
 
 // POST - Crear usuario
@@ -305,7 +315,7 @@ app.post('/api/users', async (req, res) => {
     const { name, isprovider, email, password, phone, foto } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
     const [result] = await pool.query(
-      'INSERT INTO usuarios (nombre, email, contrasenia, telefono, rol, fotoperfil) VALUES (?, ?, ?, ?, ?, ?)',
+      'INSERT INTO usuarios (nombre, email, contrasenia, telefono, rol, fotoPerfil) VALUES (?, ?, ?, ?, ?, ?)',
       [name, email, hashedPassword, phone, isprovider, foto]
     );
     res.status(201).json({ id: result.insertId, name, email });
@@ -320,7 +330,7 @@ app.put('/api/users/:id', async (req, res) => {
   try {
     const { name, email } = req.body;
     await pool.query(
-      'UPDATE users SET name = ?, email = ? WHERE id = ?',
+      'UPDATE usuarios SET nombre = ?, email = ? WHERE idUsuario = ?',
       [name, email, req.params.id]
     );
     res.json({ message: 'Usuario actualizado' });
@@ -332,7 +342,7 @@ app.put('/api/users/:id', async (req, res) => {
 // DELETE - Eliminar usuario
 app.delete('/api/users/:id', async (req, res) => {
   try {
-    await pool.query('DELETE FROM users WHERE id = ?', [req.params.id]);
+    await pool.query('DELETE FROM usuarios WHERE idUsuario = ?', [req.params.id]);
     res.json({ message: 'Usuario eliminado' });
   } catch (error) {
     res.status(500).json({ error: 'Error al eliminar' });

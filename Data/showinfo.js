@@ -98,7 +98,29 @@ function renderUserService(servicio) {
   const deleteBtn = document.createElement("button");
   deleteBtn.textContent = "Delete";
   deleteBtn.className = "btn btn-sm btn-danger";
-  deleteBtn.addEventListener("click", () => deleteService(servicio.idServicio));
+  deleteBtn.addEventListener("click", async () => {
+    if (!confirm("¿Estás seguro que quieres eliminar este servicio?")) return;
+
+    try {
+      const response = await fetch(`/api/services/${servicio.idServicio}`, {
+        method: "DELETE",
+        credentials: "include"
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Servicio eliminado correctamente");
+        // Opcional: remover la tarjeta del DOM
+        container.remove();
+      } else {
+        alert("Error eliminando servicio: " + (data.error || "Unknown error"));
+      }
+    } catch (error) {
+      console.error("Error eliminando servicio:", error);
+      alert("Error eliminando servicio. Intenta nuevamente.");
+    }
+  });
   buttonsContainer.appendChild(deleteBtn);
 }
 
@@ -128,7 +150,7 @@ function editService(idServicio) {
     .then(async servicio => {
       // Llenar campos del modal
       document.getElementById("editServiceId").value = servicio.idServicio;
-      document.getElementById("editServiceName").value = servicio.nombre;
+      document.getElementById("editServiceName").value = servicio.nombreServicio;
       document.getElementById("editServiceDescription").value = servicio.descripcion;
       document.getElementById("editServicePrice").value = servicio.precio;
       document.getElementById("editServiceDuration").value = servicio.duracionEstimada;
