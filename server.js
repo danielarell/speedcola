@@ -155,7 +155,7 @@ app.get("/api/services/:email", async (req, res) => {
       FROM servicios s
       LEFT JOIN usuarios u ON s.idUsuario = u.idUsuario
       LEFT JOIN categoria c ON s.idCategoria = c.idCategoria
-      WHERE s.email = ?;
+      WHERE u.email = ?;
       `,
       [email]
     );
