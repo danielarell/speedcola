@@ -416,9 +416,12 @@ https://templatemo.com/tm-591-villa-agency
           </div>
         </div>
       </div>
-      <div class="row" id="services-container">
-        <!-- SERVICIOS -->
+      <div class="section properties py-4">
+      <div class="container">
+        <!-- Contenedor dinámico del servicio -->
+        <div id="services-top3-container"></div>
       </div>
+    </div>
     </div>
   </div>
 
@@ -516,38 +519,7 @@ https://templatemo.com/tm-591-villa-agency
   <script src="Data/login.js"></script>
 
   <script src="Data/register.js"></script>
-
-  <script>
-    fetch('services.json')
-      .then(response => response.json())
-      .then(data => {
-        const container = document.getElementById('services-container');
-        // Solo tomamos los 2 primeros servicios
-        data.slice(0, 3).forEach(service => {
-          const serviceHTML = `
-            <div class="col-lg-4 col-md-6">
-              <div class="item">
-                <a href="property-details.html"><img src="${service.imagen}" alt=""></a>
-                <span class="category">${service.categoria}</span>
-                <h6>${service.precio}</h6>
-                <h4><a href="property-details.html">${service.ubicacion}</a></h4>
-                <ul>
-                  <li>Pay method: <span>${service.payMethod}</span></li>
-                  <li>Provider: <span>${service.provider}</span></li>
-                  <li>Rating: <span>${service.rating}</span></li>
-                  <li>Review: <span>${service.review}</span></li>
-                </ul>
-                <div class="main-button">
-                  <a href="property-details.html">Schedule a visit</a>
-                </div>
-              </div>
-            </div>
-          `;
-          container.innerHTML += serviceHTML;
-        });
-      })
-      .catch(error => console.error('Error cargando servicios:', error));
-  </script>
-
+  <script src="Data/showTopServicesIndex.js"></script>
+  
   </body>
 </html>
