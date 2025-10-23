@@ -1946,7 +1946,7 @@ body {
 
 /* MMHHH, yes, pretty containers, yummy */
 
-/* === TOP 3 SERVICES FIXED LAYOUT === */
+/* === TOP 3 SERVICES CLEAN LAYOUT === */
 #services-top3-container {
   display: flex;
   justify-content: center;
@@ -1960,9 +1960,21 @@ body {
   max-width: 100%;
   box-sizing: border-box;
   scroll-behavior: smooth;
+  scrollbar-width: none;        /* Firefox */
 }
 
-/* Prevent card edges from being cut off */
+/* Hide scrollbar (Chrome, Edge, Safari) */
+#services-top3-container::-webkit-scrollbar {
+  display: none;
+}
+
+/* Prevent edges from being cut off */
+#services-top3-container::before,
+#services-top3-container::after {
+  content: '';
+  flex: 0 0 1rem;
+}
+
 #services-top3-container .item {
   flex: 0 0 320px;
   background: #fff;
@@ -1977,9 +1989,3 @@ body {
   transform: translateY(-6px);
 }
 
-/* Allow a little breathing space on left/right edges */
-#services-top3-container::before,
-#services-top3-container::after {
-  content: '';
-  flex: 0 0 1rem;
-}
