@@ -206,7 +206,7 @@
                     return;
                 }
                 
-                currentUserId = data.user.idUsuario;
+                currentUserId = data;
                 console.log(currentUserId)
                 // Determinar si el usuario actual es proveedor
                 const isProvider = data.user.isprovider === 1 || data.user.isprovider === true;
