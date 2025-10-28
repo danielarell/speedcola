@@ -470,7 +470,9 @@ async function start() {
       
       const { toUserId, message, isProvider } = data;
       const fromUserId = currentUserId;
-      
+      console.log("DESDE SERVIDOR")
+      console.log(toUserId, message)
+      console.log(currentUserId)
       try {
         // 1. Buscar o crear el chat entre estos dos usuarios
         let chatId;
