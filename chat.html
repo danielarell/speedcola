@@ -273,10 +273,6 @@
             // Recibir mensajes nuevos
             socket.on('new_message', (data) => {
                 displayMessage(data.message, 'received', data.timestamp, data.from);
-                socket.emit('mark_as_read', {
-                    fromUserId: data.from,
-                    toUserId: currentUserId
-                });
             });
 
             // Confirmar mensaje enviado

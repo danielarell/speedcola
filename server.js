@@ -418,7 +418,7 @@ app.get("/api/socket-token", (req, res) => {
   }
 
   res.json({ token }); // Devuelve el token al frontend
-});;
+});
 
 // ========================== SERVIDOR Y SOCKETS ==========================
 
@@ -463,88 +463,116 @@ async function start() {
 
     // ========== ENVIAR MENSAJE PRIVADO ==========
     socket.on("send_private_message", async (data) => {
-      const { toUserId, message } = data;
-      const fromUserId = currentUserId; // Usar el ID autenticado
-      
-      // Guardar mensaje en BD (opcional pero recomendado)
-      try {
-        await pool.query(
-          'INSERT INTO mensajes (idEmisor, idReceptor, mensaje, fechaEnvio) VALUES (?, ?, ?, NOW())',
-          [fromUserId, toUserId, message]
-        );
-      } catch (error) {
-        console.error('Error guardando mensaje:', error);
+      if (!isAuthenticated) {
+        socket.emit('error', { message: 'No autenticado' });
+        return;
       }
-
-      // Enviar mensaje si el destinatario está conectado
-      const recipientSocketId = connectedUsers.get(toUserId);
       
-      if (recipientSocketId) {
-        io.to(recipientSocketId).emit('new_message', {
-          from: fromUserId,
-          message: message,
-          timestamp: new Date()
-        });
+      const { toUserId, message, isProvider } = data;
+      const fromUserId = currentUserId;
+      
+      try {
+        // 1. Buscar o crear el chat entre estos dos usuarios
+        let chatId;
         
-        // Confirmar al remitente
-        socket.emit('message_delivered', {
-          to: toUserId,
-          message: message,
-          timestamp: new Date(),
-          status: 'delivered'
-        });
-      } else {
-        // Usuario offline - notificar al remitente
-        socket.emit('message_delivered', {
-          to: toUserId,
-          message: message,
-          timestamp: new Date(),
-          status: 'offline'
-        });
+        // Determinar quién es cliente y quién proveedor
+        const idCliente = isProvider ? toUserId : fromUserId;
+        const idProveedor = isProvider ? fromUserId : toUserId;
+        
+        const [existingChats] = await pool.query(
+          'SELECT idChat FROM chats WHERE idCliente = ? AND idProveedor = ?',
+          [idCliente, idProveedor]
+        );
+        
+        if (existingChats.length > 0) {
+          chatId = existingChats[0].idChat;
+        } else {
+          // Crear nuevo chat
+          const [newChat] = await pool.query(
+            'INSERT INTO chats (idCliente, idProveedor) VALUES (?, ?)',
+            [idCliente, idProveedor]
+          );
+          chatId = newChat.insertId;
+        }
+        
+        // 2. Guardar el mensaje
+        await pool.query(
+          'INSERT INTO mensajes (idChat, idUsuario, contenido) VALUES (?, ?, ?)',
+          [chatId, fromUserId, message]
+        );
+        
+        // 3. Enviar mensaje si el destinatario está conectado
+        const recipientSocketId = connectedUsers.get(toUserId);
+        
+        if (recipientSocketId) {
+          io.to(recipientSocketId).emit('new_message', {
+            from: fromUserId,
+            message: message,
+            timestamp: new Date()
+          });
+          
+          socket.emit('message_delivered', {
+            to: toUserId,
+            message: message,
+            timestamp: new Date(),
+            status: 'delivered'
+          });
+        } else {
+          socket.emit('message_delivered', {
+            to: toUserId,
+            message: message,
+            timestamp: new Date(),
+            status: 'offline'
+          });
+        }
+      } catch (error) {
+        console.error('Error enviando mensaje:', error);
+        socket.emit('error', { message: 'Error al enviar mensaje' });
       }
     });
 
     // ========== OBTENER HISTORIAL DE CHAT ==========
     socket.on("get_chat_history", async (data) => {
-      const { userId1, userId2 } = data;
+      const { userId1, userId2, isProvider } = data;
       
       try {
+        // Determinar quién es cliente y quién proveedor
+        const idCliente = isProvider ? userId2 : userId1;
+        const idProveedor = isProvider ? userId1 : userId2;
+        
+        // Buscar el chat
+        const [chats] = await pool.query(
+          'SELECT idChat FROM chats WHERE idCliente = ? AND idProveedor = ?',
+          [idCliente, idProveedor]
+        );
+        
+        if (chats.length === 0) {
+          socket.emit('chat_history', []);
+          return;
+        }
+        
+        const chatId = chats[0].idChat;
+        
+        // Obtener mensajes del chat
         const [messages] = await pool.query(
           `SELECT 
             m.idMensaje,
-            m.idEmisor,
-            m.idReceptor,
-            m.mensaje,
-            m.fechaEnvio,
-            m.leido,
-            u.nombre as nombreEmisor
+            m.idUsuario,
+            m.contenido,
+            m.timestampEnvio,
+            u.nombre as nombreUsuario
           FROM mensajes m
-          JOIN usuarios u ON m.idEmisor = u.idUsuario
-          WHERE (m.idEmisor = ? AND m.idReceptor = ?)
-             OR (m.idEmisor = ? AND m.idReceptor = ?)
-          ORDER BY m.fechaEnvio ASC
+          JOIN usuarios u ON m.idUsuario = u.idUsuario
+          WHERE m.idChat = ?
+          ORDER BY m.timestampEnvio ASC
           LIMIT 100`,
-          [userId1, userId2, userId2, userId1]
+          [chatId]
         );
         
         socket.emit('chat_history', messages);
       } catch (error) {
         console.error('Error obteniendo historial:', error);
         socket.emit('chat_history', []);
-      }
-    });
-
-    // ========== MARCAR MENSAJES COMO LEÍDOS ==========
-    socket.on("mark_as_read", async (data) => {
-      const { fromUserId, toUserId } = data;
-      
-      try {
-        await pool.query(
-          'UPDATE mensajes SET leido = 1 WHERE idEmisor = ? AND idReceptor = ? AND leido = 0',
-          [fromUserId, toUserId]
-        );
-      } catch (error) {
-        console.error('Error marcando como leído:', error);
       }
     });
 
