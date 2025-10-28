@@ -411,22 +411,140 @@ app.get('/api/check-session', authenticateToken, (req, res) => {
 
 // ========================== SERVIDOR Y SOCKETS ==========================
 
+// Almacenar usuarios conectados: Map(userId -> socketId)
+const connectedUsers = new Map();
+
 async function start() {
   await initDB();
   
   const server = http.createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: "*", // o tu dominio si ya lo tienes
+      origin: "*",
       methods: ["GET", "POST"]
     }
   });
 
   io.on("connection", (socket) => {
     console.log("🟢 Usuario conectado al socket:", socket.id);
+    
+    let currentUserId = null;
+    let isAuthenticated = false;
 
+    // ========== AUTENTICAR USUARIO ==========
+    socket.on("authenticate", async (token) => {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mi_clave_secreta');
+        currentUserId = decoded.id;
+        isAuthenticated = true;
+        
+        // Registrar automáticamente para chat
+        connectedUsers.set(currentUserId, socket.id);
+        console.log(`👤 Usuario ${currentUserId} autenticado y registrado`);
+        
+        socket.emit('authenticated', { userId: currentUserId, name: decoded.name });
+      } catch (error) {
+        console.error('Error de autenticación:', error);
+        socket.emit('auth_error', { message: 'Token inválido' });
+        socket.disconnect();
+      }
+    });
+
+    // ========== ENVIAR MENSAJE PRIVADO ==========
+    socket.on("send_private_message", async (data) => {
+      const { toUserId, message } = data;
+      const fromUserId = currentUserId; // Usar el ID autenticado
+      
+      // Guardar mensaje en BD (opcional pero recomendado)
+      try {
+        await pool.query(
+          'INSERT INTO mensajes (idEmisor, idReceptor, mensaje, fechaEnvio) VALUES (?, ?, ?, NOW())',
+          [fromUserId, toUserId, message]
+        );
+      } catch (error) {
+        console.error('Error guardando mensaje:', error);
+      }
+
+      // Enviar mensaje si el destinatario está conectado
+      const recipientSocketId = connectedUsers.get(toUserId);
+      
+      if (recipientSocketId) {
+        io.to(recipientSocketId).emit('new_message', {
+          from: fromUserId,
+          message: message,
+          timestamp: new Date()
+        });
+        
+        // Confirmar al remitente
+        socket.emit('message_delivered', {
+          to: toUserId,
+          message: message,
+          timestamp: new Date(),
+          status: 'delivered'
+        });
+      } else {
+        // Usuario offline - notificar al remitente
+        socket.emit('message_delivered', {
+          to: toUserId,
+          message: message,
+          timestamp: new Date(),
+          status: 'offline'
+        });
+      }
+    });
+
+    // ========== OBTENER HISTORIAL DE CHAT ==========
+    socket.on("get_chat_history", async (data) => {
+      const { userId1, userId2 } = data;
+      
+      try {
+        const [messages] = await pool.query(
+          `SELECT 
+            m.idMensaje,
+            m.idEmisor,
+            m.idReceptor,
+            m.mensaje,
+            m.fechaEnvio,
+            m.leido,
+            u.nombre as nombreEmisor
+          FROM mensajes m
+          JOIN usuarios u ON m.idEmisor = u.idUsuario
+          WHERE (m.idEmisor = ? AND m.idReceptor = ?)
+             OR (m.idEmisor = ? AND m.idReceptor = ?)
+          ORDER BY m.fechaEnvio ASC
+          LIMIT 100`,
+          [userId1, userId2, userId2, userId1]
+        );
+        
+        socket.emit('chat_history', messages);
+      } catch (error) {
+        console.error('Error obteniendo historial:', error);
+        socket.emit('chat_history', []);
+      }
+    });
+
+    // ========== MARCAR MENSAJES COMO LEÍDOS ==========
+    socket.on("mark_as_read", async (data) => {
+      const { fromUserId, toUserId } = data;
+      
+      try {
+        await pool.query(
+          'UPDATE mensajes SET leido = 1 WHERE idEmisor = ? AND idReceptor = ? AND leido = 0',
+          [fromUserId, toUserId]
+        );
+      } catch (error) {
+        console.error('Error marcando como leído:', error);
+      }
+    });
+
+    // ========== DESCONEXIÓN ==========
     socket.on("disconnect", () => {
-      console.log("🔴 Usuario desconectado:", socket.id);
+      if (currentUserId) {
+        connectedUsers.delete(currentUserId);
+        console.log(`🔴 Usuario ${currentUserId} desconectado`);
+      } else {
+        console.log("🔴 Usuario desconectado:", socket.id);
+      }
     });
   });
 
