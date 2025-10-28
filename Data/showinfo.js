@@ -237,6 +237,30 @@ async function handleEditService(e) {
 // Asigna el handler al formulario del modal
 document.getElementById("editServiceForm").addEventListener("submit", handleEditService);
 
+// Mostrar botón de chats si es proveedor
+async function checkIfProvider() {
+    try {
+        const response = await fetch('/api/check-session', {
+            credentials: 'include'
+        });
+        const data = await response.json();
+        
+        if (data.loggedIn && (data.user.isprovider === 1 || data.user.isprovider === true)) {
+            document.getElementById('providerChatButton').style.display = 'block';
+        }
+    } catch (error) {
+        console.error('Error verificando proveedor:', error);
+    }
+}
+
+// Ir a la página de chats
+function goToChats() {
+    window.location.href = '/chats.html';
+}
+
+// Llamar al cargar la página
+window.addEventListener('DOMContentLoaded', checkIfProvider);
+
 
 
 

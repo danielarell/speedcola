@@ -405,6 +405,88 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// GET - Obtener todos los chats de un proveedor
+app.get('/api/chats/provider/:providerId', async (req, res) => {
+  try {
+    const providerId = parseInt(req.params.providerId);
+    
+    const [chats] = await pool.query(
+      `SELECT 
+        c.idChat,
+        c.idCliente,
+        c.idProveedor,
+        cliente.nombre AS nombreCliente,
+        cliente.fotoPerfil AS fotoCliente,
+        cliente.email AS emailCliente,
+        (SELECT m.contenido 
+         FROM mensajes m 
+         WHERE m.idChat = c.idChat 
+         ORDER BY m.timestampEnvio DESC 
+         LIMIT 1) AS ultimoMensaje,
+        (SELECT m.timestampEnvio 
+         FROM mensajes m 
+         WHERE m.idChat = c.idChat 
+         ORDER BY m.timestampEnvio DESC 
+         LIMIT 1) AS fechaUltimoMensaje,
+        (SELECT COUNT(*) 
+         FROM mensajes m 
+         WHERE m.idChat = c.idChat 
+         AND m.idUsuario != ?
+      FROM chats c
+      JOIN usuarios cliente ON c.idCliente = cliente.idUsuario
+      WHERE c.idProveedor = ?
+      ORDER BY fechaUltimoMensaje DESC`,
+      [providerId, providerId]
+    );
+    
+    res.json(chats);
+  } catch (error) {
+    console.error('Error obteniendo chats del proveedor:', error);
+    res.status(500).json({ error: 'Error al obtener chats' });
+  }
+});
+
+// GET - Obtener todos los chats de un cliente
+app.get('/api/chats/client/:clientId', async (req, res) => {
+  try {
+    const clientId = parseInt(req.params.clientId);
+    
+    const [chats] = await pool.query(
+      `SELECT 
+        c.idChat,
+        c.idCliente,
+        c.idProveedor,
+        proveedor.nombre AS nombreProveedor,
+        proveedor.fotoPerfil AS fotoProveedor,
+        proveedor.email AS emailProveedor,
+        (SELECT m.contenido 
+         FROM mensajes m 
+         WHERE m.idChat = c.idChat 
+         ORDER BY m.timestampEnvio DESC 
+         LIMIT 1) AS ultimoMensaje,
+        (SELECT m.timestampEnvio 
+         FROM mensajes m 
+         WHERE m.idChat = c.idChat 
+         ORDER BY m.timestampEnvio DESC 
+         LIMIT 1) AS fechaUltimoMensaje,
+        (SELECT COUNT(*) 
+         FROM mensajes m 
+         WHERE m.idChat = c.idChat 
+         AND m.idUsuario != ?
+      FROM chats c
+      JOIN usuarios proveedor ON c.idProveedor = proveedor.idUsuario
+      WHERE c.idCliente = ?
+      ORDER BY fechaUltimoMensaje DESC`,
+      [clientId, clientId]
+    );
+    
+    res.json(chats);
+  } catch (error) {
+    console.error('Error obteniendo chats del cliente:', error);
+    res.status(500).json({ error: 'Error al obtener chats' });
+  }
+});
+
 app.get('/api/check-session', authenticateToken, (req, res) => {
   // Si el middleware pasa, significa que el usuario está logeado
   res.json({ loggedIn: true, user: req.user });
