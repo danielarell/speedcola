@@ -146,6 +146,7 @@ app.get("/api/services/:id", async (req, res) => {
       `
       SELECT 
         s.idServicio, 
+        s.idUsuario,
         s.nombre AS nombreServicio, 
         s.descripcion, 
         s.precio, 

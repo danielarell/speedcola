@@ -1,349 +1,393 @@
 <!-- chat.html -->
 <!DOCTYPE html>
-    <html lang="es">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Chat Privado</title>
-            <style>
-                * {
-                    margin: 0;
-                    padding: 0;
-                    box-sizing: border-box;
-                }
-                body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    background: #f0f2f5;
-                }
-                .chat-container {
-                    max-width: 900px;
-                    margin: 20px auto;
-                    background: white;
-                    border-radius: 10px;
-                    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-                    overflow: hidden;
-                    height: 90vh;
-                    display: flex;
-                    flex-direction: column;
-                }
-                .chat-header {
-                    background: #ff9d00;
-                    color: white;
-                    padding: 15px 20px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: space-between;
-                }
-                .chat-with {
-                    font-size: 18px;
-                    font-weight: bold;
-                }
-                .online-status {
-                    font-size: 12px;
-                    opacity: 0.8;
-                }
-                .online-indicator {
-                    display: inline-block;
-                    width: 8px;
-                    height: 8px;
-                    border-radius: 50%;
-                    background: #bb9550;
-                    margin-right: 5px;
-                }
-                .offline-indicator {
-                    background: #f44336;
-                }
-                #messages {
-                    flex: 1;
-                    overflow-y: auto;
-                    padding: 20px;
-                    background: #e5ddd5;
-                }
-                .message {
-                    margin: 10px 0;
-                    display: flex;
-                    animation: fadeIn 0.3s;
-                }
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(10px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
-                .message.sent {
-                    justify-content: flex-end;
-                }
-                .message-bubble {
-                    max-width: 60%;
-                    padding: 10px 15px;
-                    border-radius: 10px;
-                    position: relative;
-                    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-                }
-                .message.sent .message-bubble {
-                    background: #dcf8c6;
-                    border-bottom-right-radius: 0;
-                }
-                .message.received .message-bubble {
-                    background: white;
-                    border-bottom-left-radius: 0;
-                }
-                .message-text {
-                    word-wrap: break-word;
-                    margin-bottom: 5px;
-                }
-                .message-time {
-                    font-size: 11px;
-                    color: #667;
-                    text-align: right;
-                }
-                .chat-input-container {
-                    padding: 15px;
-                    background: #f0f0f0;
-                    display: flex;
-                    gap: 10px;
-                    border-top: 1px solid #ddd;
-                }
-                #messageInput {
-                    flex: 1;
-                    padding: 12px 15px;
-                    border: 1px solid #ddd;
-                    border-radius: 25px;
-                    font-size: 14px;
-                    outline: none;
-                }
-                #messageInput:focus {
-                    border-color: #ff8d0a;
-                }
-                #sendBtn {
-                    background: #ff8d0a;
-                    color: white;
-                    border: none;
-                    padding: 12px 25px;
-                    border-radius: 25px;
-                    cursor: pointer;
-                    font-weight: bold;
-                    transition: background 0.3s;
-                }
-                #sendBtn:hover {
-                    background: #ff8d0a;
-                }
-                #sendBtn:disabled {
-                    background: #ccc;
-                    cursor: not-allowed;
-                }
-                .typing-indicator {
-                    padding: 10px 20px;
-                    font-size: 13px;
-                    color: #667;
-                    font-style: italic;
-                }
-                .offline-notice {
-                    background: #ff9800;
-                    color: white;
-                    padding: 10px;
-                    text-align: center;
-                    font-size: 14px;
-                }
-                .no-messages {
-                    text-align: center;
-                    color: #667;
-                    padding: 50px;
-                    font-size: 14px;
-                }
-            </style>
-        </head>
-    <body>
-        <div class="chat-container">
-            <div class="chat-header">
-                <div>
-                    <div class="chat-with" id="chatWithName">Chat</div>
-                    <div class="online-status">
-                        <span id="onlineIndicator" class="online-indicator"></span>
-                        <span id="onlineStatus">Conectando...</span>
-                    </div>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Privado</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+        }
+        .chat-container {
+            max-width: 900px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background: #075e54;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .chat-with {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .online-status {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        .online-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4caf50;
+            margin-right: 5px;
+        }
+        .offline-indicator {
+            background: #f44336;
+        }
+        #messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #e5ddd5;
+        }
+        .message {
+            margin: 10px 0;
+            display: flex;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .message.sent {
+            justify-content: flex-end;
+        }
+        .message-bubble {
+            max-width: 60%;
+            padding: 10px 15px;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .message.sent .message-bubble {
+            background: #dcf8c6;
+            border-bottom-right-radius: 0;
+        }
+        .message.received .message-bubble {
+            background: white;
+            border-bottom-left-radius: 0;
+        }
+        .message-text {
+            word-wrap: break-word;
+            margin-bottom: 5px;
+        }
+        .message-time {
+            font-size: 11px;
+            color: #667;
+            text-align: right;
+        }
+        .chat-input-container {
+            padding: 15px;
+            background: #f0f0f0;
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #ddd;
+        }
+        #messageInput {
+            flex: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+        }
+        #messageInput:focus {
+            border-color: #075e54;
+        }
+        #sendBtn {
+            background: #075e54;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        #sendBtn:hover {
+            background: #064e47;
+        }
+        #sendBtn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .typing-indicator {
+            padding: 10px 20px;
+            font-size: 13px;
+            color: #667;
+            font-style: italic;
+        }
+        .offline-notice {
+            background: #ff9800;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+        }
+        .no-messages {
+            text-align: center;
+            color: #667;
+            padding: 50px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div>
+                <div class="chat-with" id="chatWithName">Chat</div>
+                <div class="online-status">
+                    <span id="onlineIndicator" class="online-indicator"></span>
+                    <span id="onlineStatus">Conectando...</span>
                 </div>
             </div>
-            
-            <div id="messages">
-                <div class="no-messages">No hay mensajes aún. ¡Inicia la conversación!</div>
-            </div>
-            
-            <div class="chat-input-container">
-                <input 
-                    type="text" 
-                    id="messageInput" 
-                    placeholder="Escribe un mensaje..."
-                    onkeypress="if(event.key==='Enter') sendMessage()">
-                <button id="sendBtn" onclick="sendMessage()">Enviar</button>
-            </div>
         </div>
+        
+        <div id="messages">
+            <div class="no-messages">No hay mensajes aún. ¡Inicia la conversación!</div>
+        </div>
+        
+        <div class="chat-input-container">
+            <input 
+                type="text" 
+                id="messageInput" 
+                placeholder="Escribe un mensaje..."
+                onkeypress="if(event.key==='Enter') sendMessage()">
+            <button id="sendBtn" onclick="sendMessage()">Enviar</button>
+        </div>
+    </div>
 
-        <script src="/socket.io/socket.io.js"></script>
-        <script>
-            let socket;
-            let currentUserId; // Se obtendrá del servidor automáticamente
-            let targetUserId;
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket;
+        let currentUserId;
+        let targetUserId;
 
-            // Obtener IDs de URL
-            const urlParams = new URLSearchParams(window.location.search);
-            targetUserId = urlParams.get('to');
+        // Obtener IDs de URL
+        const urlParams = new URLSearchParams(window.location.search);
+        targetUserId = urlParams.get('to');
 
-            // Inicializar chat
-            async function initChat() {
-                if (!targetUserId) {
-                    alert('Error: No se especificó destinatario');
+        // Obtener token de la cookie
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) return parts.pop().split(';').shift();
+        }
+
+        // Inicializar chat
+        async function initChat() {
+            if (!targetUserId) {
+                alert('Error: No se especificó destinatario');
+                return;
+            }
+
+            // Verificar sesión primero usando tu endpoint existente
+            try {
+                const response = await fetch('/api/check-session', {
+                    credentials: 'include'
+                });
+                const data = await response.json();
+                
+                if (!data.loggedIn) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+                
+                currentUserId = data.user.id;
+                // Determinar si el usuario actual es proveedor
+                const isProvider = data.user.isprovider === 1 || data.user.isprovider === true;
+                
+                console.log('Usuario autenticado:', currentUserId, 'Es proveedor:', isProvider);
+                
+                // Guardar si es proveedor para usarlo después
+                window.isCurrentUserProvider = isProvider;
+                
+                // Ahora conectar al socket
+                connectSocket();
+                
+            } catch (error) {
+                console.error('Error verificando sesión:', error);
+                window.location.href = '/login.html';
+            }
+        }
+
+        function connectSocket() {
+            socket = io();
+
+            socket.on('connect', () => {
+                console.log('✅ Conectado al socket');
+                
+                // Autenticar con el token
+                const token = getCookie('token');
+                socket.emit('authenticate', token);
+            });
+
+            socket.on('authenticated', (data) => {
+                console.log('✅ Autenticado en socket');
+                document.getElementById('onlineStatus').textContent = 'En línea';
+                document.getElementById('onlineIndicator').classList.remove('offline-indicator');
+                
+                // Cargar historial
+                loadChatHistory();
+            });
+
+            socket.on('auth_error', (data) => {
+                alert('Error de autenticación: ' + data.message);
+                window.location.href = '/login.html';
+            });
+
+            socket.on('disconnect', () => {
+                console.log('❌ Desconectado del socket');
+                document.getElementById('onlineStatus').textContent = 'Desconectado';
+                document.getElementById('onlineIndicator').classList.add('offline-indicator');
+            });
+
+            // Recibir mensajes nuevos
+            socket.on('new_message', (data) => {
+                displayMessage(data.message, 'received', data.timestamp, data.from);
+                // Marcar como leído
+                socket.emit('mark_as_read', {
+                    fromUserId: data.from,
+                    toUserId: currentUserId
+                });
+            });
+
+            // Confirmar mensaje enviado
+            socket.on('message_delivered', (data) => {
+                if (data.status === 'offline') {
+                    showNotification('Usuario no conectado. El mensaje se entregará cuando se conecte.');
+                }
+            });
+
+            // Recibir historial
+            socket.on('chat_history', (messages) => {
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.innerHTML = '';
+                
+                if (messages.length === 0) {
+                    messagesDiv.innerHTML = '<div class="no-messages">No hay mensajes aún. ¡Inicia la conversación!</div>';
                     return;
                 }
 
-                // Conectar socket (la autenticación es automática desde la cookie)
-                socket = io();
-
-                socket.on('connect', () => {
-                    console.log('✅ Conectado al socket');
-                    // Ya NO necesitas registrar manualmente
-                    document.getElementById('onlineStatus').textContent = 'En línea';
-                    document.getElementById('onlineIndicator').classList.remove('offline-indicator');
-                    
-                    // Obtener ID del usuario actual
-                    socket.emit('get_my_id');
+                messages.forEach(msg => {
+                    const type = msg.idUsuario == currentUserId ? 'sent' : 'received';
+                    displayMessage(msg.contenido, type, msg.timestampEnvio, msg.idUsuario);
                 });
+            });
 
-                socket.on('your_id', (userId) => {
-                    currentUserId = userId;
-                    console.log('Mi ID:', currentUserId);
-                    // Cargar historial después de obtener el ID
-                    loadChatHistory();
-                });
+            // Obtener nombre del destinatario
+            fetchTargetUserName();
+        }
 
-                socket.on('disconnect', () => {
-                    console.log('❌ Desconectado del socket');
-                    document.getElementById('onlineStatus').textContent = 'Desconectado';
-                    document.getElementById('onlineIndicator').classList.add('offline-indicator');
-                });
+        // Cargar historial de chat
+        function loadChatHistory() {
+            socket.emit('get_chat_history', {
+                userId1: currentUserId,
+                userId2: targetUserId,
+                isProvider: window.isCurrentUserProvider
+            });
+        }
 
-                // Recibir mensajes nuevos
-                socket.on('new_message', (data) => {
-                    displayMessage(data.message, 'received', data.timestamp, data.from);
-                    // Marcar como leído
-                    socket.emit('mark_as_read', {
-                        fromUserId: data.from,
-                        toUserId: currentUserId
-                    });
-                });
-
-                // Confirmar mensaje enviado
-                socket.on('message_delivered', (data) => {
-                    if (data.status === 'offline') {
-                        showNotification('Usuario no conectado. El mensaje se entregará cuando se conecte.');
-                    }
-                });
-
-                // Recibir historial
-                socket.on('chat_history', (messages) => {
-                    const messagesDiv = document.getElementById('messages');
-                    messagesDiv.innerHTML = '';
-                    
-                    if (messages.length === 0) {
-                        messagesDiv.innerHTML = '<div class="no-messages">No hay mensajes aún. ¡Inicia la conversación!</div>';
-                        return;
-                    }
-
-                    messages.forEach(msg => {
-                        const type = msg.idEmisor == currentUserId ? 'sent' : 'received';
-                        displayMessage(msg.mensaje, type, msg.fechaEnvio, msg.idEmisor);
-                    });
-                });
-
-                // Obtener nombre del destinatario
-                fetchTargetUserName();
-            }
-
-            // Cargar historial de chat
-            function loadChatHistory() {
-                socket.emit('get_chat_history', {
-                    userId1: currentUserId,
-                    userId2: targetUserId
-                });
-            }
-
-            // Obtener nombre del usuario destinatario
-            async function fetchTargetUserName() {
-                try {
-                    const response = await fetch(`/api/users`);
-                    const users = await response.json();
-                    const targetUser = users.find(u => u.idUsuario == targetUserId);
-                    if (targetUser) {
-                        document.getElementById('chatWithName').textContent = `Chat con ${targetUser.nombre}`;
-                    }
-                } catch (error) {
-                    console.error('Error obteniendo nombre:', error);
+        // Obtener nombre del usuario destinatario
+        async function fetchTargetUserName() {
+            try {
+                const response = await fetch(`/api/users`);
+                const users = await response.json();
+                const targetUser = users.find(u => u.idUsuario == targetUserId);
+                if (targetUser) {
+                    document.getElementById('chatWithName').textContent = `Chat con ${targetUser.nombre}`;
                 }
+            } catch (error) {
+                console.error('Error obteniendo nombre:', error);
             }
+        }
 
-            // Enviar mensaje
-            function sendMessage() {
-                const input = document.getElementById('messageInput');
-                const message = input.value.trim();
-                
-                if (!message || !socket || !currentUserId) return;
+        // Enviar mensaje
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message || !socket || !currentUserId) return;
 
-                // Enviar al servidor (fromUserId se obtiene automáticamente en el servidor)
-                socket.emit('send_private_message', {
-                    toUserId: targetUserId,
-                    message: message
-                });
+            // Enviar al servidor
+            socket.emit('send_private_message', {
+                toUserId: targetUserId,
+                message: message,
+                isProvider: window.isCurrentUserProvider
+            });
 
-                // Mostrar en UI inmediatamente
-                displayMessage(message, 'sent', new Date(), currentUserId);
-                
-                input.value = '';
-            }
+            // Mostrar en UI inmediatamente
+            displayMessage(message, 'sent', new Date(), currentUserId);
+            
+            input.value = '';
+        }
 
-            // Mostrar mensaje en la UI
-            function displayMessage(text, type, timestamp, fromUserId) {
-                const messagesDiv = document.getElementById('messages');
-                
-                // Remover mensaje de "no hay mensajes"
-                const noMessages = messagesDiv.querySelector('.no-messages');
-                if (noMessages) noMessages.remove();
-                
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${type}`;
-                
-                const time = new Date(timestamp).toLocaleTimeString('es', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
-                
-                messageDiv.innerHTML = `
-                    <div class="message-bubble">
-                        <div class="message-text">${escapeHtml(text)}</div>
-                        <div class="message-time">${time}</div>
-                    </div>
-                `;
-                
-                messagesDiv.appendChild(messageDiv);
-                messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            }
+        // Mostrar mensaje en la UI
+        function displayMessage(text, type, timestamp, fromUserId) {
+            const messagesDiv = document.getElementById('messages');
+            
+            // Remover mensaje de "no hay mensajes"
+            const noMessages = messagesDiv.querySelector('.no-messages');
+            if (noMessages) noMessages.remove();
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            
+            const time = new Date(timestamp).toLocaleTimeString('es', { 
+                hour: '2-digit', 
+                minute: '2-digit' 
+            });
+            
+            messageDiv.innerHTML = `
+                <div class="message-bubble">
+                    <div class="message-text">${escapeHtml(text)}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
 
-            // Mostrar notificación temporal
-            function showNotification(message) {
-                const notification = document.createElement('div');
-                notification.className = 'offline-notice';
-                notification.textContent = message;
-                document.body.appendChild(notification);
-                
-                setTimeout(() => notification.remove(), 3000);
-            }
+        // Mostrar notificación temporal
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'offline-notice';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 3000);
+        }
 
-            // Escapar HTML para prevenir XSS
-            function escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
+        // Escapar HTML para prevenir XSS
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
 
-            // Iniciar cuando cargue la página
-            window.onload = initChat;
-        </script>
-    </body>
+        // Iniciar cuando cargue la página
+        window.onload = initChat;
+    </script>
+</body>
 </html>
