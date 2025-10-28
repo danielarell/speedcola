@@ -525,7 +525,7 @@ async function start() {
         
         // Registrar automáticamente para chat
         connectedUsers.set(currentUserId, socket.id);
-        console.log(`👤 Usuario ${currentUserId} autenticado y registrado`);
+        console.log(`Usuario ${currentUserId} autenticado y registrado`);
         
         socket.emit('authenticated', { userId: currentUserId, name: decoded.name });
       } catch (error) {
@@ -542,19 +542,19 @@ socket.on("send_private_message", async (data) => {
     return;
   }
   
-  // 🔥 CONVERTIR A NÚMEROS
+  // CONVERTIR A NÚMEROS
   const toUserId = parseInt(data.toUserId);
   const fromUserId = parseInt(currentUserId);
   const { message, isProvider } = data;
   
-  console.log("📩 ENVIAR MENSAJE:");
-  console.log("- De:", fromUserId, "Para:", toUserId);
-  console.log("- Mensaje:", message);
-  console.log("- Es proveedor quien envía:", isProvider);
+  // console.log("ENVIAR MENSAJE:");
+  // console.log("- De:", fromUserId, "Para:", toUserId);
+  // console.log("- Mensaje:", message);
+  // console.log("- Es proveedor quien envía:", isProvider);
   
   // Validar que los IDs sean números válidos
   if (isNaN(toUserId) || isNaN(fromUserId)) {
-    console.error("❌ IDs inválidos:", { toUserId, fromUserId });
+    console.error("IDs inválidos:", { toUserId, fromUserId });
     socket.emit('error', { message: 'IDs de usuario inválidos' });
     return;
   }
@@ -576,7 +576,7 @@ socket.on("send_private_message", async (data) => {
     
     if (existingChats.length > 0) {
       chatId = existingChats[0].idChat;
-      console.log("💬 Chat existente encontrado:", chatId);
+      console.log("Chat existente encontrado:", chatId);
     } else {
       // Crear nuevo chat
       const [newChat] = await pool.query(
@@ -584,7 +584,7 @@ socket.on("send_private_message", async (data) => {
         [idCliente, idProveedor]
       );
       chatId = newChat.insertId;
-      console.log("✨ Nuevo chat creado:", chatId);
+      console.log("Nuevo chat creado:", chatId);
     }
     
     // 3. Guardar el mensaje
@@ -593,7 +593,7 @@ socket.on("send_private_message", async (data) => {
       [chatId, fromUserId, message]
     );
     
-    console.log("✅ Mensaje guardado con ID:", insertResult.insertId);
+    console.log("Mensaje guardado con ID:", insertResult.insertId);
     
     // 4. Enviar mensaje si el destinatario está conectado
     const recipientSocketId = connectedUsers.get(toUserId);
@@ -607,7 +607,7 @@ socket.on("send_private_message", async (data) => {
     
     if (recipientSocketId) {
       io.to(recipientSocketId).emit('new_message', messageData);
-      console.log("📤 Mensaje enviado al destinatario");
+      console.log("Mensaje enviado al destinatario");
       
       socket.emit('message_delivered', {
         ...messageData,
@@ -634,7 +634,7 @@ socket.on("send_private_message", async (data) => {
 
 // ========== OBTENER HISTORIAL DE CHAT ==========
 socket.on("get_chat_history", async (data) => {
-    // 🔥 CONVERTIR A NÚMEROS
+    // CONVERTIR A NÚMEROS
     const userId1 = parseInt(data.userId1);
     const userId2 = parseInt(data.userId2);
     const { isProvider } = data;
@@ -705,7 +705,7 @@ socket.on("get_chat_history", async (data) => {
   app.set("io", io);
 
   server.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+    console.log(`Servidor corriendo en puerto ${PORT}`);
   });
 }
 
@@ -713,7 +713,7 @@ socket.on("get_chat_history", async (data) => {
 // async function start() {
 //   await initDB();
 //   app.listen(PORT, () => {
-//     console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+//     console.log(`Servidor corriendo en puerto ${PORT}`);
 //   });
 // }
 

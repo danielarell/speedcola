@@ -232,7 +232,7 @@
                 
             } catch (error) {
                 console.error('Error verificando sesión:', error);
-                window.location.href = '/login.html';
+                window.location.href = '/index.html';
             }
         }
 
@@ -240,7 +240,7 @@
             socket = io();
 
             socket.on('connect', async () => {
-                console.log('✅ Conectado al socket');
+                console.log('Conectado al socket');
 
                 try {
                     // 🔥 Nuevo: pedimos el token al backend
@@ -258,12 +258,12 @@
                 } catch (err) {
                     console.error('Error obteniendo token:', err);
                     alert('Error de autenticación');
-                    window.location.href = '/login.html';
+                    window.location.href = '/index.html';
                 }
             });
 
             socket.on('authenticated', (data) => {
-                console.log('✅ Autenticado en socket');
+                console.log('Autenticado en socket');
                 document.getElementById('onlineStatus').textContent = 'En línea';
                 document.getElementById('onlineIndicator').classList.remove('offline-indicator');
                 
@@ -273,11 +273,11 @@
 
             socket.on('auth_error', (data) => {
                 alert('Error de autenticación: ' + data.message);
-                window.location.href = '/login.html';
+                window.location.href = '/index.html';
             });
 
             socket.on('disconnect', () => {
-                console.log('❌ Desconectado del socket');
+                console.log('Desconectado del socket');
                 document.getElementById('onlineStatus').textContent = 'Desconectado';
                 document.getElementById('onlineIndicator').classList.add('offline-indicator');
             });
@@ -305,12 +305,11 @@
                 }
 
                 messages.forEach(msg => {
-                    // 🔥 USAR idUsuario en lugar de idEmisor
                     const type = msg.idUsuario == currentUserId ? 'sent' : 'received';
                     displayMessage(msg.mensaje, type, msg.fechaEnvio, msg.idUsuario);
                 });
                 
-                console.log(`✅ ${messages.length} mensajes cargados`);
+                console.log(`${messages.length} mensajes cargados`);
             });
 
             // Obtener nombre del destinatario
@@ -343,7 +342,7 @@
 
         // Enviar mensaje
         function sendMessage() {
-            console.log("📤 Intentando enviar mensaje...");
+            console.log("Intentando enviar mensaje...");
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
             
@@ -353,18 +352,18 @@
             console.log("Usuario destino:", targetUserId);
             
             if (!message) {
-                console.log("❌ Mensaje vacío");
+                console.log("Mensaje vacío");
                 return;
             }
             
             if (!socket || !socket.connected) {
-                console.log("❌ Socket no conectado");
+                console.log("Socket no conectado");
                 alert('No estás conectado al servidor');
                 return;
             }
             
             if (!currentUserId || !targetUserId) {
-                console.log("❌ Faltan IDs de usuario");
+                console.log("Faltan IDs de usuario");
                 return;
             }
 
@@ -375,7 +374,7 @@
                 isProvider: window.isCurrentUserProvider || false
             };
             
-            console.log("📨 Enviando datos:", dataToSend);
+            console.log("Enviando datos:", dataToSend);
 
             // Enviar al servidor
             socket.emit('send_private_message', dataToSend);
@@ -423,7 +422,6 @@
             setTimeout(() => notification.remove(), 3000);
         }
 
-        // Escapar HTML para prevenir XSS
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;

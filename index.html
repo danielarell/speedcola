@@ -713,7 +713,7 @@ https://templatemo.com/tm-591-villa-agency
       event.stopPropagation();
       const dropdown = document.getElementById('notificationDropdown');
       dropdown.classList.toggle('show');
-      console.log('✅ Dropdown toggled:', dropdown.classList.contains('show') ? 'ABIERTO' : 'CERRADO');
+      console.log('Dropdown toggled:', dropdown.classList.contains('show') ? 'ABIERTO' : 'CERRADO');
     }
 
     // Función para limpiar notificaciones (llamada por onclick)
@@ -721,7 +721,7 @@ https://templatemo.com/tm-591-villa-agency
       notifications = [];
       unreadCount = 0;
       updateNotificationUI();
-      console.log('🗑️ Notificaciones limpiadas');
+      console.log('Notificaciones limpiadas');
     }
 
     // Cerrar dropdown al hacer click fuera
@@ -811,12 +811,12 @@ https://templatemo.com/tm-591-villa-agency
         notifications = notifications.slice(0, 50);
       }
       
-      console.log('🔔 Nueva notificación:', title);
+      console.log('Nueva notificación:', title);
     }
 
     // Inicializar cuando el DOM esté listo
     document.addEventListener('DOMContentLoaded', function() {
-      console.log('🚀 Inicializando sistema de notificaciones...');
+      console.log('Inicializando sistema de notificaciones...');
       
       // Inicializar UI
       updateNotificationUI();
@@ -825,7 +825,7 @@ https://templatemo.com/tm-591-villa-agency
       socket = io("http://54.226.207.123");
 
       socket.on("connect", () => {
-        console.log("✅ Conectado al servidor de notificaciones");
+        console.log("Conectado al servidor de notificaciones");
         addNotification(
           "Conectado", 
           "Sistema de notificaciones activo",
@@ -843,7 +843,7 @@ https://templatemo.com/tm-591-villa-agency
       });
 
       socket.on("disconnect", () => {
-        console.log("❌ Desconectado del servidor");
+        console.log("Desconectado del servidor");
         addNotification(
           "Desconectado", 
           "Se perdió la conexión con el servidor",
@@ -851,7 +851,7 @@ https://templatemo.com/tm-591-villa-agency
         );
       });
       
-      console.log('✅ Sistema de notificaciones listo');
+      console.log('Sistema de notificaciones listo');
     });
   </script>
   

@@ -3,7 +3,7 @@ let categories = [];
 
 document.addEventListener("DOMContentLoaded", async () => {
   try {
-    // 1. Hacer fetch a la ruta protegida para obtener el usuario logeado
+    // fetch a la ruta protegida para obtener el usuario logeado
     const response = await fetch("/api/check-session", {
       method: "GET",
       credentials: "include" // importante para enviar la cookie
@@ -16,16 +16,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const data = await response.json();
-    const usuario = data.user; // aquí viene {id, name, email} desde el JWT
+    const usuario = data.user; 
 
-    // 2. Rellenar el formulario
+    // Rellenar el formulario
     document.getElementById("idUsuario").value = usuario.id;
     document.getElementById("nombre").value = usuario.name;
     document.getElementById("email").value = usuario.email;
     document.getElementById("telefono").value = usuario.phone;
     document.getElementById("rol").value = usuario.isprovider ? "Proveedor" : "Cliente";
 
-    // 3. Rellenar la tarjeta de perfil
+    // Rellenar la tarjeta de perfil
     const items = document.querySelectorAll(".list-group-item");
     items[0].innerHTML = `<strong>Name:</strong> ${usuario.name}`;
     items[1].innerHTML = `<strong>Email:</strong> ${usuario.email}`;
@@ -110,7 +110,7 @@ function renderUserService(servicio) {
 
       if (response.ok) {
         alert("Servicio eliminado correctamente");
-        // Opcional: remover la tarjeta del DOM
+        
         container.remove();
       } else {
         alert("Error eliminando servicio: " + (data.error || "Unknown error"));
@@ -164,7 +164,7 @@ async function editService(idServicio) {
     const categorySelect = document.getElementById("editServiceCategory");
     if (categorySelect) categorySelect.value = servicio.idCategoria;
 
-    // Mostrar modal usando Bootstrap API
+    // Mostrar modal
     const modalEl = document.getElementById('editServiceModal');
 
     // Obtener instancia existente o crear nueva
