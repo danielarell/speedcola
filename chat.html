@@ -149,6 +149,16 @@
             padding: 50px;
             font-size: 14px;
         }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
     </style>
 </head>
 <body>
@@ -160,6 +170,7 @@
                     <span id="onlineIndicator" class="online-indicator"></span>
                     <span id="onlineStatus">Conectando...</span>
                 </div>
+                <button class="back-btn" onclick="goBack()">← Volver</button>
             </div>
         </div>
         
@@ -417,6 +428,11 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+
+        // Volver atrás
+        function goBack() {
+            window.history.back();
         }
 
         // Iniciar cuando cargue la página
