@@ -146,6 +146,7 @@ app.get("/api/services/:id", async (req, res) => {
       `
       SELECT 
         s.idServicio, 
+        s.idUsuario,
         s.nombre AS nombreServicio, 
         s.descripcion, 
         s.precio, 
@@ -380,7 +381,7 @@ app.post('/api/login', async (req, res) => {
     // Crear token JWT
     const token = jwt.sign(
     { 
-        id: user.id,
+        id: user.idUsuario,
         name: user.nombre,
         email: user.email,
         phone: user.telefono,   
@@ -404,12 +405,99 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// GET - Obtener todos los chats de un proveedor
+app.get('/api/chats/provider/:providerId', async (req, res) => {
+  try {
+    const providerId = parseInt(req.params.providerId);
+    
+    const [chats] = await pool.query(
+      `SELECT 
+        c.idChat,
+        c.idCliente,
+        c.idProveedor,
+        cliente.nombre AS nombreCliente,
+        cliente.fotoPerfil AS fotoCliente,
+        cliente.email AS emailCliente,
+        (SELECT m.contenido 
+         FROM mensajes m 
+         WHERE m.idChat = c.idChat 
+         ORDER BY m.timestampEnvio DESC 
+         LIMIT 1) AS ultimoMensaje,
+        (SELECT m.timestampEnvio 
+         FROM mensajes m 
+         WHERE m.idChat = c.idChat 
+         ORDER BY m.timestampEnvio DESC 
+         LIMIT 1) AS fechaUltimoMensaje
+      FROM chats c
+      JOIN usuarios cliente ON c.idCliente = cliente.idUsuario
+      WHERE c.idProveedor = ?
+      ORDER BY fechaUltimoMensaje DESC`,
+      [providerId, providerId]
+    );
+    
+    res.json(chats);
+  } catch (error) {
+    console.error('Error obteniendo chats del proveedor:', error);
+    res.status(500).json({ error: 'Error al obtener chats' });
+  }
+});
+
+// GET - Obtener todos los chats de un cliente
+app.get('/api/chats/client/:clientId', async (req, res) => {
+  try {
+    const clientId = parseInt(req.params.clientId);
+    
+    const [chats] = await pool.query(
+      `SELECT 
+        c.idChat,
+        c.idCliente,
+        c.idProveedor,
+        proveedor.nombre AS nombreProveedor,
+        proveedor.fotoPerfil AS fotoProveedor,
+        proveedor.email AS emailProveedor,
+        (SELECT m.contenido 
+         FROM mensajes m 
+         WHERE m.idChat = c.idChat 
+         ORDER BY m.timestampEnvio DESC 
+         LIMIT 1) AS ultimoMensaje,
+        (SELECT m.timestampEnvio 
+         FROM mensajes m 
+         WHERE m.idChat = c.idChat 
+         ORDER BY m.timestampEnvio DESC 
+         LIMIT 1) AS fechaUltimoMensaje
+      FROM chats c
+      JOIN usuarios proveedor ON c.idProveedor = proveedor.idUsuario
+      WHERE c.idCliente = ?
+      ORDER BY fechaUltimoMensaje DESC`,
+      [clientId, clientId]
+    );
+    
+    res.json(chats);
+  } catch (error) {
+    console.error('Error obteniendo chats del cliente:', error);
+    res.status(500).json({ error: 'Error al obtener chats' });
+  }
+});
+
 app.get('/api/check-session', authenticateToken, (req, res) => {
   // Si el middleware pasa, significa que el usuario está logeado
   res.json({ loggedIn: true, user: req.user });
 });
 
+app.get("/api/socket-token", (req, res) => {
+  const token = req.cookies.token; // Recupera el token guardado en la cookie
+  
+  if (!token) {
+    return res.status(401).json({ error: "No token found" });
+  }
+
+  res.json({ token }); // Devuelve el token al frontend
+});
+
 // ========================== SERVIDOR Y SOCKETS ==========================
+
+// Almacenar usuarios conectados: Map(userId -> socketId)
+const connectedUsers = new Map();
 
 async function start() {
   await initDB();
@@ -417,16 +505,199 @@ async function start() {
   const server = http.createServer(app);
   const io = new Server(server, {
     cors: {
-      origin: "*", // o tu dominio si ya lo tienes
+      origin: "*",
       methods: ["GET", "POST"]
     }
   });
 
   io.on("connection", (socket) => {
     console.log("🟢 Usuario conectado al socket:", socket.id);
+    
+    let currentUserId = null;
+    let isAuthenticated = false;
 
+    // ========== AUTENTICAR USUARIO ==========
+    socket.on("authenticate", async (token) => {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mi_clave_secreta');
+        currentUserId = decoded.id;
+        isAuthenticated = true;
+        
+        // Registrar automáticamente para chat
+        connectedUsers.set(currentUserId, socket.id);
+        console.log(`Usuario ${currentUserId} autenticado y registrado`);
+        
+        socket.emit('authenticated', { userId: currentUserId, name: decoded.name });
+      } catch (error) {
+        console.error('Error de autenticación:', error);
+        socket.emit('auth_error', { message: 'Token inválido' });
+        socket.disconnect();
+      }
+    });
+
+    // ========== ENVIAR MENSAJE PRIVADO ==========
+socket.on("send_private_message", async (data) => {
+  if (!isAuthenticated) {
+    socket.emit('error', { message: 'No autenticado' });
+    return;
+  }
+  
+  // CONVERTIR A NÚMEROS
+  const toUserId = parseInt(data.toUserId);
+  const fromUserId = parseInt(currentUserId);
+  const { message, isProvider } = data;
+  
+  // console.log("ENVIAR MENSAJE:");
+  // console.log("- De:", fromUserId, "Para:", toUserId);
+  // console.log("- Mensaje:", message);
+  // console.log("- Es proveedor quien envía:", isProvider);
+  
+  // Validar que los IDs sean números válidos
+  if (isNaN(toUserId) || isNaN(fromUserId)) {
+    console.error("IDs inválidos:", { toUserId, fromUserId });
+    socket.emit('error', { message: 'IDs de usuario inválidos' });
+    return;
+  }
+  
+  try {
+    // 1. Determinar quién es cliente y quién proveedor
+    const idCliente = isProvider ? toUserId : fromUserId;
+    const idProveedor = isProvider ? fromUserId : toUserId;
+    
+    console.log("👥 Roles: Cliente =", idCliente, "| Proveedor =", idProveedor);
+    
+    // 2. Buscar o crear el chat entre estos dos usuarios
+    let chatId;
+    
+    const [existingChats] = await pool.query(
+      'SELECT idChat FROM chats WHERE idCliente = ? AND idProveedor = ?',
+      [idCliente, idProveedor]
+    );
+    
+    if (existingChats.length > 0) {
+      chatId = existingChats[0].idChat;
+      console.log("Chat existente encontrado:", chatId);
+    } else {
+      // Crear nuevo chat
+      const [newChat] = await pool.query(
+        'INSERT INTO chats (idCliente, idProveedor) VALUES (?, ?)',
+        [idCliente, idProveedor]
+      );
+      chatId = newChat.insertId;
+      console.log("Nuevo chat creado:", chatId);
+    }
+    
+    // 3. Guardar el mensaje
+    const [insertResult] = await pool.query(
+      'INSERT INTO mensajes (idChat, idUsuario, contenido) VALUES (?, ?, ?)',
+      [chatId, fromUserId, message]
+    );
+    
+    console.log("Mensaje guardado con ID:", insertResult.insertId);
+    
+    // 4. Enviar mensaje si el destinatario está conectado
+    const recipientSocketId = connectedUsers.get(toUserId);
+    
+    const messageData = {
+      from: fromUserId,
+      message: message,
+      timestamp: new Date(),
+      chatId: chatId
+    };
+    
+    if (recipientSocketId) {
+      io.to(recipientSocketId).emit('new_message', messageData);
+      console.log("Mensaje enviado al destinatario");
+      
+      socket.emit('message_delivered', {
+        ...messageData,
+        to: toUserId,
+        status: 'delivered'
+      });
+    } else {
+      console.log("⚠️ Destinatario offline");
+      socket.emit('message_delivered', {
+        ...messageData,
+        to: toUserId,
+        status: 'offline'
+      });
+    }
+  } catch (error) {
+    console.error('❌ Error enviando mensaje:', error);
+    console.error('Stack:', error.stack);
+    socket.emit('error', { 
+      message: 'Error al enviar mensaje',
+      details: error.message 
+    });
+  }
+});
+
+// ========== OBTENER HISTORIAL DE CHAT ==========
+socket.on("get_chat_history", async (data) => {
+    // CONVERTIR A NÚMEROS
+    const userId1 = parseInt(data.userId1);
+    const userId2 = parseInt(data.userId2);
+    const { isProvider } = data;
+    
+    console.log("SOLICITUD DE HISTORIAL:");
+    console.log("- Usuario 1:", userId1, "Usuario 2:", userId2);
+    console.log("- Usuario 1 es proveedor:", isProvider);
+    
+    try {
+      // Determinar quién es cliente y quién proveedor
+      const idCliente = isProvider ? userId2 : userId1;
+      const idProveedor = isProvider ? userId1 : userId2;
+      
+      console.log("👥 Roles: Cliente =", idCliente, "| Proveedor =", idProveedor);
+      
+      // Buscar el chat
+      const [chats] = await pool.query(
+        'SELECT idChat FROM chats WHERE idCliente = ? AND idProveedor = ?',
+        [idCliente, idProveedor]
+      );
+      
+      if (chats.length === 0) {
+        console.log("📭 No hay chat entre estos usuarios");
+        socket.emit('chat_history', []);
+        return;
+      }
+      
+      const chatId = chats[0].idChat;
+      console.log("💬 Chat encontrado:", chatId);
+      
+      //CORREGIR QUERY: usar idUsuario en lugar de idEmisor
+      const [messages] = await pool.query(
+        `SELECT 
+          m.idMensaje,
+          m.idUsuario,
+          m.contenido as mensaje,
+          m.timestampEnvio as fechaEnvio,
+          u.nombre as nombreUsuario
+        FROM mensajes m
+        JOIN usuarios u ON m.idUsuario = u.idUsuario
+        WHERE m.idChat = ?
+        ORDER BY m.timestampEnvio ASC
+        LIMIT 100`,
+        [chatId]
+      );
+      
+      console.log(`📨 ${messages.length} mensajes encontrados`);
+      socket.emit('chat_history', messages);
+    } catch (error) {
+        console.error('❌ Error obteniendo historial:', error);
+        console.error('Stack:', error.stack);
+        socket.emit('chat_history', []);
+    }
+});
+
+    // ========== DESCONEXIÓN ==========
     socket.on("disconnect", () => {
-      console.log("🔴 Usuario desconectado:", socket.id);
+      if (currentUserId) {
+        connectedUsers.delete(currentUserId);
+        console.log(`🔴 Usuario ${currentUserId} desconectado`);
+      } else {
+        console.log("🔴 Usuario desconectado:", socket.id);
+      }
     });
   });
 
@@ -434,7 +705,7 @@ async function start() {
   app.set("io", io);
 
   server.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+    console.log(`Servidor corriendo en puerto ${PORT}`);
   });
 }
 
@@ -442,7 +713,7 @@ async function start() {
 // async function start() {
 //   await initDB();
 //   app.listen(PORT, () => {
-//     console.log(`🚀 Servidor corriendo en puerto ${PORT}`);
+//     console.log(`Servidor corriendo en puerto ${PORT}`);
 //   });
 // }
 
