@@ -427,11 +427,7 @@ app.get('/api/chats/provider/:providerId', async (req, res) => {
          FROM mensajes m 
          WHERE m.idChat = c.idChat 
          ORDER BY m.timestampEnvio DESC 
-         LIMIT 1) AS fechaUltimoMensaje,
-        (SELECT COUNT(*) 
-         FROM mensajes m 
-         WHERE m.idChat = c.idChat 
-         AND m.idUsuario != ?
+         LIMIT 1) AS fechaUltimoMensaje
       FROM chats c
       JOIN usuarios cliente ON c.idCliente = cliente.idUsuario
       WHERE c.idProveedor = ?
@@ -468,11 +464,7 @@ app.get('/api/chats/client/:clientId', async (req, res) => {
          FROM mensajes m 
          WHERE m.idChat = c.idChat 
          ORDER BY m.timestampEnvio DESC 
-         LIMIT 1) AS fechaUltimoMensaje,
-        (SELECT COUNT(*) 
-         FROM mensajes m 
-         WHERE m.idChat = c.idChat 
-         AND m.idUsuario != ?
+         LIMIT 1) AS fechaUltimoMensaje
       FROM chats c
       JOIN usuarios proveedor ON c.idProveedor = proveedor.idUsuario
       WHERE c.idCliente = ?
