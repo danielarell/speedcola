@@ -187,13 +187,6 @@
         const urlParams = new URLSearchParams(window.location.search);
         targetUserId = urlParams.get('to');
 
-        // Obtener token de la cookie
-        function getCookie(name) {
-            const value = `; ${document.cookie}`;
-            const parts = value.split(`; ${name}=`);
-            if (parts.length === 2) return parts.pop().split(';').shift();
-        }
-
         // Inicializar chat
         async function initChat() {
             if (!targetUserId) {
@@ -231,15 +224,30 @@
             }
         }
 
-        function connectSocket() {
+        async function connectSocket() {
             socket = io();
 
-            socket.on('connect', () => {
+            socket.on('connect', async () => {
                 console.log('✅ Conectado al socket');
-                
-                // Autenticar con el token
-                const token = getCookie('token');
-                socket.emit('authenticate', token);
+
+                try {
+                    // 🔥 Nuevo: pedimos el token al backend
+                    const resp = await fetch('/api/socket-token', { credentials: 'include' });
+                    const data = await resp.json();
+
+                    if (!resp.ok || !data.token) {
+                        alert('Error: No se encontró token de sesión');
+                        window.location.href = '/login.html';
+                        return;
+                    }
+
+                    // Autenticamos el socket con el token recibido
+                    socket.emit('authenticate', data.token);
+                } catch (err) {
+                    console.error('Error obteniendo token:', err);
+                    alert('Error de autenticación');
+                    window.location.href = '/login.html';
+                }
             });
 
             socket.on('authenticated', (data) => {
@@ -265,7 +273,6 @@
             // Recibir mensajes nuevos
             socket.on('new_message', (data) => {
                 displayMessage(data.message, 'received', data.timestamp, data.from);
-                // Marcar como leído
                 socket.emit('mark_as_read', {
                     fromUserId: data.from,
                     toUserId: currentUserId
@@ -283,21 +290,22 @@
             socket.on('chat_history', (messages) => {
                 const messagesDiv = document.getElementById('messages');
                 messagesDiv.innerHTML = '';
-                
+
                 if (messages.length === 0) {
                     messagesDiv.innerHTML = '<div class="no-messages">No hay mensajes aún. ¡Inicia la conversación!</div>';
                     return;
                 }
 
                 messages.forEach(msg => {
-                    const type = msg.idUsuario == currentUserId ? 'sent' : 'received';
-                    displayMessage(msg.contenido, type, msg.timestampEnvio, msg.idUsuario);
+                    const type = msg.idEmisor == currentUserId ? 'sent' : 'received';
+                    displayMessage(msg.mensaje, type, msg.fechaEnvio, msg.idEmisor);
                 });
             });
 
             // Obtener nombre del destinatario
             fetchTargetUserName();
         }
+
 
         // Cargar historial de chat
         function loadChatHistory() {

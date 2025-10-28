@@ -54,21 +54,30 @@ function renderSingleService(servicio) {
 // Función para abrir el chat con el proveedor
 async function openChat(proveedorId) {
   try {
-    // Verificar que el usuario esté logeado
-    const response = await fetch('/api/check-session', {
-      credentials: 'include'
-    });
+    // Verificar sesión
+    const response = await fetch('/api/check-session', { credentials: 'include' });
     const data = await response.json();
-    
+
     if (!data.loggedIn) {
       alert('Debes iniciar sesión para chatear');
-      window.location.href = '/login.html';
+      window.location.href = '/index.html';
       return;
     }
-    
-    // Redirigir al chat con el proveedor
+
+    // Obtener token del backend (desde la cookie)
+    const tokenResp = await fetch('/api/socket-token', { credentials: 'include' });
+    const tokenData = await tokenResp.json();
+
+    if (!tokenData.token) {
+      alert('Error: no se encontró el token');
+      return;
+    }
+
+    // Guardar temporalmente el token (no se expone al usuario)
+    sessionStorage.setItem("socketToken", tokenData.token);
+
+    // Redirigir al chat
     window.location.href = `/chat.html?to=${proveedorId}`;
-    
   } catch (error) {
     console.error('Error abriendo chat:', error);
     alert('Error al abrir el chat. Por favor intenta de nuevo.');

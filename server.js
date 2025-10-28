@@ -410,6 +410,16 @@ app.get('/api/check-session', authenticateToken, (req, res) => {
   res.json({ loggedIn: true, user: req.user });
 });
 
+app.get("/api/socket-token", (req, res) => {
+  const token = req.cookies.token; // Recupera el token guardado en la cookie
+  
+  if (!token) {
+    return res.status(401).json({ error: "No token found" });
+  }
+
+  res.json({ token }); // Devuelve el token al frontend
+});;
+
 // ========================== SERVIDOR Y SOCKETS ==========================
 
 // Almacenar usuarios conectados: Map(userId -> socketId)
