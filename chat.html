@@ -293,9 +293,12 @@
                 }
 
                 messages.forEach(msg => {
-                    const type = msg.idEmisor == currentUserId ? 'sent' : 'received';
-                    displayMessage(msg.mensaje, type, msg.fechaEnvio, msg.idEmisor);
+                    // 🔥 USAR idUsuario en lugar de idEmisor
+                    const type = msg.idUsuario == currentUserId ? 'sent' : 'received';
+                    displayMessage(msg.mensaje, type, msg.fechaEnvio, msg.idUsuario);
                 });
+                
+                console.log(`✅ ${messages.length} mensajes cargados`);
             });
 
             // Obtener nombre del destinatario
@@ -328,23 +331,46 @@
 
         // Enviar mensaje
         function sendMessage() {
-            console.log("HOLA ESTAS EN LA FUNCION")
+            console.log("📤 Intentando enviar mensaje...");
             const input = document.getElementById('messageInput');
             const message = input.value.trim();
-            console.log(message)
             
-            if (!message || !socket || !currentUserId) return;
+            console.log("Mensaje:", message);
+            console.log("Socket conectado:", socket?.connected);
+            console.log("Usuario actual:", currentUserId);
+            console.log("Usuario destino:", targetUserId);
+            
+            if (!message) {
+                console.log("❌ Mensaje vacío");
+                return;
+            }
+            
+            if (!socket || !socket.connected) {
+                console.log("❌ Socket no conectado");
+                alert('No estás conectado al servidor');
+                return;
+            }
+            
+            if (!currentUserId || !targetUserId) {
+                console.log("❌ Faltan IDs de usuario");
+                return;
+            }
+
+            // ASEGURAR QUE SON NÚMEROS
+            const dataToSend = {
+                toUserId: parseInt(targetUserId),
+                message: message,
+                isProvider: window.isCurrentUserProvider || false
+            };
+            
+            console.log("📨 Enviando datos:", dataToSend);
 
             // Enviar al servidor
-            socket.emit('send_private_message', {
-                toUserId: targetUserId,
-                message: message,
-                isProvider: window.isCurrentUserProvider
-            });
+            socket.emit('send_private_message', dataToSend);
 
             // Mostrar en UI inmediatamente
             displayMessage(message, 'sent', new Date(), currentUserId);
-            console.log(message)
+            
             input.value = '';
         }
 

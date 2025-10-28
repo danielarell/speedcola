@@ -462,121 +462,159 @@ async function start() {
     });
 
     // ========== ENVIAR MENSAJE PRIVADO ==========
-    socket.on("send_private_message", async (data) => {
-      if (!isAuthenticated) {
-        socket.emit('error', { message: 'No autenticado' });
+socket.on("send_private_message", async (data) => {
+  if (!isAuthenticated) {
+    socket.emit('error', { message: 'No autenticado' });
+    return;
+  }
+  
+  // 🔥 CONVERTIR A NÚMEROS
+  const toUserId = parseInt(data.toUserId);
+  const fromUserId = parseInt(currentUserId);
+  const { message, isProvider } = data;
+  
+  console.log("📩 ENVIAR MENSAJE:");
+  console.log("- De:", fromUserId, "Para:", toUserId);
+  console.log("- Mensaje:", message);
+  console.log("- Es proveedor quien envía:", isProvider);
+  
+  // Validar que los IDs sean números válidos
+  if (isNaN(toUserId) || isNaN(fromUserId)) {
+    console.error("❌ IDs inválidos:", { toUserId, fromUserId });
+    socket.emit('error', { message: 'IDs de usuario inválidos' });
+    return;
+  }
+  
+  try {
+    // 1. Determinar quién es cliente y quién proveedor
+    const idCliente = isProvider ? toUserId : fromUserId;
+    const idProveedor = isProvider ? fromUserId : toUserId;
+    
+    console.log("👥 Roles: Cliente =", idCliente, "| Proveedor =", idProveedor);
+    
+    // 2. Buscar o crear el chat entre estos dos usuarios
+    let chatId;
+    
+    const [existingChats] = await pool.query(
+      'SELECT idChat FROM chats WHERE idCliente = ? AND idProveedor = ?',
+      [idCliente, idProveedor]
+    );
+    
+    if (existingChats.length > 0) {
+      chatId = existingChats[0].idChat;
+      console.log("💬 Chat existente encontrado:", chatId);
+    } else {
+      // Crear nuevo chat
+      const [newChat] = await pool.query(
+        'INSERT INTO chats (idCliente, idProveedor) VALUES (?, ?)',
+        [idCliente, idProveedor]
+      );
+      chatId = newChat.insertId;
+      console.log("✨ Nuevo chat creado:", chatId);
+    }
+    
+    // 3. Guardar el mensaje
+    const [insertResult] = await pool.query(
+      'INSERT INTO mensajes (idChat, idUsuario, contenido) VALUES (?, ?, ?)',
+      [chatId, fromUserId, message]
+    );
+    
+    console.log("✅ Mensaje guardado con ID:", insertResult.insertId);
+    
+    // 4. Enviar mensaje si el destinatario está conectado
+    const recipientSocketId = connectedUsers.get(toUserId);
+    
+    const messageData = {
+      from: fromUserId,
+      message: message,
+      timestamp: new Date(),
+      chatId: chatId
+    };
+    
+    if (recipientSocketId) {
+      io.to(recipientSocketId).emit('new_message', messageData);
+      console.log("📤 Mensaje enviado al destinatario");
+      
+      socket.emit('message_delivered', {
+        ...messageData,
+        to: toUserId,
+        status: 'delivered'
+      });
+    } else {
+      console.log("⚠️ Destinatario offline");
+      socket.emit('message_delivered', {
+        ...messageData,
+        to: toUserId,
+        status: 'offline'
+      });
+    }
+  } catch (error) {
+    console.error('❌ Error enviando mensaje:', error);
+    console.error('Stack:', error.stack);
+    socket.emit('error', { 
+      message: 'Error al enviar mensaje',
+      details: error.message 
+    });
+  }
+});
+
+// ========== OBTENER HISTORIAL DE CHAT ==========
+socket.on("get_chat_history", async (data) => {
+    // 🔥 CONVERTIR A NÚMEROS
+    const userId1 = parseInt(data.userId1);
+    const userId2 = parseInt(data.userId2);
+    const { isProvider } = data;
+    
+    console.log("SOLICITUD DE HISTORIAL:");
+    console.log("- Usuario 1:", userId1, "Usuario 2:", userId2);
+    console.log("- Usuario 1 es proveedor:", isProvider);
+    
+    try {
+      // Determinar quién es cliente y quién proveedor
+      const idCliente = isProvider ? userId2 : userId1;
+      const idProveedor = isProvider ? userId1 : userId2;
+      
+      console.log("👥 Roles: Cliente =", idCliente, "| Proveedor =", idProveedor);
+      
+      // Buscar el chat
+      const [chats] = await pool.query(
+        'SELECT idChat FROM chats WHERE idCliente = ? AND idProveedor = ?',
+        [idCliente, idProveedor]
+      );
+      
+      if (chats.length === 0) {
+        console.log("📭 No hay chat entre estos usuarios");
+        socket.emit('chat_history', []);
         return;
       }
       
-      const { toUserId, message, isProvider } = data;
-      const fromUserId = currentUserId;
-      console.log("DESDE SERVIDOR")
-      console.log(toUserId, message)
-      console.log(currentUserId)
-      try {
-        // 1. Buscar o crear el chat entre estos dos usuarios
-        let chatId;
-        
-        // Determinar quién es cliente y quién proveedor
-        const idCliente = isProvider ? toUserId : fromUserId;
-        const idProveedor = isProvider ? fromUserId : toUserId;
-        
-        const [existingChats] = await pool.query(
-          'SELECT idChat FROM chats WHERE idCliente = ? AND idProveedor = ?',
-          [idCliente, idProveedor]
-        );
-        
-        if (existingChats.length > 0) {
-          chatId = existingChats[0].idChat;
-        } else {
-          // Crear nuevo chat
-          const [newChat] = await pool.query(
-            'INSERT INTO chats (idCliente, idProveedor) VALUES (?, ?)',
-            [idCliente, idProveedor]
-          );
-          chatId = newChat.insertId;
-        }
-        
-        // 2. Guardar el mensaje
-        await pool.query(
-          'INSERT INTO mensajes (idChat, idUsuario, contenido) VALUES (?, ?, ?)',
-          [chatId, fromUserId, message]
-        );
-        
-        // 3. Enviar mensaje si el destinatario está conectado
-        const recipientSocketId = connectedUsers.get(toUserId);
-        
-        if (recipientSocketId) {
-          io.to(recipientSocketId).emit('new_message', {
-            from: fromUserId,
-            message: message,
-            timestamp: new Date()
-          });
-          
-          socket.emit('message_delivered', {
-            to: toUserId,
-            message: message,
-            timestamp: new Date(),
-            status: 'delivered'
-          });
-        } else {
-          socket.emit('message_delivered', {
-            to: toUserId,
-            message: message,
-            timestamp: new Date(),
-            status: 'offline'
-          });
-        }
-      } catch (error) {
-        console.error('Error enviando mensaje:', error);
-        socket.emit('error', { message: 'Error al enviar mensaje' });
-      }
-    });
-
-    // ========== OBTENER HISTORIAL DE CHAT ==========
-    socket.on("get_chat_history", async (data) => {
-      const { userId1, userId2, isProvider } = data;
+      const chatId = chats[0].idChat;
+      console.log("💬 Chat encontrado:", chatId);
       
-      try {
-        // Determinar quién es cliente y quién proveedor
-        const idCliente = isProvider ? userId2 : userId1;
-        const idProveedor = isProvider ? userId1 : userId2;
-        
-        // Buscar el chat
-        const [chats] = await pool.query(
-          'SELECT idChat FROM chats WHERE idCliente = ? AND idProveedor = ?',
-          [idCliente, idProveedor]
-        );
-        
-        if (chats.length === 0) {
-          socket.emit('chat_history', []);
-          return;
-        }
-        
-        const chatId = chats[0].idChat;
-        
-        // Obtener mensajes del chat
-        const [messages] = await pool.query(
-          `SELECT 
-            m.idMensaje,
-            m.idUsuario,
-            m.contenido,
-            m.timestampEnvio,
-            u.nombre as nombreUsuario
-          FROM mensajes m
-          JOIN usuarios u ON m.idUsuario = u.idUsuario
-          WHERE m.idChat = ?
-          ORDER BY m.timestampEnvio ASC
-          LIMIT 100`,
-          [chatId]
-        );
-        
-        socket.emit('chat_history', messages);
-      } catch (error) {
-        console.error('Error obteniendo historial:', error);
+      //CORREGIR QUERY: usar idUsuario en lugar de idEmisor
+      const [messages] = await pool.query(
+        `SELECT 
+          m.idMensaje,
+          m.idUsuario,
+          m.contenido as mensaje,
+          m.timestampEnvio as fechaEnvio,
+          u.nombre as nombreUsuario
+        FROM mensajes m
+        JOIN usuarios u ON m.idUsuario = u.idUsuario
+        WHERE m.idChat = ?
+        ORDER BY m.timestampEnvio ASC
+        LIMIT 100`,
+        [chatId]
+      );
+      
+      console.log(`📨 ${messages.length} mensajes encontrados`);
+      socket.emit('chat_history', messages);
+    } catch (error) {
+        console.error('❌ Error obteniendo historial:', error);
+        console.error('Stack:', error.stack);
         socket.emit('chat_history', []);
-      }
-    });
+    }
+});
 
     // ========== DESCONEXIÓN ==========
     socket.on("disconnect", () => {
