@@ -42,7 +42,7 @@ function renderSingleService(servicio) {
           <button class="btn btn-chat" onclick="openChat(${servicio.idUsuario})">
             <i class="fa fa-comments"></i> Chat
           </button>
-          <button class="btn btn-hire" onclick="openHireModal(${servicio.idServicio}, '${servicio.nombreServicio}', ${servicio.precio}, ${servicio.duracionEstimada}, ${servicio.nombreProveedor}, ${servicio.descripcion})">
+          <button class="btn btn-hire" onclick="openHireModal(${servicio.idServicio}, '${servicio.nombreServicio}', ${servicio.precio}, ${servicio.duracionEstimada}, '${servicio.nombreProveedor}', '${servicio.descripcion}')">
             <i class="fa fa-briefcase"></i> Contratar servicio
           </button>
         </div>
@@ -71,7 +71,7 @@ function openHireModal(idServicio, nombreServicio, precio, duracion, proveedor, 
     <p><strong>Service:</strong> ${nombreServicio}</p>
     <p><strong>Price:</strong> $${precio}</p>
     <p><strong>Provider:</strong> ${proveedor}</p>
-    <p><strong>Estimated Duration:</strong> ${proveedor}</p>
+    <p><strong>Estimated Duration:</strong> ${duracion}</p>
     <p><strong>Description:</strong> ${descripcion}</p>
     
     <form id="hireForm" onsubmit="submitHire(event, ${idServicio})">
