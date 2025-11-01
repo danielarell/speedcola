@@ -132,6 +132,7 @@ async function submitHire(event, idServicio, idProveedor, costo) {
     });
 
     if (response_2.ok) {
+      console.log(response_2)
       console.log("creada con exito cita")
     }
 
@@ -140,6 +141,31 @@ async function submitHire(event, idServicio, idProveedor, costo) {
         console.error('Error del servidor:', errData);
     }
   }catch (err) {
+    console.error('Error:', err);
+    alert('⚠️ Falló la conexión con el servidor');
+  }
+
+  try{
+    let idCita = response_2.id
+
+    const response_3 = await fetch('/api/contrato', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ idCita, fecha, idCliente, idProveedor, idServicio, costo, especificaciones})
+    });
+
+    if (response_3.ok) {
+      console.log(response_3)
+      console.log("creada con exito contrato")
+    }
+
+    if (!response_3.ok) {
+        const errData = await response.json().catch(() => ({}));
+        console.error('Error del servidor:', errData);
+    }
+  }catch(err){
     console.error('Error:', err);
     alert('⚠️ Falló la conexión con el servidor');
   }
