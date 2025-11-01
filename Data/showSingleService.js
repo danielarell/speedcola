@@ -42,13 +42,96 @@ function renderSingleService(servicio) {
           <button class="btn btn-chat" onclick="openChat(${servicio.idUsuario})">
             <i class="fa fa-comments"></i> Chat
           </button>
-          <button class="btn btn-hire">
+          <button class="btn btn-hire" onclick="openHireModal(${servicio.idServicio}, '${servicio.nombreServicio}', ${servicio.precio}, ${servicio.duracionEstimada}, ${servicio.nombreProveedor}, ${servicio.descripcion})">
             <i class="fa fa-briefcase"></i> Contratar servicio
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Modal de Contratación -->
+    <div id="hireModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeHireModal()">&times;</span>
+        <h2>Contratar Servicio</h2>
+        <div id="modal-body">
+          <!-- El contenido se llenará dinámicamente -->
+        </div>
+      </div>
+    </div>
   `;
+}
+
+// Función para abrir el modal
+function openHireModal(idServicio, nombreServicio, precio, duracion, proveedor, descripcion) {
+  const modal = document.getElementById("hireModal");
+  const modalBody = document.getElementById("modal-body");
+  
+  modalBody.innerHTML = `
+    <p><strong>Service:</strong> ${nombreServicio}</p>
+    <p><strong>Price:</strong> $${precio}</p>
+    <p><strong>Provider:</strong> ${proveedor}</p>
+    <p><strong>Estimated Duration:</strong> ${proveedor}</p>
+    <p><strong>Description:</strong> ${descripcion}</p>
+    
+    <form id="hireForm" onsubmit="submitHire(event, ${idServicio})">
+      <div class="form-group">
+        <label for="fecha">Fecha preferida:</label>
+        <input type="date" id="fecha" name="fecha" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="hora">Hora preferida:</label>
+        <input type="time" id="hora" name="hora" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="notas">Notas adicionales:</label>
+        <textarea id="notas" name="notas" rows="4" placeholder="Agrega cualquier detalle especial..."></textarea>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeHireModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Confirmar Contratación</button>
+      </div>
+    </form>
+  `;
+  
+  modal.style.display = "block";
+}
+
+// Función para cerrar el modal
+function closeHireModal() {
+  const modal = document.getElementById("hireModal");
+  modal.style.display = "none";
+}
+
+// Función para procesar la contratación
+function submitHire(event, idServicio) {
+  event.preventDefault();
+  
+  const fecha = document.getElementById("fecha").value;
+  const hora = document.getElementById("hora").value;
+  const notas = document.getElementById("notas").value;
+  
+  // Aquí puedes hacer tu llamada al backend
+  console.log("Contratando servicio:", {
+    idServicio,
+    fecha,
+    hora,
+    notas
+  });
+  
+  alert("¡Servicio contratado exitosamente!");
+  closeHireModal();
+}
+
+// Cerrar modal al hacer click fuera de él
+window.onclick = function(event) {
+  const modal = document.getElementById("hireModal");
+  if (event.target == modal) {
+    closeHireModal();
+  }
 }
 
 // Función para abrir el chat con el proveedor
