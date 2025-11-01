@@ -12,14 +12,13 @@ async function loadUserData() {
 
     const data = await response.json();
     const usuario = data.user;
-    const idUsuario = usuario.id || usuario.idUsuario;
-    const rol = usuario.isprovider || usuario.rol;
+    const idUsuario = usuario.id;
+    const rol = usuario.isprovider;
 
     console.log("Usuario logeado:", usuario);
 
     // detecta si el usuario es proveedor
-    const isProvider = rol === "Proveedor" || rol === "provider" || rol === "true";
-
+    const isProvider = rol === 1;
     await loadCitas(idUsuario, isProvider);
     await loadContratos(idUsuario);
 }
