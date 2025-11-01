@@ -4,6 +4,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const serviceId = params.get("id");
 
+  // fetch a la ruta protegida para obtener el usuario logeado
+  const response = await fetch("/api/check-session", {
+    method: "GET",
+    credentials: "include" // importante para enviar la cookie
+  });
+
+  if (!response.ok) {
+    alert("Usuario no logeado. Inicia sesión.");
+    window.location.href = "../index.html";
+    return;
+  }
+
   if (!serviceId) {
     console.error("No service ID found in URL");
     return;
