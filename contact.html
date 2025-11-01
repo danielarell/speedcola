@@ -65,7 +65,7 @@ https://templatemo.com/tm-591-villa-agency
   </div>
 
   <!-- ***** Header Area Start ***** -->
-  <header class="header-area header-sticky">
+   <header class="header-area header-sticky">
     <div class="container">
       <div class="row">
         <div class="col-12">
@@ -77,17 +77,16 @@ https://templatemo.com/tm-591-villa-agency
             <!-- ***** Logo End ***** -->
             <!-- ***** Menu Start ***** -->
             <ul class="nav">
-              <li><a href="index.html">Home</a></li>
+              <li><a href="index.html" class="active">Home</a></li>
               <li><a href="properties.html">Services</a></li>
               <li><a href="user-details.html">User Details</a></li>
-              <li><a href="contact.html" class="active">About Us</a></li>
+              <li><a href="contact.html">About Us</a></li>
               <li>
                 <!-- Botón para abrir modal de Login -->
                 <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
                   <i class="fa fa-user"></i> Login
                 </a>
               </li>
-              <li><a href="#"><i class="fa fa-calendar"></i> Schedule a visit</a></li>
             </ul>
             <a class="menu-trigger">
               <span>Menu</span>
@@ -108,7 +107,7 @@ https://templatemo.com/tm-591-villa-agency
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form action="/login" method="POST">
+          <form id="loginForm">
             <div class="mb-3">
               <label for="loginEmail" class="form-label">Email</label>
               <input type="email" class="form-control" id="loginEmail" name="email" required>
@@ -140,14 +139,14 @@ https://templatemo.com/tm-591-villa-agency
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <form action="index.html" method="GET">
+          <form id="registerForm">
             <div class="mb-3">
               <label for="regName" class="form-label">Full Name</label>
               <input type="text" class="form-control" id="regName" name="nombre" required>
             </div>
             <div class="mb-3">
-              <label for="regLocation" class="form-label">Location</label>
-              <input type="text" class="form-control" id="regLocation" name="ubicacion" required>
+              <label for="regPhoto" class="form-label">Photo (link)</label>
+              <input type="text" class="form-control" id="regPhoto" name="photo" required>
             </div>
             <div class="mb-3 form-check">
               <input type="checkbox" class="form-check-input" id="isProvider" name="isProvider">

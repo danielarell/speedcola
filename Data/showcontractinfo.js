@@ -53,7 +53,7 @@ async function loadCitas(idUsuario, isProvider) {
             accionHTML += `<button class="btn btn-sm btn-info me-1" onclick="cambiarEstado(${citaId}, 'terminado', ${idUsuario})">Terminar</button>`;
         }
 
-        // 🔴 Cancelar (ambos)
+        // Cancelar (ambos)
         if (estado !== "cancelado" && estado !== "terminado") {
             accionHTML += `<button class="btn btn-sm btn-danger" onclick="cancelarCita(${citaId}, ${idUsuario})">Cancelar</button>`;
         }
