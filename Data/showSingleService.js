@@ -107,20 +107,20 @@ function closeHireModal() {
 }
 
 // Función para procesar la contratación
-async function submitHire(event, idServicio, idProveedor, precio, especificaciones) {
+async function submitHire(event, idServicio, idProveedor, costo) {
   event.preventDefault();
   const response = await fetch('/api/check-session', {
       credentials: 'include'
   });
   const data = await response.json();
   
-  currentUserId = data.user.id;
+  let idCliente = data.user.id;
   
   const fecha = document.getElementById("fecha").value;
   const hora = document.getElementById("hora").value;
-  const notas = document.getElementById("notas").value;
+  const especificaciones = document.getElementById("notas").value;
 
-  const fechaHora = `${fecha} ${hora}:00`;
+  fecha = `${fecha} ${hora}:00`;
 
   try {
     const response_2 = await fetch('/api/citas', {
@@ -128,14 +128,14 @@ async function submitHire(event, idServicio, idProveedor, precio, especificacion
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ fechaHora, currentUserId, idProveedor, idServicio, precio, notas})
+      body: JSON.stringify({ fecha, idCliente, idProveedor, idServicio, costo, especificaciones})
     });
 
-    if (response.ok) {
+    if (response_2.ok) {
       console.log("creada con exito cita")
     }
 
-    if (!response.ok) {
+    if (!response_2.ok) {
         const errData = await response.json().catch(() => ({}));
         console.error('Error del servidor:', errData);
     }
