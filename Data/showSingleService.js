@@ -4,6 +4,18 @@ document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
   const serviceId = params.get("id");
 
+  // fetch a la ruta protegida para obtener el usuario logeado
+  const response = await fetch("/api/check-session", {
+    method: "GET",
+    credentials: "include" // importante para enviar la cookie
+  });
+
+  if (!response.ok) {
+    alert("Usuario no logeado. Inicia sesión.");
+    window.location.href = "../index.html";
+    return;
+  }
+
   if (!serviceId) {
     console.error("No service ID found in URL");
     return;
@@ -42,13 +54,147 @@ function renderSingleService(servicio) {
           <button class="btn btn-chat" onclick="openChat(${servicio.idUsuario})">
             <i class="fa fa-comments"></i> Chat
           </button>
-          <button class="btn btn-hire">
+          <button class="btn btn-hire" onclick="openHireModal(${servicio.idServicio}, '${servicio.nombreServicio}', ${servicio.precio}, '${servicio.duracionEstimada}', '${servicio.nombreProveedor}', '${servicio.descripcion}', ${servicio.idUsuario})">
             <i class="fa fa-briefcase"></i> Contratar servicio
           </button>
         </div>
       </div>
     </div>
+
+    <!-- Modal de Contratación -->
+    <div id="hireModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeHireModal()">&times;</span>
+        <h2>Contratar Servicio</h2>
+        <div id="modal-body">
+          <!-- El contenido se llenará dinámicamente -->
+        </div>
+      </div>
+    </div>
   `;
+}
+
+// Función para abrir el modal
+function openHireModal(idServicio, nombreServicio, precio, duracion, proveedor, descripcion, idProveedor) {
+  const modal = document.getElementById("hireModal");
+  const modalBody = document.getElementById("modal-body");
+  
+  modalBody.innerHTML = `
+    <p><strong>Service:</strong> ${nombreServicio}</p>
+    <p><strong>Price:</strong> $${precio}</p>
+    <p><strong>Provider:</strong> ${proveedor}</p>
+    <p><strong>Estimated Duration:</strong> ${duracion}</p>
+    <p><strong>Description:</strong> ${descripcion}</p>
+    
+    <form id="hireForm" onsubmit="submitHire(event, ${idServicio}, ${idProveedor}, ${precio})">
+      <div class="form-group">
+        <label for="fecha">Fecha preferida:</label>
+        <input type="date" id="fecha" name="fecha" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="hora">Hora preferida:</label>
+        <input type="time" id="hora" name="hora" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="notas">Notas adicionales:</label>
+        <textarea id="notas" name="notas" rows="4" placeholder="Agrega cualquier detalle especial..."></textarea>
+      </div>
+      
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeHireModal()">Cancelar</button>
+        <button type="submit" class="btn btn-primary">Confirmar Cita</button>
+      </div>
+    </form>
+  `;
+  
+  modal.style.display = "block";
+}
+
+// Función para cerrar el modal
+function closeHireModal() {
+  const modal = document.getElementById("hireModal");
+  modal.style.display = "none";
+}
+
+// Función para procesar la contratación
+async function submitHire(event, idServicio, idProveedor, costo) {
+  event.preventDefault();
+  const response = await fetch('/api/check-session', {
+      credentials: 'include'
+  });
+  const data = await response.json();
+  
+  let idCliente = data.user.id;
+  let idCita;
+  
+  let fecha = document.getElementById("fecha").value;
+  const hora = document.getElementById("hora").value;
+  const especificaciones = document.getElementById("notas").value;
+
+  fecha = `${fecha} ${hora}:00`;
+
+  try {
+    const response_2 = await fetch('/api/citas', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ fecha, idCliente, idProveedor, idServicio, costo, especificaciones})
+    });
+
+    if (response_2.ok) {
+      const data = await response_2.json();
+      console.log(data)
+      idCita = data.id
+      console.log("creada con exito cita")
+    }
+
+    if (!response_2.ok) {
+        const errData = await response.json().catch(() => ({}));
+        console.error('Error del servidor:', errData);
+    }
+  }catch (err) {
+    console.error('Error:', err);
+    alert('⚠️ Falló la conexión con el servidor');
+  }
+
+  try{
+
+    const response_3 = await fetch('/api/contrato', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ idCita, fecha, idCliente, idProveedor, idServicio, costo, especificaciones})
+    });
+
+    if (response_3.ok) {
+      const data_2 = await response_3.json();
+      console.log(data_2)
+      console.log("creada con exito contrato")
+    }
+
+    if (!response_3.ok) {
+        const errData = await response.json().catch(() => ({}));
+        console.error('Error del servidor:', errData);
+    }
+  }catch(err){
+    console.error('Error:', err);
+    alert('⚠️ Falló la conexión con el servidor');
+  }
+  
+  alert("¡Servicio contratado exitosamente!");
+  closeHireModal();
+}
+
+// Cerrar modal al hacer click fuera de él
+window.onclick = function(event) {
+  const modal = document.getElementById("hireModal");
+  if (event.target == modal) {
+    closeHireModal();
+  }
 }
 
 // Función para abrir el chat con el proveedor
