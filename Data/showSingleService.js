@@ -42,7 +42,7 @@ function renderSingleService(servicio) {
           <button class="btn btn-chat" onclick="openChat(${servicio.idUsuario})">
             <i class="fa fa-comments"></i> Chat
           </button>
-          <button class="btn btn-hire" onclick="openHireModal(${servicio.idServicio}, '${servicio.nombreServicio}', ${servicio.precio}, '${servicio.duracionEstimada}', '${servicio.nombreProveedor}', '${servicio.descripcion}')">
+          <button class="btn btn-hire" onclick="openHireModal(${servicio.idServicio}, '${servicio.nombreServicio}', ${servicio.precio}, '${servicio.duracionEstimada}', '${servicio.nombreProveedor}', '${servicio.descripcion}', ${servicio.idUsuario})">
             <i class="fa fa-briefcase"></i> Contratar servicio
           </button>
         </div>
@@ -63,7 +63,7 @@ function renderSingleService(servicio) {
 }
 
 // Función para abrir el modal
-function openHireModal(idServicio, nombreServicio, precio, duracion, proveedor, descripcion) {
+function openHireModal(idServicio, nombreServicio, precio, duracion, proveedor, descripcion, idProveedor) {
   const modal = document.getElementById("hireModal");
   const modalBody = document.getElementById("modal-body");
   
@@ -74,7 +74,7 @@ function openHireModal(idServicio, nombreServicio, precio, duracion, proveedor, 
     <p><strong>Estimated Duration:</strong> ${duracion}</p>
     <p><strong>Description:</strong> ${descripcion}</p>
     
-    <form id="hireForm" onsubmit="submitHire(event, ${idServicio})">
+    <form id="hireForm" onsubmit="submitHire(event, ${idServicio}, ${idProveedor}, ${precio})">
       <div class="form-group">
         <label for="fecha">Fecha preferida:</label>
         <input type="date" id="fecha" name="fecha" required>
@@ -107,8 +107,14 @@ function closeHireModal() {
 }
 
 // Función para procesar la contratación
-function submitHire(event, idServicio) {
+async function submitHire(event, idServicio, idProveedor, precio) {
   event.preventDefault();
+  const response = await fetch('/api/check-session', {
+      credentials: 'include'
+  });
+  const data = await response.json();
+  
+  currentUserId = data.user.id;
   
   const fecha = document.getElementById("fecha").value;
   const hora = document.getElementById("hora").value;
@@ -116,9 +122,11 @@ function submitHire(event, idServicio) {
   
   // Aquí puedes hacer tu llamada al backend
   console.log("Contratando servicio:", {
-    idServicio,
     fecha,
-    hora,
+    currentUserId,
+    idProveedor,
+    idServicio,
+    precio,
     notas
   });
   
