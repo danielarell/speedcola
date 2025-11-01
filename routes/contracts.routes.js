@@ -39,7 +39,7 @@ router.post('/api/citas', async (req, res) => {
   }
 });
 
-router.post('api/contrato', async (req, res) => {
+router.post('/api/contrato', async (req, res) => {
     try {
 
     const {idCita, fecha, idCliente, idProveedor, idServicio, costo, especificaciones} = req.body;
