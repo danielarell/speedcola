@@ -90,7 +90,9 @@ router.get('/api/citas/:idUsuario', async (req, res) => {
        JOIN usuarios u1 ON c.idCliente = u1.idUsuario
        JOIN usuarios u2 ON c.idProveedor = u2.idUsuario
        JOIN servicios s ON c.idServicio = s.idServicio
-       WHERE c.idCliente = ? OR c.idProveedor = ?`,
+       WHERE c.idCliente = ? OR c.idProveedor = ?
+       ORDER BY c.fecha DESC
+       LIMIT 10`,
       [idUsuario, idUsuario]
     );
     res.json(rows);
@@ -104,13 +106,24 @@ router.put('/api/citas/:id/estado', async (req, res) => {
   const { id } = req.params;
   const { estado } = req.body;
   try {
+    // Si el nuevo estado es "cancelado", borrar el contrato asociado
+    if (estado === 'cancelado') {
+      await pool.query('DELETE FROM contrato WHERE idCita = ?', [id]);
+    }
+
+    // Actualizar estado en la cita
     const [result] = await pool.query(
       'UPDATE citas SET estado = ? WHERE idCita = ?',
       [estado, id]
     );
-    if (result.affectedRows === 0) return res.status(404).json({ error: 'Cita no encontrada' });
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Cita no encontrada' });
+    }
+
     res.json({ message: `Estado de cita cambiado a ${estado}` });
   } catch (error) {
+    console.error("Error al actualizar cita:", error);
     res.status(500).json({ error: 'Error al actualizar cita', details: error.message });
   }
 });
