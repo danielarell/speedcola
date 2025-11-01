@@ -116,7 +116,7 @@ async function submitHire(event, idServicio, idProveedor, costo) {
   
   let idCliente = data.user.id;
   
-  const fecha = document.getElementById("fecha").value;
+  let fecha = document.getElementById("fecha").value;
   const hora = document.getElementById("hora").value;
   const especificaciones = document.getElementById("notas").value;
 
