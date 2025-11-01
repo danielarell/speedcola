@@ -133,8 +133,9 @@ async function submitHire(event, idServicio, idProveedor, costo) {
   const hora = document.getElementById("hora").value;
   const especificaciones = document.getElementById("notas").value;
 
-  fecha = `${fecha} ${hora}:00`;
-
+  const fechaLocal = new Date(`${fecha}T${hora}:00`);
+  const fechaUTC = fechaLocal.toISOString();
+  fecha = fechaUTC
   try {
     const response_2 = await fetch('/api/citas', {
       method: 'POST',
