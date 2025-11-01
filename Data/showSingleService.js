@@ -115,6 +115,7 @@ async function submitHire(event, idServicio, idProveedor, costo) {
   const data = await response.json();
   
   let idCliente = data.user.id;
+  let idCita;
   
   let fecha = document.getElementById("fecha").value;
   const hora = document.getElementById("hora").value;
@@ -132,7 +133,9 @@ async function submitHire(event, idServicio, idProveedor, costo) {
     });
 
     if (response_2.ok) {
-      console.log(response_2)
+      const data = await response_2.json();
+      console.log(data)
+      idCita = data.id
       console.log("creada con exito cita")
     }
 
@@ -146,7 +149,6 @@ async function submitHire(event, idServicio, idProveedor, costo) {
   }
 
   try{
-    let idCita = response_2.id
 
     const response_3 = await fetch('/api/contrato', {
       method: 'POST',
@@ -157,7 +159,8 @@ async function submitHire(event, idServicio, idProveedor, costo) {
     });
 
     if (response_3.ok) {
-      console.log(response_3)
+      const data_2 = await response_3.json();
+      console.log(data_2)
       console.log("creada con exito contrato")
     }
 
