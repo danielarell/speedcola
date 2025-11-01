@@ -92,7 +92,7 @@ function openHireModal(idServicio, nombreServicio, precio, duracion, proveedor, 
       
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" onclick="closeHireModal()">Cancelar</button>
-        <button type="submit" class="btn btn-primary">Confirmar Contratación</button>
+        <button type="submit" class="btn btn-primary">Confirmar Cita</button>
       </div>
     </form>
   `;
@@ -107,7 +107,7 @@ function closeHireModal() {
 }
 
 // Función para procesar la contratación
-async function submitHire(event, idServicio, idProveedor, precio) {
+async function submitHire(event, idServicio, idProveedor, precio, especificaciones) {
   event.preventDefault();
   const response = await fetch('/api/check-session', {
       credentials: 'include'
@@ -119,16 +119,30 @@ async function submitHire(event, idServicio, idProveedor, precio) {
   const fecha = document.getElementById("fecha").value;
   const hora = document.getElementById("hora").value;
   const notas = document.getElementById("notas").value;
-  
-  // Aquí puedes hacer tu llamada al backend
-  console.log("Contratando servicio:", {
-    fecha,
-    currentUserId,
-    idProveedor,
-    idServicio,
-    precio,
-    notas
-  });
+
+  const fechaHora = `${fecha} ${hora}:00`;
+
+  try {
+    const response_2 = await fetch('/api/citas', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ fechaHora, currentUserId, idProveedor, idServicio, precio, notas})
+    });
+
+    if (response.ok) {
+      console.log("creada con exito cita")
+    }
+
+    if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        console.error('Error del servidor:', errData);
+    }
+  }catch (err) {
+    console.error('Error:', err);
+    alert('⚠️ Falló la conexión con el servidor');
+  }
   
   alert("¡Servicio contratado exitosamente!");
   closeHireModal();
