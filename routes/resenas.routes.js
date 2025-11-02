@@ -104,8 +104,9 @@ router.get('/api/resena/:tipo/:idA/:idB', async (req, res) => {
 router.get('/api/resenas/escritas/:idUsuario', async (req, res) => {
   const { idUsuario } = req.params;
   console.log(req.query.isProvider)
+  const isProvider = Number(req.query.isProvider) === 1;
   try {
-    const [rows] = req.query.isProvider
+    const [rows] = isProvider
       ? await pool.query(`
           SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor
           FROM resenaUsuario r
@@ -131,11 +132,11 @@ router.get('/api/resenas/escritas/:idUsuario', async (req, res) => {
 // Reseñas recibidas por el usuario actual
 router.get('/api/resenas/recibidas/:idUsuario', async (req, res) => {
   const { idUsuario } = req.params;
-  
+  const isProvider = Number(req.query.isProvider) === 1;
   console.log(req.query.isProvider)
 
   try {
-    const [rows] = req.query.isProvider
+    const [rows] = isProvider
       ? await pool.query(`
           SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor
           FROM resenaProveedor r
