@@ -1,0 +1,225 @@
+/* ================================
+   USER DETAILS PAGE CUSTOM STYLES
+   Palette: White | Black | Pastel Orange (#FF9E6D)
+================================== */
+
+body {
+  background-color: #F7F7F7;
+  font-family: "Poppins", sans-serif;
+  color: #1C1C1C;
+}
+
+/* Page Heading */
+.page-heading {
+  background: linear-gradient(135deg, #FF9E6D, #FFBE9F);
+  color: #fff;
+  text-align: center;
+  padding: 60px 0;
+  border-bottom-left-radius: 40px;
+  border-bottom-right-radius: 40px;
+  box-shadow: 0 6px 20px rgba(255, 158, 109, 0.3);
+}
+
+.page-heading h3 {
+  font-weight: 700;
+  font-size: 2.2rem;
+}
+
+.page-heading .breadcrumb a {
+  color: #fff;
+  opacity: 0.9;
+}
+
+.page-heading .breadcrumb a:hover {
+  text-decoration: underline;
+}
+
+/* Card styling */
+.card {
+  background: #FFF;
+  border: none;
+  border-radius: 20px;
+  box-shadow: 0 4px 15px rgba(28, 28, 28, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 20px rgba(255, 158, 109, 0.2);
+}
+
+.card h4 {
+  font-weight: 600;
+  color: #FF9E6D;
+  border-bottom: 2px solid rgba(255, 158, 109, 0.3);
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+}
+
+/* Inputs */
+.form-control {
+  border-radius: 10px;
+  border: 1px solid #E0E0E0;
+  box-shadow: none;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  border-color: #FF9E6D;
+  box-shadow: 0 0 0 0.2rem rgba(255, 158, 109, 0.25);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: #FF9E6D;
+  border-color: #FF9E6D;
+  font-weight: 600;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #FFBE9F;
+  border-color: #FFBE9F;
+}
+
+.btn-warning {
+  background-color: #FF9E6D !important;
+  border-color: #FF9E6D !important;
+  color: #fff;
+}
+
+.btn-warning:hover {
+  background-color: #FFBE9F !important;
+  border-color: #FFBE9F !important;
+}
+
+.btn-danger {
+  background-color: #E74C3C;
+  border: none;
+}
+
+.btn-danger:hover {
+  background-color: #C0392B;
+}
+
+/* Tables */
+.table {
+  border-radius: 12px;
+  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.table th {
+  background-color: #FF9E6D;
+  color: #fff;
+  border: none;
+  text-align: center;
+}
+
+.table td {
+  text-align: center;
+  vertical-align: middle;
+  background-color: #fff;
+}
+
+.table tbody tr:nth-child(even) {
+  background-color: #FFF5EF;
+}
+
+/* Badges */
+.badge {
+  padding: 8px 12px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+}
+
+.badge.bg-warning {
+  background-color: #FFD580 !important;
+  color: #1C1C1C;
+}
+
+.badge.bg-primary {
+  background-color: #FF9E6D !important;
+}
+
+.badge.bg-success {
+  background-color: #9EE493 !important;
+}
+
+.badge.bg-danger {
+  background-color: #F28B82 !important;
+}
+
+/* Modal */
+.modal-content {
+  border-radius: 16px;
+  border: none;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+  border-bottom: none;
+}
+
+.modal-title {
+  color: #FF9E6D;
+  font-weight: 600;
+}
+
+.modal .btn-success {
+  background-color: #FF9E6D;
+  border-color: #FF9E6D;
+  font-weight: 600;
+}
+
+.modal .btn-success:hover {
+  background-color: #FFBE9F;
+  border-color: #FFBE9F;
+}
+
+/* Footer */
+.footer-no-gap {
+  background-color: #1C1C1C;
+  color: #FFF;
+  padding: 25px 0;
+  text-align: center;
+  border-top-left-radius: 40px;
+  border-top-right-radius: 40px;
+}
+
+.footer-no-gap a {
+  color: #FF9E6D;
+  text-decoration: none;
+}
+
+.footer-no-gap a:hover {
+  text-decoration: underline;
+}
+
+.text-orange {
+  color: #ff8c42;
+}
+.ratings-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+.rating-card {
+    background: #fff7f2;
+    border: 1px solid #ffe0c2;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+.rating-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(255, 140, 66, 0.2);
+}
+.rating-stars {
+    color: #ffb300;
+    font-size: 1.2rem;
+}

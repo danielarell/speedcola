@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="assets/css/owl.css">
   <link rel="stylesheet" href="assets/css/animate.css">
   <link rel="stylesheet" href="https://unpkg.com/swiper@7/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="assets/css/user-details.css">
 </head>
 
 <body>
@@ -154,6 +155,28 @@
           </div>
         </div>
 
+        <!-- ***** Reseñas Escritas ***** -->
+        <div class="col-lg-12 mt-5">
+          <div class="card shadow-sm p-4 rounded-3">
+            <h4 class="mb-3 text-orange">🖊️ Mis Reseñas Escritas</h4>
+            <p class="text-muted mb-3">Aquí puedes ver las reseñas que has dejado a otros usuarios o proveedores.</p>
+            <div id="resenasEscritasContainer" class="ratings-scroll">
+              <div class="text-center text-muted">Cargando reseñas escritas...</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ***** Reseñas Recibidas ***** -->
+        <div class="col-lg-12 mt-4">
+          <div class="card shadow-sm p-4 rounded-3">
+            <h4 class="mb-3 text-orange">⭐ Reseñas Recibidas</h4>
+            <p class="text-muted mb-3">Estas son las reseñas que otros han escrito sobre ti.</p>
+            <div id="resenasRecibidasContainer" class="ratings-scroll">
+              <div class="text-center text-muted">Cargando reseñas recibidas...</div>
+            </div>
+          </div>
+        </div>
+
 
         <!-- Provider Service Overview -->
         <div class="col-lg-6 mt-4">
@@ -198,50 +221,87 @@
 
 
     <!-- Modal Edit Service -->
-<div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content p-4">
-      <div class="modal-header">
-        <h5 class="modal-title" id="editServiceModalLabel">Edit Service</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form id="editServiceForm">
-          <input type="hidden" id="editServiceId" name="idServicio">
-          <div class="mb-3">
-            <label for="editServiceName" class="form-label">Service Name</label>
-            <input type="text" class="form-control" id="editServiceName" name="nombre" required>
-          </div>
-          <div class="mb-3">
-            <label for="editServiceDescription" class="form-label">Description</label>
-            <textarea class="form-control" id="editServiceDescription" name="descripcion" rows="3" required></textarea>
-          </div>
-          <div class="mb-3">
-            <label for="editServicePrice" class="form-label">Price</label>
-            <input type="number" class="form-control" id="editServicePrice" name="precio" step="0.01" min="0" required>
-          </div>
-          <div class="mb-3">
-            <label for="editServiceDuration" class="form-label">Estimated Duration</label>
-            <input type="text" class="form-control" id="editServiceDuration" name="duracionEstimada" required>
-          </div>
-          <div class="mb-3">
-            <label for="editServiceImage" class="form-label">Image URL</label>
-            <input type="url" class="form-control" id="editServiceImage" name="imagen" required>
-          </div>
-          <div class="mb-3">
-            <label for="editServiceCategory" class="form-label">Category</label>
-            <select class="form-select" id="editServiceCategory" name="idCategoria" required style="color: #000; background-color: #fff;">
-              <option value="">Select a category</option>
-            </select>
-          </div>
-          <button type="submit" class="btn btn-success w-100" style="background-color: orangered; border-color: orangered;">
-            Save Changes
-          </button>
-        </form>
+  <div class="modal fade" id="editServiceModal" tabindex="-1" aria-labelledby="editServiceModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-4">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editServiceModalLabel">Edit Service</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editServiceForm">
+            <input type="hidden" id="editServiceId" name="idServicio">
+            <div class="mb-3">
+              <label for="editServiceName" class="form-label">Service Name</label>
+              <input type="text" class="form-control" id="editServiceName" name="nombre" required>
+            </div>
+            <div class="mb-3">
+              <label for="editServiceDescription" class="form-label">Description</label>
+              <textarea class="form-control" id="editServiceDescription" name="descripcion" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+              <label for="editServicePrice" class="form-label">Price</label>
+              <input type="number" class="form-control" id="editServicePrice" name="precio" step="0.01" min="0" required>
+            </div>
+            <div class="mb-3">
+              <label for="editServiceDuration" class="form-label">Estimated Duration</label>
+              <input type="text" class="form-control" id="editServiceDuration" name="duracionEstimada" required>
+            </div>
+            <div class="mb-3">
+              <label for="editServiceImage" class="form-label">Image URL</label>
+              <input type="url" class="form-control" id="editServiceImage" name="imagen" required>
+            </div>
+            <div class="mb-3">
+              <label for="editServiceCategory" class="form-label">Category</label>
+              <select class="form-select" id="editServiceCategory" name="idCategoria" required style="color: #000; background-color: #fff;">
+                <option value="">Select a category</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-success w-100" style="background-color: orangered; border-color: orangered;">
+              Save Changes
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
+  <div class="modal fade" id="modalResena" tabindex="-1" aria-labelledby="modalResenaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content p-4">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalResenaLabel">Dejar Reseña</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formResena">
+            <input type="hidden" id="tipoResena">
+            <input type="hidden" id="idUsuarioResena">
+            <input type="hidden" id="idProveedorResena">
+
+            <div class="mb-3">
+              <label class="form-label">Puntuación</label>
+              <select id="puntuacionResena" class="form-select" required>
+                <option value="">Selecciona...</option>
+                <option value="1">⭐ 1</option>
+                <option value="2">⭐⭐ 2</option>
+                <option value="3">⭐⭐⭐ 3</option>
+                <option value="4">⭐⭐⭐⭐ 4</option>
+                <option value="5">⭐⭐⭐⭐⭐ 5</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Comentarios</label>
+              <textarea id="comentariosResena" class="form-control" rows="3" placeholder="Escribe tu reseña..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success w-100">Enviar Reseña</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
 
   <!-- Scripts -->

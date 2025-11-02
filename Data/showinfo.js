@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     items[3].innerHTML = `<strong>Role:</strong> ${usuario.isprovider ? "Proveedor" : "Cliente"}`;
     items[4].innerHTML = `<strong>User ID:</strong> ${usuario.id}`;
 
+    cargarResenas(usuario.id, usuario.isprovider);
 
     if (usuario.isprovider) {
       const serviceResp = await fetch(`/api/serviceProv/${usuario.email}`, {
@@ -187,9 +188,53 @@ async function editService(idServicio) {
 }
 
 
+async function cargarResenas(idUsuario, isProvider) {
+  try {
+    const [resEscritas, resRecibidas] = await Promise.all([
+      fetch(`/api/resenas/escritas/${idUsuario}?isProvider=${isProvider}`),
+      fetch(`/api/resenas/recibidas/${idUsuario}?isProvider=${isProvider}`)
+    ]);
 
+    const escritas = await resEscritas.json();
+    const recibidas = await resRecibidas.json();
 
+    console.log("Reseñas escritas:", escritas);
+    console.log("Reseñas recibidas:", recibidas);
 
+    renderResenas("resenasEscritasContainer", escritas, "Aún no has escrito reseñas.");
+    renderResenas("resenasRecibidasContainer", recibidas, "Aún no has recibido reseñas.");
+
+  } catch (err) {
+    console.error("Error cargando reseñas:", err);
+  }
+}
+
+function renderResenas(containerId, resenas, mensajeVacio) {
+  const container = document.getElementById(containerId);
+  container.innerHTML = "";
+
+  if (!resenas || resenas.length === 0) {
+    container.innerHTML = `<div class="text-center text-muted">${mensajeVacio}</div>`;
+    return;
+  }
+
+  resenas.forEach(r => {
+    const stars = "⭐".repeat(Number(r.puntuacion || 0));
+    const card = document.createElement("div");
+    card.className = "rating-card";
+    card.innerHTML = `
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <strong>${r.nombreAutor || "Usuario Anónimo"}</strong><br>
+          <span class="rating-stars">${stars}</span>
+        </div>
+        <small class="text-muted">${new Date(Date.now()).toLocaleDateString()}</small>
+      </div>
+      <p class="mt-2 mb-0">${r.comentarios || "(Sin comentarios)"}</p>
+    `;
+    container.appendChild(card);
+  });
+}
 
 // Manejar el envío del formulario (PUT)
 async function handleEditService(e) {

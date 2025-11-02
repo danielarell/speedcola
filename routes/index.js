@@ -7,5 +7,6 @@ router.use(require('./categories.routes'));
 router.use(require('./auth.routes'));
 router.use(require('./chats.routes'));
 router.use(require('./contracts.routes'));
+router.use(require('./resenas.routes'));
 
 module.exports = router;
