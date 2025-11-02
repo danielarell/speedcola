@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     items[3].innerHTML = `<strong>Role:</strong> ${usuario.isprovider ? "Proveedor" : "Cliente"}`;
     items[4].innerHTML = `<strong>User ID:</strong> ${usuario.id}`;
 
+    cargarResenas(usuario.id, usuario.isprovider);
 
     if (usuario.isprovider) {
       const serviceResp = await fetch(`/api/serviceProv/${usuario.email}`, {
@@ -48,7 +49,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (serviceResp.ok) {
         const servicio = await serviceResp.json(); 
         renderUserService(servicio);
-        cargarResenas(usuario.id, usuario.isprovider);
       } else {
         console.warn("No se pudo obtener el servicio del proveedor");
       }
