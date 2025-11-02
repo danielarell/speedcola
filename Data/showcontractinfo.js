@@ -60,13 +60,16 @@ async function loadCitas(idUsuario, isProvider) {
 
         // Evaluación (reseña) si la cita está terminada
         if (estado === "terminado") {
-            // Si es cliente -> reseña proveedor
+            // Si el usuario es cliente → reseña proveedor
             if (idUsuario === idCli) {
-                accionHTML += `<button class="btn btn-sm btn-warning me-1" onclick="abrirModalResena('proveedor', ${idCli}, ${idProv})">Reseñar Proveedor</button>`;
+                accionHTML += `<span id="btnResenaProv-${idProv}-${idCli}"></span>`;
+                verificarResenaExistente("proveedor", idCli, idProv);
             }
-            // Si es proveedor -> reseña usuario
+
+            // Si el usuario es proveedor → reseña usuario
             if (idUsuario === idProv) {
-                accionHTML += `<button class="btn btn-sm btn-warning me-1" onclick="abrirModalResena('usuario', ${idProv}, ${idCli})">Evaluar Usuario</button>`;
+                accionHTML += `<span id="btnResenaUser-${idProv}-${idCli}"></span>`;
+                verificarResenaExistente("usuario", idProv, idCli);
             }
         }
 
@@ -175,6 +178,33 @@ function abrirModalResena(tipo, idUsuario, idProveedor) {
       }
     });
 }
+
+async function verificarResenaExistente(tipo, idA, idB) {
+  try {
+    const res = await fetch(`/api/resena/${tipo}/${idA}/${idB}`);
+    const data = await res.json();
+    const existe = data.exists;
+
+    // Construir el botón adecuado
+    const spanId =
+      tipo === "proveedor"
+        ? `btnResenaProv-${idB}-${idA}`
+        : `btnResenaUser-${idA}-${idB}`;
+
+    const span = document.getElementById(spanId);
+    if (!span) return;
+
+    if (existe) {
+      span.innerHTML = `<button class="btn btn-sm btn-secondary me-1" onclick="abrirModalResena('${tipo}', ${idA}, ${idB})">Editar Reseña</button>`;
+    } else {
+      const texto = tipo === "proveedor" ? "Reseñar Proveedor" : "Evaluar Usuario";
+      span.innerHTML = `<button class="btn btn-sm btn-warning me-1" onclick="abrirModalResena('${tipo}', ${idA}, ${idB})">${texto}</button>`;
+    }
+  } catch (err) {
+    console.error("Error verificando reseña existente:", err);
+  }
+}
+
 
 document.getElementById("formResena").addEventListener("submit", async e => {
   e.preventDefault();
