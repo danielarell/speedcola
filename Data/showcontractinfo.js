@@ -171,7 +171,7 @@ function abrirModalResena(tipo, idUsuario, idProveedor) {
     .then(r => r.json())
     .then(d => {
       if (d.exists) {
-        alert("Ya se ha dejado una reseña para esta cita.");
+        alert("Ya se ha dejado una reseña para este servicio.");
       } else {
         const modal = new bootstrap.Modal(document.getElementById("modalResena"));
         modal.show();

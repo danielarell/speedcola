@@ -26,15 +26,15 @@ router.post('/api/resenaProveedor', async (req, res) => {
       [idProveedor]
     );
 
-    const promedio = promedioRows[0].promedio || 0;
+    const promedio = parseFloat(promedioRows[0].promedio || 0).toFixed(2);
 
-    // Actualizar campo calificacion en usuarios
+    // Actualizar campo calificacion del proveedor
     await pool.query(
       `UPDATE usuarios SET calificacion = ? WHERE idUsuario = ?`,
       [promedio, idProveedor]
     );
 
-    res.json({ message: 'Reseña de proveedor guardada y promedio actualizado', promedio });
+    res.json({ message: '✅ Reseña de proveedor guardada y promedio actualizado', promedio });
   } catch (error) {
     console.error('Error guardando reseña de proveedor:', error);
     res.status(500).json({ error: 'Error guardando reseña de proveedor', details: error.message });
@@ -57,23 +57,23 @@ router.post('/api/resenaUsuario', async (req, res) => {
       [idProveedor, idUsuario, puntuacion, comentarios]
     );
 
-    // Recalcular promedio de calificaciones del usuario
+    // Recalcular promedio de calificaciones del usuario (ojo: ahora correcto)
     const [promedioRows] = await pool.query(
       `SELECT AVG(puntuacion) AS promedio 
        FROM resenaUsuario 
        WHERE idUsuario = ?`,
-      [idProveedor]
+      [idUsuario]
     );
 
-    const promedio = promedioRows[0].promedio || 0;
+    const promedio = parseFloat(promedioRows[0].promedio || 0).toFixed(2);
 
-    // Actualizar campo calificacion en usuarios
+    // Actualizar campo calificacion del usuario evaluado
     await pool.query(
       `UPDATE usuarios SET calificacion = ? WHERE idUsuario = ?`,
-      [promedio, idProveedor]
+      [promedio, idUsuario]
     );
 
-    res.json({ message: 'Reseña de usuario guardada y promedio actualizado', promedio });
+    res.json({ message: '✅ Reseña de usuario guardada y promedio actualizado', promedio });
   } catch (error) {
     console.error('Error guardando reseña de usuario:', error);
     res.status(500).json({ error: 'Error guardando reseña de usuario', details: error.message });
