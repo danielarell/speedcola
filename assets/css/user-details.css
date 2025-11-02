@@ -202,7 +202,7 @@ body {
   color: #ff8c42;
 }
 .ratings-scroll {
-    max-height: 300px;
+    max-height: 150px;
     overflow-y: auto;
     border-top: 1px solid #eee;
     padding-top: 15px;
