@@ -108,18 +108,16 @@ router.get('/api/resenas/escritas/:idUsuario', async (req, res) => {
   try {
     const [rows] = isProvider
       ? await pool.query(`
-          SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor, r.fecha
+          SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor
           FROM resenaUsuario r
           JOIN usuarios u ON r.idUsuario = u.idUsuario
           WHERE r.idProveedor = ?
-          ORDER BY r.fecha DESC
         `, [idUsuario])
       : await pool.query(`
-          SELECT r.puntuacion, r.comentarios, p.nombre AS nombreAutor, r.fecha
+          SELECT r.puntuacion, r.comentarios, p.nombre AS nombreAutor
           FROM resenaProveedor r
           JOIN usuarios p ON r.idProveedor = p.idUsuario
           WHERE r.idUsuario = ?
-          ORDER BY r.fecha DESC
         `, [idUsuario]);
 
     res.json(rows);
@@ -138,18 +136,16 @@ router.get('/api/resenas/recibidas/:idUsuario', async (req, res) => {
   try {
     const [rows] = isProvider
       ? await pool.query(`
-          SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor, r.fecha
+          SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor
           FROM resenaProveedor r
           JOIN usuarios u ON r.idUsuario = u.idUsuario
           WHERE r.idProveedor = ?
-          ORDER BY r.fecha DESC
         `, [idUsuario])
       : await pool.query(`
-          SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor, r.fecha
+          SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor
           FROM resenaUsuario r
           JOIN usuarios u ON r.idProveedor = u.idUsuario
           WHERE r.idUsuario = ?
-          ORDER BY r.fecha DESC
         `, [idUsuario]);
 
     res.json(rows);
