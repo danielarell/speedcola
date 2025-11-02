@@ -54,23 +54,23 @@ router.post('/api/resenaUsuario', async (req, res) => {
       `INSERT INTO resenaUsuario (idProveedor, idUsuario, puntuacion, comentarios)
        VALUES (?, ?, ?, ?)
        ON DUPLICATE KEY UPDATE puntuacion = VALUES(puntuacion), comentarios = VALUES(comentarios)`,
-      [idProveedor, idUsuario, puntuacion, comentarios]
+      [idUsuario, idProveedor, puntuacion, comentarios]
     );
 
-    // Recalcular promedio de calificaciones del usuario (ojo: ahora correcto)
+    // ✅ Recalcular promedio de calificaciones del USUARIO reseñado
     const [promedioRows] = await pool.query(
       `SELECT AVG(puntuacion) AS promedio 
        FROM resenaUsuario 
        WHERE idUsuario = ?`,
-      [idUsuario]
+      [idProveedor]
     );
 
     const promedio = parseFloat(promedioRows[0].promedio || 0).toFixed(2);
 
-    // Actualizar campo calificacion del usuario evaluado
+    // ✅ Actualizar campo calificacion en usuarios (del usuario reseñado)
     await pool.query(
       `UPDATE usuarios SET calificacion = ? WHERE idUsuario = ?`,
-      [promedio, idUsuario]
+      [promedio, idProveedor]
     );
 
     res.json({ message: '✅ Reseña de usuario guardada y promedio actualizado', promedio });
