@@ -58,6 +58,18 @@ async function loadCitas(idUsuario, isProvider) {
             accionHTML += `<button class="btn btn-sm btn-danger" onclick="cancelarCita(${citaId}, ${idUsuario})">Cancelar</button>`;
         }
 
+        // Evaluación (reseña) si la cita está terminada
+        if (estado === "terminado") {
+            // Si es cliente -> reseña proveedor
+            if (idUsuario === idCli) {
+                accionHTML += `<button class="btn btn-sm btn-warning me-1" onclick="abrirModalResena('proveedor', ${idCli}, ${idProv})">Reseñar Proveedor</button>`;
+            }
+            // Si es proveedor -> reseña usuario
+            if (idUsuario === idProv) {
+                accionHTML += `<button class="btn btn-sm btn-warning me-1" onclick="abrirModalResena('usuario', ${idProv}, ${idCli})">Evaluar Usuario</button>`;
+            }
+        }
+
         // Color del estado
         const estadoDisplay = c.estado || "-";
         const badgeClass =
@@ -142,6 +154,62 @@ async function cancelarCita(idCita, idUsuario) {
     alert("Error de red al intentar cancelar la cita.");
   }
 }
+
+function abrirModalResena(tipo, idUsuario, idProveedor) {
+  console.log("Abriendo modal reseña:", { tipo, idUsuario, idProveedor });
+
+  document.getElementById("tipoResena").value = tipo;
+  document.getElementById("idUsuarioResena").value = idUsuario;
+  document.getElementById("idProveedorResena").value = idProveedor;
+
+  // Verificar si ya existe reseña antes de abrir
+  const url = `/api/resena/${tipo}/${idUsuario}/${idProveedor}`;
+  fetch(url)
+    .then(r => r.json())
+    .then(d => {
+      if (d.exists) {
+        alert("Ya se ha dejado una reseña para esta cita.");
+      } else {
+        const modal = new bootstrap.Modal(document.getElementById("modalResena"));
+        modal.show();
+      }
+    });
+}
+
+document.getElementById("formResena").addEventListener("submit", async e => {
+  e.preventDefault();
+
+  const tipo = document.getElementById("tipoResena").value;
+  const idUsuario = document.getElementById("idUsuarioResena").value;
+  const idProveedor = document.getElementById("idProveedorResena").value;
+  const puntuacion = document.getElementById("puntuacionResena").value;
+  const comentarios = document.getElementById("comentariosResena").value;
+
+  if (!puntuacion || !comentarios) {
+    alert("Completa todos los campos.");
+    return;
+  }
+
+  const endpoint = tipo === "proveedor" ? "/api/resenaProveedor" : "/api/resenaUsuario";
+  const body = tipo === "proveedor"
+    ? { idUsuario, idProveedor, puntuacion, comentarios }
+    : { idProveedor, idUsuario, puntuacion, comentarios };
+
+  const res = await fetch(endpoint, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  });
+
+  if (res.ok) {
+    alert("✅ Reseña enviada correctamente.");
+    bootstrap.Modal.getInstance(document.getElementById("modalResena")).hide();
+    e.target.reset();
+  } else {
+    alert("❌ Error al enviar la reseña.");
+  }
+});
+
 
 
 document.addEventListener("DOMContentLoaded", loadUserData);
