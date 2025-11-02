@@ -131,10 +131,11 @@ router.get('/api/resenas/escritas/:idUsuario', async (req, res) => {
 // Reseñas recibidas por el usuario actual
 router.get('/api/resenas/recibidas/:idUsuario', async (req, res) => {
   const { idUsuario } = req.params;
-  const isProvider = req.query.isProvider === 1;
+  
+  console.log(req.query.isProvider)
 
   try {
-    const [rows] = isProvider
+    const [rows] = req.query.isProvider
       ? await pool.query(`
           SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor
           FROM resenaProveedor r
@@ -148,6 +149,7 @@ router.get('/api/resenas/recibidas/:idUsuario', async (req, res) => {
           WHERE r.idUsuario = ?
         `, [idUsuario]);
 
+    console.log(rows)
     res.json(rows);
   } catch (error) {
     console.error("Error obteniendo reseñas recibidas:", error);

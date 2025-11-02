@@ -228,7 +228,7 @@ function renderResenas(containerId, resenas, mensajeVacio) {
           <strong>${r.nombreAutor || "Usuario Anónimo"}</strong><br>
           <span class="rating-stars">${stars}</span>
         </div>
-        <small class="text-muted">${new Date(r.fecha || Date.now()).toLocaleDateString()}</small>
+        <small class="text-muted">${new Date(Date.now()).toLocaleDateString()}</small>
       </div>
       <p class="mt-2 mb-0">${r.comentarios || "(Sin comentarios)"}</p>
     `;
