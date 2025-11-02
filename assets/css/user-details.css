@@ -197,3 +197,29 @@ body {
 .footer-no-gap a:hover {
   text-decoration: underline;
 }
+
+.text-orange {
+  color: #ff8c42;
+}
+.ratings-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+.rating-card {
+    background: #fff7f2;
+    border: 1px solid #ffe0c2;
+    border-radius: 15px;
+    padding: 15px;
+    margin-bottom: 12px;
+    transition: all 0.2s ease;
+}
+.rating-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(255, 140, 66, 0.2);
+}
+.rating-stars {
+    color: #ffb300;
+    font-size: 1.2rem;
+}

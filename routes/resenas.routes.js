@@ -100,4 +100,64 @@ router.get('/api/resena/:tipo/:idA/:idB', async (req, res) => {
   }
 });
 
+// Reseñas escritas por el usuario actual
+router.get('/api/resenas/escritas/:idUsuario', async (req, res) => {
+  const { idUsuario } = req.params;
+  const isProvider = req.query.isProvider === 1;
+
+  try {
+    const [rows] = isProvider
+      ? await pool.query(`
+          SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor, r.fecha
+          FROM resenaUsuario r
+          JOIN usuarios u ON r.idUsuario = u.idUsuario
+          WHERE r.idProveedor = ?
+          ORDER BY r.fecha DESC
+        `, [idUsuario])
+      : await pool.query(`
+          SELECT r.puntuacion, r.comentarios, p.nombre AS nombreAutor, r.fecha
+          FROM resenaProveedor r
+          JOIN usuarios p ON r.idProveedor = p.idUsuario
+          WHERE r.idUsuario = ?
+          ORDER BY r.fecha DESC
+        `, [idUsuario]);
+
+    res.json(rows);
+  } catch (error) {
+    console.error("Error obteniendo reseñas escritas:", error);
+    res.status(500).json({ error: "Error al obtener reseñas escritas" });
+  }
+});
+
+
+// Reseñas recibidas por el usuario actual
+router.get('/api/resenas/recibidas/:idUsuario', async (req, res) => {
+  const { idUsuario } = req.params;
+  const isProvider = req.query.isProvider === 1;
+
+  try {
+    const [rows] = isProvider
+      ? await pool.query(`
+          SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor, r.fecha
+          FROM resenaProveedor r
+          JOIN usuarios u ON r.idUsuario = u.idUsuario
+          WHERE r.idProveedor = ?
+          ORDER BY r.fecha DESC
+        `, [idUsuario])
+      : await pool.query(`
+          SELECT r.puntuacion, r.comentarios, u.nombre AS nombreAutor, r.fecha
+          FROM resenaUsuario r
+          JOIN usuarios u ON r.idProveedor = u.idUsuario
+          WHERE r.idUsuario = ?
+          ORDER BY r.fecha DESC
+        `, [idUsuario]);
+
+    res.json(rows);
+  } catch (error) {
+    console.error("Error obteniendo reseñas recibidas:", error);
+    res.status(500).json({ error: "Error al obtener reseñas recibidas" });
+  }
+});
+
+
 module.exports = router;
