@@ -62,7 +62,7 @@ router.post('/api/resenaUsuario', async (req, res) => {
       `SELECT AVG(puntuacion) AS promedio 
        FROM resenaUsuario 
        WHERE idUsuario = ?`,
-      [idUsuario]
+      [idProveedor]
     );
 
     const promedio = promedioRows[0].promedio || 0;
@@ -70,7 +70,7 @@ router.post('/api/resenaUsuario', async (req, res) => {
     // Actualizar campo calificacion en usuarios
     await pool.query(
       `UPDATE usuarios SET calificacion = ? WHERE idUsuario = ?`,
-      [promedio, idUsuario]
+      [promedio, idProveedor]
     );
 
     res.json({ message: 'Reseña de usuario guardada y promedio actualizado', promedio });
