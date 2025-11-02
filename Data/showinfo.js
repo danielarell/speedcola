@@ -198,6 +198,9 @@ async function cargarResenas(idUsuario, isProvider) {
     const escritas = await resEscritas.json();
     const recibidas = await resRecibidas.json();
 
+    console.log("Reseñas escritas:", escritas);
+    console.log("Reseñas recibidas:", recibidas);
+
     renderResenas("resenasEscritasContainer", escritas, "Aún no has escrito reseñas.");
     renderResenas("resenasRecibidasContainer", recibidas, "Aún no has recibido reseñas.");
 
