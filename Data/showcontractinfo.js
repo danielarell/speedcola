@@ -112,25 +112,34 @@ async function cambiarEstado(idCita, nuevoEstado) {
 }
 
 async function loadContratos(idUsuario) {
-    const res = await fetch(`/api/contratos/${idUsuario}`);
-    const contratos = await res.json();
-    const tbody = document.getElementById("contratos-body");
-    tbody.innerHTML = "";
+  const res = await fetch(`/api/contratos/${idUsuario}`);
+  const contratos = await res.json();
+  const tbody = document.getElementById("contratos-body");
+  tbody.innerHTML = "";
 
-    console.log("Contratos obtenidos:", contratos);
+  console.log("Contratos obtenidos:", contratos);
 
-    contratos.forEach(ct => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-        <td>${ct.nombreServicio || "-"}</td>
-        <td>${ct.nombreProveedor || "-"}</td>
-        <td>${ct.nombreCliente || "-"}</td>
-        <td>${new Date(ct.fecha).toLocaleString()}</td>
-        <td>$${ct.costo}</td>
-        <td>${ct.especificaciones || "-"}</td>
-        `;
-        tbody.appendChild(tr);
-    });
+  contratos.forEach(ct => {
+    const tr = document.createElement("tr");
+
+    // Verificar el estado de la cita y aplicar color
+    const estado = (ct.estadoCita || "").toLowerCase();
+    if (estado === "activo") {
+      tr.style.backgroundColor = "#ffe5cc";
+      tr.style.transition = "background-color 0.3s ease";
+    }
+
+    tr.innerHTML = `
+      <td>${ct.nombreServicio || "-"}</td>
+      <td>${ct.nombreProveedor || "-"}</td>
+      <td>${ct.nombreCliente || "-"}</td>
+      <td>${new Date(ct.fechaCita || ct.fecha).toLocaleString()}</td>
+      <td>$${ct.costo}</td>
+      <td>${ct.especificaciones || "-"}</td>
+    `;
+
+    tbody.appendChild(tr);
+  });
 }
 
 async function cancelarCita(idCita, idUsuario) {

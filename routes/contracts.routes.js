@@ -136,18 +136,25 @@ router.get('/api/contratos/:idUsuario', async (req, res) => {
       `SELECT ct.*, 
               u1.nombre AS nombreCliente, 
               u2.nombre AS nombreProveedor,
-              s.nombre AS nombreServicio
+              s.nombre AS nombreServicio,
+              c.estado AS estadoCita,
+              c.fecha AS fechaCita
        FROM contrato ct
        JOIN usuarios u1 ON ct.idCliente = u1.idUsuario
        JOIN usuarios u2 ON ct.idProveedor = u2.idUsuario
        JOIN servicios s ON ct.idServicio = s.idServicio
-       WHERE ct.idCliente = ? OR ct.idProveedor = ?`,
+       JOIN citas c ON ct.idCita = c.idCita
+       WHERE ct.idCliente = ? OR ct.idProveedor = ?
+       ORDER BY c.fecha DESC`,
       [idUsuario, idUsuario]
     );
+
     res.json(rows);
   } catch (error) {
+    console.error("Error al obtener contratos:", error);
     res.status(500).json({ error: 'Error al obtener contratos', details: error.message });
   }
 });
+
 
 module.exports = router;
