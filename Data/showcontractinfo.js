@@ -122,18 +122,23 @@ async function loadContratos(idUsuario) {
   contratos.forEach(ct => {
     const tr = document.createElement("tr");
 
-    // Verificar el estado de la cita y aplicar color
     const estado = (ct.estadoCita || "").toLowerCase();
-    if (estado === "activo") {
-      tr.style.backgroundColor = "#ffe5cc";
-      tr.style.transition = "background-color 0.3s ease";
-    }
+    const fecha = new Date(ct.fechaCita || ct.fecha).toLocaleString();
+
+    let bgColor = "";
+    if (estado === "activo") bgColor = "#d4f8d4";        // verde claro
+    else if (estado === "pendiente") bgColor = "#fff8d1"; // amarillo suave
+    else if (estado === "cancelado") bgColor = "#ffd6d6"; // rojo rosado
+    else if (estado === "terminado") bgColor = "#d8ecff"; // azul claro
+
+    tr.style.backgroundColor = bgColor;
+    tr.style.transition = "background-color 0.3s ease";
 
     tr.innerHTML = `
       <td>${ct.nombreServicio || "-"}</td>
       <td>${ct.nombreProveedor || "-"}</td>
       <td>${ct.nombreCliente || "-"}</td>
-      <td>${new Date(ct.fechaCita || ct.fecha).toLocaleString()}</td>
+      <td>${fecha}</td>
       <td>$${ct.costo}</td>
       <td>${ct.especificaciones || "-"}</td>
     `;
@@ -141,6 +146,8 @@ async function loadContratos(idUsuario) {
     tbody.appendChild(tr);
   });
 }
+
+
 
 async function cancelarCita(idCita, idUsuario) {
   if (!confirm("¿Seguro que deseas cancelar esta cita? Se eliminará su contrato asociado.")) return;
