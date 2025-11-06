@@ -145,7 +145,12 @@ router.get('/api/contratos/:idUsuario', async (req, res) => {
        JOIN servicios s ON ct.idServicio = s.idServicio
        JOIN citas c ON ct.idCita = c.idCita
        WHERE ct.idCliente = ? OR ct.idProveedor = ?
-       ORDER BY c.fecha DESC`,
+       ORDER BY 
+        CASE 
+          WHEN c.estado = 'activo' THEN 1 
+          ELSE 2 
+        END,
+       c.fecha DESC`,
       [idUsuario, idUsuario]
     );
 
