@@ -122,18 +122,19 @@ async function loadContratos(idUsuario) {
   contratos.forEach(ct => {
     const tr = document.createElement("tr");
 
-    const estado = (ct.estadoCita || "").toLowerCase();
+    // Normalizamos el estado
+    const estado = (ct.estadoCita || "").trim().toLowerCase();
     const fecha = new Date(ct.fechaCita || ct.fecha).toLocaleString();
 
+    console.log(`Contrato ${ct.idCita} -> Estado: [${estado}]`);
+
     let bgColor = "";
-    if (estado === "activo") bgColor = "#d4f8d4";        // verde claro
+    if (estado === "activo") bgColor = "#d4f8d4"; // verde claro
     else if (estado === "pendiente") bgColor = "#fff8d1"; // amarillo suave
     else if (estado === "cancelado") bgColor = "#ffd6d6"; // rojo rosado
     else if (estado === "terminado") bgColor = "#d8ecff"; // azul claro
 
-    tr.style.backgroundColor = bgColor;
-    tr.style.transition = "background-color 0.3s ease";
-
+    // Renderizamos la fila
     tr.innerHTML = `
       <td>${ct.nombreServicio || "-"}</td>
       <td>${ct.nombreProveedor || "-"}</td>
@@ -143,9 +144,17 @@ async function loadContratos(idUsuario) {
       <td>${ct.especificaciones || "-"}</td>
     `;
 
+    // Aplicamos el color de fondo con alta prioridad
+    if (bgColor) {
+      tr.setAttribute("style", `
+        background-color: ${bgColor} !important;
+      `);
+    }
+
     tbody.appendChild(tr);
   });
 }
+
 
 
 
