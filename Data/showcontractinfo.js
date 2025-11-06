@@ -121,20 +121,15 @@ async function loadContratos(idUsuario) {
 
   contratos.forEach(ct => {
     const tr = document.createElement("tr");
-
-    // Normalizamos el estado
     const estado = (ct.estadoCita || "").trim().toLowerCase();
     const fecha = new Date(ct.fechaCita || ct.fecha).toLocaleString();
 
-    console.log(`Contrato ${ct.idCita} -> Estado: [${estado}]`);
+    // Mostrar "Activo" en verde, o "-" si no lo es
+    const estadoHTML =
+      estado === "activo"
+        ? `<span style="color: green; font-weight: 600;">Activo</span>`
+        : `<span style="color: #888;">-</span>`;
 
-    let bgColor = "";
-    if (estado === "activo") bgColor = "#d4f8d4"; // verde claro
-    else if (estado === "pendiente") bgColor = "#fff8d1"; // amarillo suave
-    else if (estado === "cancelado") bgColor = "#ffd6d6"; // rojo rosado
-    else if (estado === "terminado") bgColor = "#d8ecff"; // azul claro
-
-    // Renderizamos la fila
     tr.innerHTML = `
       <td>${ct.nombreServicio || "-"}</td>
       <td>${ct.nombreProveedor || "-"}</td>
@@ -142,18 +137,13 @@ async function loadContratos(idUsuario) {
       <td>${fecha}</td>
       <td>$${ct.costo}</td>
       <td>${ct.especificaciones || "-"}</td>
+      <td>${estadoHTML}</td>
     `;
-
-    // Aplicamos el color de fondo con alta prioridad
-    if (bgColor) {
-      tr.setAttribute("style", `
-        background-color: ${bgColor} !important;
-      `);
-    }
 
     tbody.appendChild(tr);
   });
 }
+
 
 
 
