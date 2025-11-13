@@ -1,19 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1763054971113" clover="3.2.0">
-  <project timestamp="1763054971113" name="All files">
-    <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1" elements="11" coveredelements="11" complexity="0" loc="10" ncloc="10" packages="1" files="1" classes="1"/>
-    <file name="categories.routes.js" path="C:\Users\juanl\Documents\ITESO 7mo Semestre\Sistemas Escalables\speedcola\routes\categories.routes.js">
-      <metrics statements="10" coveredstatements="10" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+<coverage generated="1763058803878" clover="3.2.0">
+  <project timestamp="1763058803878" name="All files">
+    <metrics statements="20" coveredstatements="20" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1" elements="23" coveredelements="23" complexity="0" loc="20" ncloc="20" packages="1" files="1" classes="1"/>
+    <file name="categories.routes.js" path="C:\Users\DANYZ\OneDrive\Documentos\ITESO\Escalables\Prueba_SC\routes\categories.routes.js">
+      <metrics statements="20" coveredstatements="20" conditionals="2" coveredconditionals="2" methods="1" coveredmethods="1"/>
       <line num="1" count="1" type="stmt"/>
       <line num="2" count="1" type="stmt"/>
       <line num="3" count="1" type="stmt"/>
-      <line num="6" count="1" type="stmt"/>
-      <line num="7" count="2" type="stmt"/>
-      <line num="8" count="2" type="stmt"/>
-      <line num="9" count="1" type="stmt"/>
+      <line num="5" count="1" type="stmt"/>
+      <line num="8" count="1" type="stmt"/>
       <line num="11" count="1" type="stmt"/>
-      <line num="12" count="1" type="stmt"/>
-      <line num="16" count="1" type="stmt"/>
+      <line num="12" count="3" type="stmt"/>
+      <line num="13" count="3" type="stmt"/>
+      <line num="16" count="3" type="stmt"/>
+      <line num="17" count="3" type="cond" truecount="2" falsecount="0"/>
+      <line num="18" count="1" type="stmt"/>
+      <line num="19" count="1" type="stmt"/>
+      <line num="23" count="2" type="stmt"/>
+      <line num="24" count="2" type="stmt"/>
+      <line num="27" count="1" type="stmt"/>
+      <line num="28" count="1" type="stmt"/>
+      <line num="30" count="1" type="stmt"/>
+      <line num="32" count="1" type="stmt"/>
+      <line num="33" count="1" type="stmt"/>
+      <line num="37" count="1" type="stmt"/>
     </file>
   </project>
 </coverage>

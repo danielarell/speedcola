@@ -15,7 +15,7 @@ router.get('/api/categories', async (req, res) => {
     //Buscar en caché
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
-      console.log('🟡 Cache hit: /api/categories');
+      console.log('Cache hit: /api/categories');
       return res.json(cachedData);
     }
 
