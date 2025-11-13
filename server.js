@@ -7,7 +7,9 @@ const cookieParser = require('cookie-parser');
 const pool = require('./config/db');
 const initSockets = require('./sockets');
 const routes = require('./routes');
+const NodeCache = require('node-cache');
 
+const cache = new NodeCache({ stdTTL: 120 }); // TTL de 120 segundos (2 minutos)
 const app = express();
 const PORT = process.env.PORT || 3000;
 

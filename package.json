@@ -4,7 +4,6 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-
     "test": "jest --coverage",
     "start": "node server.js",
     "dev": "nodemon server.js"
@@ -20,6 +19,7 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.15.1",
+    "node-cache": "^5.1.2",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {

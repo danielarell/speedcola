@@ -5,7 +5,15 @@ const router = express.Router();
 // GET - Obtener todos los servicios
 router.get('/api/services', async (req, res) => {
   try {
+    const cachedServices = cache.get('services');
+    if (cachedServices) {
+      console.log('Cache hit');
+      return res.json(cachedServices);
+    }
+
+    console.log('Cache miss');
     const [rows] = await pool.query('SELECT * FROM servicios');
+    cache.set('services', rows);
     res.json(rows);
   } catch (error) {
     res.status(500).json({ error: 'Error al mostrar servicios', details: error.message });
