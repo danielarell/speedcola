@@ -23,13 +23,9 @@ describe("Reseñas (Proveedor / Usuario)", () => {
   // SP-RES-01 - Crear reseña de proveedor
   // ============================================================
   test("SP-RES-01 Crear reseña de proveedor", async () => {
-    // Inserción o actualización
+    
     pool.query.mockResolvedValueOnce([{}]);
-
-    // Cálculo promedio
     pool.query.mockResolvedValueOnce([[{ promedio: 5 }]]);
-
-    // Actualizar promedio
     pool.query.mockResolvedValueOnce([{}]);
 
     const res = await request(app)
@@ -50,13 +46,9 @@ describe("Reseñas (Proveedor / Usuario)", () => {
   // SP-RES-02 - Crear reseña de usuario
   // ============================================================
   test("SP-RES-02 Crear reseña de usuario", async () => {
-    // Inserción
+    
     pool.query.mockResolvedValueOnce([{}]);
-
-    // Cálculo promedio
     pool.query.mockResolvedValueOnce([[{ promedio: 4 }]]);
-
-    // Actualizar calificación
     pool.query.mockResolvedValueOnce([{}]);
 
     const res = await request(app)
