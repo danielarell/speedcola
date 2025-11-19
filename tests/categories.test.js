@@ -57,7 +57,7 @@ describe('Rutas /api/categories con NodeCache', () => {
     expect(mockCache.get).toHaveBeenCalledWith('categories');
   });
 
-  test('Error en base de datos → devuelve 500', async () => {
+  test('Error en base de datos -> devuelve 500', async () => {
     mockCache.get.mockReturnValueOnce(null); // Forzar cache miss
     pool.query.mockRejectedValueOnce(new Error('DB fail'));
 
