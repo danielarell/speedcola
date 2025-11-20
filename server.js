@@ -20,6 +20,10 @@ app.use(express.static(__dirname));
 
 app.use('/', routes);
 
+app.get('/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Servidor funcionando' });
+});
+
 async function start() {
   const server = http.createServer(app);
   const io = initSockets(server, pool);
