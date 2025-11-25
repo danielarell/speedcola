@@ -27,10 +27,41 @@ document.addEventListener("DOMContentLoaded", async () => {
     const service = await resp.json();
 
     renderSingleService(service);
+    loadProviderReviews(service.idUsuario);
   } catch (err) {
     console.error("Error fetching service:", err);
   }
 });
+
+async function loadProviderReviews(idProveedor) {
+  const container = document.getElementById("provider-reviews");
+
+  try {
+    const res = await fetch(`/api/resenas/recibidas/${idProveedor}?isProvider=1`);
+    const reseñas = await res.json();
+
+    if (!reseñas.length) {
+      container.innerHTML = "<p>Este proveedor aún no tiene reseñas.</p>";
+      return;
+    }
+
+    container.innerHTML = reseñas.map(r => `
+      <div class="review-card">
+        <div class="review-header">
+          <strong>${r.nombreAutor}</strong>
+          <span class="stars">⭐ ${r.puntuacion}</span>
+        </div>
+        <p>${r.comentarios}</p>
+      </div>
+    `).join("");
+
+  } catch (error) {
+    console.error("Error cargando reseñas:", error);
+    container.innerHTML = "<p>Error al cargar reseñas.</p>";
+  }
+}
+
+
 
 function renderSingleService(servicio) {
   const container = document.getElementById("single-service-container");
@@ -59,6 +90,12 @@ function renderSingleService(servicio) {
           </button>
         </div>
       </div>
+    </div>
+
+    <!-- SECCIÓN RESEÑAS DEL PROVEEDOR -->
+    <h3 class="mt-5">Reseñas del Proveedor</h3>
+    <div id="provider-reviews" class="reviews-container">
+      <p>Cargando reseñas...</p>
     </div>
 
     <!-- Modal de Contratación -->
