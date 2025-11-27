@@ -7,7 +7,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   try {
     const res = await fetch('/api/login', {
       method: 'POST',
-      credentials: 'include', // 👈 importante para cookies
+      credentials: 'include', 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     });
@@ -15,15 +15,15 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const data = await res.json();
 
     if (res.ok) {
-      alert('✅ Login exitoso: ' + data.user.name);
+      alert('Login exitoso: ' + data.user.name);
       // Redirigir o mostrar perfil
       const modal = bootstrap.Modal.getInstance(document.getElementById('loginModal'));
       modal.hide();
     } else {
-      alert('❌ ' + data.error);
+      alert(data.error);
     }
   } catch (err) {
       console.error(err);
-      alert('⚠️ Error en la conexión');
+      alert('Error en la conexión');
   }
 });

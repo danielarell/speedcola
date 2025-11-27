@@ -103,7 +103,7 @@ async function loadCategoriesForModal() {
         categories.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.idCategoria;
-            option.textContent = cat.descripcion; // Changed from cat.nombre to cat.descripcion
+            option.textContent = cat.descripcion;
             select.appendChild(option);
         });
     } catch (error) {
@@ -173,10 +173,10 @@ function renderServices(list) {
         const col = document.createElement("div");
         col.className = "col-lg-4 col-md-6 align-self-center mb-30 properties-items";
 
-        // Simple HTML (CAMBIAR EL PRECIO DE LUGAR)
+        // Simple HTML
         col.innerHTML = `
             <div class="item text-center">
-                <a href="property-details.html">
+                <a href="service-details.html?id=${servicio.idServicio}">
                     <img src="${servicio.imagen}" alt="${servicio.nombreServicio}">
                 </a>
                 <h4 class="service-title" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">
@@ -230,7 +230,7 @@ async function handleCreateService(e) {
             credentials: "include"
         });
 
-        // ✅ Verificar si el fetch fue exitoso
+        // Verificar si el fetch fue exitoso
         if (serviceResp.ok) {
             const servicioExistente = await serviceResp.json();
             if (servicioExistente) {
@@ -299,8 +299,6 @@ async function handleCreateService(e) {
     }
 }
 
-
-// Apartado para servicio individual
 
 
 
