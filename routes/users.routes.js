@@ -31,11 +31,20 @@ router.post('/api/users', async (req, res) => {
 // PUT - Actualizar usuario
 router.put('/api/users/:id', async (req, res) => {
   try {
-    const { name, email } = req.body;
-    await pool.query('UPDATE usuarios SET nombre=?, email=? WHERE idUsuario=?', [name, email, req.params.id]);
-    res.json({ message: 'Usuario actualizado' });
+    const { nombre, email, telefono } = req.body;
+
+    await pool.query(
+      'UPDATE usuarios SET nombre = ?, email = ?, telefono = ? WHERE idUsuario = ?',
+      [nombre, email, telefono, req.params.id]
+    );
+
+    res.json({ message: 'Usuario actualizado correctamente' });
+
   } catch (error) {
-    res.status(500).json({ error: 'Error al actualizar usuario', details: error.message });
+    res.status(500).json({ 
+      error: 'Error al actualizar usuario', 
+      details: error.message 
+    });
   }
 });
 

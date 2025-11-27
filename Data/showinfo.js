@@ -298,6 +298,34 @@ async function checkIfProvider() {
     }
 }
 
+document.getElementById("userEditForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const id = document.getElementById("idUsuario").value;
+
+  const body = {
+    nombre: document.getElementById("nombre").value,
+    email: document.getElementById("email").value,
+    telefono: document.getElementById("telefono").value
+  };
+
+  const response = await fetch(`/api/users/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(body)
+  });
+
+  const data = await response.json();
+
+  if (response.ok) {
+    alert("Usuario actualizado correctamente");
+    location.reload();
+  } else {
+    alert("Error actualizando usuario");
+  }
+});
+
 // Ir a la página de chats
 function goToChats() {
     window.location.href = '/chats.html';
