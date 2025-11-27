@@ -33,7 +33,7 @@ function renderTop3Service(list) {
         // Simple HTML
         col.innerHTML = `
             <div class="item text-center">
-                <a href="property-details.html">
+                <a href="service-details.html?id=${servicio.idServicio}">
                     <img src="${servicio.imagen}" alt="${servicio.nombreServicio}">
                 </a>
                 <h4 class="service-title" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">
