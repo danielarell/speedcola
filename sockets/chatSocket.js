@@ -1,5 +1,5 @@
 module.exports = (io, socket, pool, connectedUsers, isAuthenticated, getUserId) => {
-  // ========== ENVIAR MENSAJE PRIVADO ==========
+  // ENVIAR MENSAJE PRIVADO 
   socket.on("send_private_message", async (data) => {
     if (!isAuthenticated()) {
       socket.emit('error', { message: 'No autenticado' });
@@ -64,12 +64,12 @@ module.exports = (io, socket, pool, connectedUsers, isAuthenticated, getUserId) 
         });
       }
     } catch (error) {
-      console.error('❌ Error enviando mensaje:', error);
+      console.error('Error enviando mensaje:', error);
       socket.emit('error', { message: 'Error al enviar mensaje', details: error.message });
     }
   });
 
-  // ========== OBTENER HISTORIAL DE CHAT ==========
+  //  OBTENER HISTORIAL DE CHAT 
   socket.on("get_chat_history", async (data) => {
     const userId1 = parseInt(data.userId1);
     const userId2 = parseInt(data.userId2);
@@ -108,7 +108,7 @@ module.exports = (io, socket, pool, connectedUsers, isAuthenticated, getUserId) 
 
       socket.emit('chat_history', messages);
     } catch (error) {
-      console.error('❌ Error obteniendo historial:', error);
+      console.error('Error obteniendo historial:', error);
       socket.emit('chat_history', []);
     }
   });

@@ -19,7 +19,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
 
     if (response.ok) {
       const data = await response.json();
-      alert('✅ Usuario registrado con éxito: ' + data.name);
+      alert('Usuario registrado con éxito: ' + data.name);
       e.target.reset();
       const modal = bootstrap.Modal.getInstance(document.getElementById('registerModal'));
       modal.hide();
@@ -27,10 +27,10 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
         console.error('Error del servidor:', errData);
-        alert('❌ Error al registrar usuario');
+        alert('Error al registrar usuario');
     }
   } catch (err) {
     console.error('Error:', err);
-    alert('⚠️ Falló la conexión con el servidor');
+    alert('Falló la conexión con el servidor');
   }
 });

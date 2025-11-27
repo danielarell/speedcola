@@ -247,11 +247,11 @@ document.getElementById("formResena").addEventListener("submit", async e => {
   });
 
   if (res.ok) {
-    alert("✅ Reseña enviada correctamente.");
+    alert("Reseña enviada correctamente.");
     bootstrap.Modal.getInstance(document.getElementById("modalResena")).hide();
     e.target.reset();
   } else {
-    alert("❌ Error al enviar la reseña.");
+    alert("Error al enviar la reseña.");
   }
 });
 

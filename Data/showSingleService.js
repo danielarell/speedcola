@@ -1,4 +1,4 @@
-// ===================== showSingleService.js =====================
+
 
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(window.location.search);
@@ -112,9 +112,20 @@ function renderSingleService(servicio) {
 }
 
 // Función para abrir el modal
-function openHireModal(idServicio, nombreServicio, precio, duracion, proveedor, descripcion, idProveedor) {
+async function openHireModal(idServicio, nombreServicio, precio, duracion, proveedor, descripcion, idProveedor) {
   const modal = document.getElementById("hireModal");
   const modalBody = document.getElementById("modal-body");
+
+  // Verificar usuario logeado
+  const response = await fetch("/api/check-session", { credentials: "include" });
+  const data = await response.json();
+  const idCliente = data.user.id;
+
+  // Si el usuario es el creador del servicio
+  if (idCliente === idProveedor) {
+    alert("Este es tu propio servicio, no puedes contratarlo.");
+    return;
+  }
   
   modalBody.innerHTML = `
     <p><strong>Service:</strong> ${nombreServicio}</p>
@@ -195,7 +206,7 @@ async function submitHire(event, idServicio, idProveedor, costo) {
     }
   }catch (err) {
     console.error('Error:', err);
-    alert('⚠️ Falló la conexión con el servidor');
+    alert('Falló la conexión con el servidor');
   }
 
   try{
@@ -220,7 +231,7 @@ async function submitHire(event, idServicio, idProveedor, costo) {
     }
   }catch(err){
     console.error('Error:', err);
-    alert('⚠️ Falló la conexión con el servidor');
+    alert('Falló la conexión con el servidor');
   }
   
   alert("¡Servicio contratado exitosamente!");
@@ -245,6 +256,14 @@ async function openChat(proveedorId) {
     if (!data.loggedIn) {
       alert('Debes iniciar sesión para chatear');
       window.location.href = '/index.html';
+      return;
+    }
+
+    const idCliente = data.user.id;
+
+    // Evitar chatear contigo mismo
+    if (idCliente === proveedorId) {
+      alert("No puedes iniciar un chat contigo mismo.");
       return;
     }
 

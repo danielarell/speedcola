@@ -12,23 +12,32 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log(sessionData)
         
         if (sessionData.loggedIn && sessionData.user.isprovider) {
-            // Crear botón dinámicamente
-            console.log("User is provider, creating button...");
+            const emailProveedor = sessionData.user.email;
 
-            const container = document.querySelector(".row.mb-4.g-3");
-            const btn = document.createElement("button");
-            btn.textContent = "Crear Servicio";
-            btn.style.display = "block";
-            btn.style.backgroundColor = '#f35525';
-            btn.className = "btn btn-success mb-3";
-            btn.setAttribute("data-bs-toggle", "modal");
-            btn.setAttribute("data-bs-target", "#createServiceModal");
+            // Verificar si YA tiene servicio creado
+            const serviceCheck = await fetch(`/api/serviceProv/${emailProveedor}`, {
+                method: "GET",
+                credentials: "include"
+            });
 
-            // Insertar el botón al inicio del container (antes de los filtros)
-            container.insertBefore(btn, container.firstChild);
-            
-        } else {
-            console.log("User is not provider...");
+            if (serviceCheck.status === 404) {
+                // NO TIENE SERVICIO → Mostrar botón
+                console.log("Proveedor NO tiene servicio — mostrar botón");
+
+                const container = document.querySelector(".row.mb-4.g-3");
+                const btn = document.createElement("button");
+                btn.textContent = "Crear Servicio";
+                btn.style.display = "block";
+                btn.style.backgroundColor = '#f35525';
+                btn.className = "btn btn-success mb-3";
+                btn.setAttribute("data-bs-toggle", "modal");
+                btn.setAttribute("data-bs-target", "#createServiceModal");
+
+                container.insertBefore(btn, container.firstChild);
+            } else {
+                // Tiene servicio → No mostrar botón
+                console.log("Proveedor YA TIENE servicio — ocultar botón");
+            }
         }
 
         try {
@@ -103,7 +112,7 @@ async function loadCategoriesForModal() {
         categories.forEach(cat => {
             const option = document.createElement('option');
             option.value = cat.idCategoria;
-            option.textContent = cat.descripcion; // Changed from cat.nombre to cat.descripcion
+            option.textContent = cat.descripcion;
             select.appendChild(option);
         });
     } catch (error) {
@@ -173,10 +182,10 @@ function renderServices(list) {
         const col = document.createElement("div");
         col.className = "col-lg-4 col-md-6 align-self-center mb-30 properties-items";
 
-        // Simple HTML (CAMBIAR EL PRECIO DE LUGAR)
+        // Simple HTML
         col.innerHTML = `
             <div class="item text-center">
-                <a href="property-details.html">
+                <a href="service-details.html?id=${servicio.idServicio}">
                     <img src="${servicio.imagen}" alt="${servicio.nombreServicio}">
                 </a>
                 <h4 class="service-title" style="font-size: 1.4rem; font-weight: bold; margin-top: 10px;">
@@ -230,7 +239,7 @@ async function handleCreateService(e) {
             credentials: "include"
         });
 
-        // ✅ Verificar si el fetch fue exitoso
+        // Verificar si el fetch fue exitoso
         if (serviceResp.ok) {
             const servicioExistente = await serviceResp.json();
             if (servicioExistente) {
@@ -299,8 +308,6 @@ async function handleCreateService(e) {
     }
 }
 
-
-// Apartado para servicio individual
 
 
 

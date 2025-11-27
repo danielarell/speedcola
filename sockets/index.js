@@ -15,12 +15,12 @@ function initSockets(server, pool) {
   });
 
   io.on("connection", (socket) => {
-    console.log("🟢 Usuario conectado al socket:", socket.id);
+    console.log("Usuario conectado al socket:", socket.id);
     
     let currentUserId = null;
     let isAuthenticated = false;
 
-    // ========== AUTENTICAR USUARIO ==========
+    //  AUTENTICAR USUARIO
     socket.on("authenticate", async (token) => {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'mi_clave_secreta');
@@ -41,13 +41,13 @@ function initSockets(server, pool) {
     chatSocket(io, socket, pool, connectedUsers, () => isAuthenticated, () => currentUserId);
     serviceSocket(io, socket, pool);
 
-    // ========== DESCONEXIÓN ==========
+    //DESCONEXIÓN
     socket.on("disconnect", () => {
       if (currentUserId) {
         connectedUsers.delete(currentUserId);
-        console.log(`🔴 Usuario ${currentUserId} desconectado`);
+        console.log(`Usuario ${currentUserId} desconectado`);
       } else {
-        console.log("🔴 Usuario desconectado:", socket.id);
+        console.log("Usuario desconectado:", socket.id);
       }
     });
   });
