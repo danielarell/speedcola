@@ -43,7 +43,7 @@ router.post('/api/login', async (req, res) => {
     // Guardar token en cookie HTTP-only
     res.cookie('token', token, {
       httpOnly: true,
-      secure: false, // true si usas HTTPS
+      secure: false,
       maxAge: 3600000 // 1 hora
     });
 

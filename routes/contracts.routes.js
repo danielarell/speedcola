@@ -7,7 +7,7 @@ router.post('/api/citas', async (req, res) => {
 
     const {fecha, idCliente, idProveedor, idServicio, costo, especificaciones} = req.body;
     
-    // Validate required fields
+    // Validar entrada
     if (!fecha || !idCliente || !idProveedor || !idServicio || !costo || !especificaciones) {
       return res.status(400).json({ 
         error: 'Missing required fields',
@@ -44,7 +44,7 @@ router.post('/api/contrato', async (req, res) => {
 
     const {idCita, fecha, idCliente, idProveedor, idServicio, costo, especificaciones} = req.body;
     
-    // Validate required fields
+    // Validar entrada
     if (!idCita || !fecha || !idCliente || !idProveedor || !idServicio || !costo || !especificaciones) {
       return res.status(400).json({ 
         error: 'Missing required fields',

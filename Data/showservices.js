@@ -12,23 +12,32 @@ document.addEventListener("DOMContentLoaded", async () => {
         console.log(sessionData)
         
         if (sessionData.loggedIn && sessionData.user.isprovider) {
-            // Crear botón dinámicamente
-            console.log("User is provider, creating button...");
+            const emailProveedor = sessionData.user.email;
 
-            const container = document.querySelector(".row.mb-4.g-3");
-            const btn = document.createElement("button");
-            btn.textContent = "Crear Servicio";
-            btn.style.display = "block";
-            btn.style.backgroundColor = '#f35525';
-            btn.className = "btn btn-success mb-3";
-            btn.setAttribute("data-bs-toggle", "modal");
-            btn.setAttribute("data-bs-target", "#createServiceModal");
+            // Verificar si YA tiene servicio creado
+            const serviceCheck = await fetch(`/api/serviceProv/${emailProveedor}`, {
+                method: "GET",
+                credentials: "include"
+            });
 
-            // Insertar el botón al inicio del container (antes de los filtros)
-            container.insertBefore(btn, container.firstChild);
-            
-        } else {
-            console.log("User is not provider...");
+            if (serviceCheck.status === 404) {
+                // NO TIENE SERVICIO → Mostrar botón
+                console.log("Proveedor NO tiene servicio — mostrar botón");
+
+                const container = document.querySelector(".row.mb-4.g-3");
+                const btn = document.createElement("button");
+                btn.textContent = "Crear Servicio";
+                btn.style.display = "block";
+                btn.style.backgroundColor = '#f35525';
+                btn.className = "btn btn-success mb-3";
+                btn.setAttribute("data-bs-toggle", "modal");
+                btn.setAttribute("data-bs-target", "#createServiceModal");
+
+                container.insertBefore(btn, container.firstChild);
+            } else {
+                // Tiene servicio → No mostrar botón
+                console.log("Proveedor YA TIENE servicio — ocultar botón");
+            }
         }
 
         try {

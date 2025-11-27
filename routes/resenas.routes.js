@@ -34,7 +34,7 @@ router.post('/api/resenaProveedor', async (req, res) => {
       [promedio, idProveedor]
     );
 
-    res.json({ message: '✅ Reseña de proveedor guardada y promedio actualizado', promedio });
+    res.json({ message: 'Reseña de proveedor guardada y promedio actualizado', promedio });
   } catch (error) {
     console.error('Error guardando reseña de proveedor:', error);
     res.status(500).json({ error: 'Error guardando reseña de proveedor', details: error.message });
@@ -57,7 +57,7 @@ router.post('/api/resenaUsuario', async (req, res) => {
       [idUsuario, idProveedor, puntuacion, comentarios]
     );
 
-    // ✅ Recalcular promedio de calificaciones del USUARIO reseñado
+    // Recalcular promedio de calificaciones del USUARIO reseñado
     const [promedioRows] = await pool.query(
       `SELECT AVG(puntuacion) AS promedio 
        FROM resenaUsuario 
@@ -67,13 +67,13 @@ router.post('/api/resenaUsuario', async (req, res) => {
 
     const promedio = parseFloat(promedioRows[0].promedio || 0).toFixed(2);
 
-    // ✅ Actualizar campo calificacion en usuarios (del usuario reseñado)
+    // Actualizar campo calificacion en usuarios (del usuario reseñado)
     await pool.query(
       `UPDATE usuarios SET calificacion = ? WHERE idUsuario = ?`,
       [promedio, idProveedor]
     );
 
-    res.json({ message: '✅ Reseña de usuario guardada y promedio actualizado', promedio });
+    res.json({ message: 'Reseña de usuario guardada y promedio actualizado', promedio });
   } catch (error) {
     console.error('Error guardando reseña de usuario:', error);
     res.status(500).json({ error: 'Error guardando reseña de usuario', details: error.message });
