@@ -156,6 +156,49 @@ async function openHireModal(idServicio, nombreServicio, precio, duracion, prove
       </div>
     </form>
   `;
+
+  
+  const dateInput = modalBody.querySelector('#fecha');
+  const timeInput = modalBody.querySelector('#hora');
+
+  // Obtener fecha de hoy en formato YYYY-MM-DD
+  const hoy = new Date();
+  const yyyy = hoy.getFullYear();
+  const mm = String(hoy.getMonth() + 1).padStart(2, '0');
+  const dd = String(hoy.getDate()).padStart(2, '0');
+  const fechaHoyStr = `${yyyy}-${mm}-${dd}`;
+
+  // Evitar seleccionar fechas pasadas
+  dateInput.min = fechaHoyStr;
+
+  function actualizarMinHora() {
+    const selectedDate = dateInput.value; 
+    if (!selectedDate) {
+      timeInput.removeAttribute('min');
+      return;
+    }
+
+    if (selectedDate === fechaHoyStr) {
+      // Hora mínima: ahora +5 min
+      const ahora = new Date();
+      ahora.setMinutes(ahora.getMinutes() + 5);
+      const hh = String(ahora.getHours()).padStart(2, '0');
+      const mins = String(ahora.getMinutes()).padStart(2, '0');
+
+      timeInput.min = `${hh}:${mins}`;
+
+      // Si la hora elegida está por debajo del mínimo → limpiar
+      if (timeInput.value && timeInput.value < timeInput.min) {
+        timeInput.value = '';
+      }
+    } else {
+      timeInput.removeAttribute('min');
+    }
+  }
+
+  actualizarMinHora(); // Ejecutar inmediatamente
+  dateInput.addEventListener('change', actualizarMinHora);
+
   
   modal.style.display = "block";
 }
