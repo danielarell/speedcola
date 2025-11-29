@@ -109,6 +109,11 @@ function renderUserService(servicio) {
 
       const data = await response.json();
 
+      if (response.status === 400) {
+        alert(data.error); // "No puedes eliminar este servicio porque tiene citas activas."
+        return;
+      }
+
       if (response.ok) {
         alert("Servicio eliminado correctamente");
         

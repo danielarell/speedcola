@@ -138,14 +138,62 @@ router.put('/api/services/:id', async (req, res) => {
 // SP-SRV-06 – ELIMINAR SERVICIO
 // ============================================================
 router.delete('/api/services/:id', async (req, res) => {
+  const id = req.params.id;
+
   try {
-    await pool.query('DELETE FROM servicios WHERE idServicio = ?', [req.params.id]);
-    res.status(200).json({ message: 'Servicio eliminado' });
+
+    //Verificar si tiene citas ACTIVAS
+    const [citasActivas] = await pool.query(
+      `SELECT idCita FROM citas 
+       WHERE idServicio = ? 
+       AND estado IN ('activo')`,
+      [id]
+    );
+
+    if (citasActivas.length > 0) {
+      return res.status(400).json({
+        error: "No puedes eliminar este servicio porque tiene citas activas."
+      });
+    }
+
+    //Borrar MENSAJES relacionados
+    await pool.query(`
+      DELETE m FROM mensajes m
+      JOIN chats c ON m.idChat = c.idChat
+      JOIN citas ci ON c.idCita = ci.idCita
+      WHERE ci.idServicio = ?
+    `, [id]);
+
+    //Borrar CHATS relacionados
+    await pool.query(`
+      DELETE c FROM chats c
+      JOIN citas ci ON c.idCita = ci.idCita
+      WHERE ci.idServicio = ?
+    `, [id]);
+
+    //Borrar CONTRATOS relacionados
+    await pool.query(`
+      DELETE FROM contrato WHERE idServicio = ?
+    `, [id]);
+
+    //Borrar CITAS relacionadas (ya no activas)
+    await pool.query(`
+      DELETE FROM citas WHERE idServicio = ?
+    `, [id]);
+
+    //Finalmente borrar el servicio
+    await pool.query(`
+      DELETE FROM servicios WHERE idServicio = ?
+    `, [id]);
+
+    res.status(200).json({ message: 'Servicio eliminado correctamente' });
 
   } catch (error) {
-    res.status(500).json({ error: 'Error al eliminar' });
+    console.error("Error al eliminar servicio:", error);
+    res.status(500).json({ error: 'Error al eliminar servicio' });
   }
 });
+
 
 // ============================================================
 // SP-SRV-07 – LISTAR SERVICIOS CON USUARIO
