@@ -136,17 +136,17 @@ async function openHireModal(idServicio, nombreServicio, precio, duracion, prove
     
     <form id="hireForm" onsubmit="submitHire(event, ${idServicio}, ${idProveedor}, ${precio})">
       <div class="form-group">
-        <label for="fecha">Fecha preferida:</label>
+        <label for="fecha">Fecha preferida: *</label>
         <input type="date" id="fecha" name="fecha" required>
       </div>
       
       <div class="form-group">
-        <label for="hora">Hora preferida:</label>
+        <label for="hora">Hora preferida: *</label>
         <input type="time" id="hora" name="hora" required>
       </div>
       
       <div class="form-group">
-        <label for="notas">Notas adicionales:</label>
+        <label for="notas">Notas adicionales: *</label>
         <textarea id="notas" name="notas" rows="4" placeholder="Agrega cualquier detalle especial..."></textarea>
       </div>
       
@@ -184,6 +184,12 @@ async function submitHire(event, idServicio, idProveedor, costo) {
   const fechaLocal = new Date(`${fecha}T${hora}:00`);
   const fechaUTC = fechaLocal.toISOString();
   fecha = fechaUTC
+
+  if (!fecha || !hora || !especificaciones.trim()) {
+    alert("Debes completar todos los campos: fecha, hora y especificaciones.");
+    return; //Detener todo el flujo inmediatamente
+  }
+
   try {
     const response_2 = await fetch('/api/citas', {
       method: 'POST',
