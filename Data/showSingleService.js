@@ -190,6 +190,16 @@ async function submitHire(event, idServicio, idProveedor, costo) {
     return; //Detener todo el flujo inmediatamente
   }
 
+  const hoy = new Date();
+  hoy.setHours(0,0,0,0);
+
+  const fechaSeleccionada = new Date(`${fecha}T00:00:00`);
+
+  if (fechaSeleccionada < hoy) {
+      alert("La fecha seleccionada no puede ser anterior a la fecha actual.");
+      return;
+  }
+
   try {
     const response_2 = await fetch('/api/citas', {
       method: 'POST',
